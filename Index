@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Business Card Generator</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-color: #2C3E50;    /* Professional Navy */
+      --secondary-color: #3498DB;  /* Trust Blue */
+      --accent-color: #E74C3C;     /* Alert Red */
+      --neutral-light: rgba(236, 240, 241, 0.9); /* Light Gray with transparency */
+      --neutral-dark: #34495E;     /* Dark Gray */
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 400px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      padding: 1.5rem;
+      margin: 1rem;
+    }
+
+    .form-header {
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1px solid var(--neutral-light);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .image-upload-group {
+      grid-column: 1 / -1;
+      text-align: center;
+      border: 2px dashed var(--neutral-light);
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #imagePreview {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0.5rem auto;
+      display: none;
+    }
+
+    #generateCard {
+      background: var(--secondary-color);
+      color: white;
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        max-width: 90%;
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Form Section -->
+  <div class="form-container">
+    <div class="form-header">
+      <h2>Create Business Card</h2>
+      <p>Fill in all required information</p>
+    </div>
+
+    <div class="form-grid">
+      <div class="image-upload-group">
+        <label for="profileImage">
+          <i class="fas fa-camera fa-2x"></i>
+          <p>Upload Profile Photo</p>
+        </label>
+        <input type="file" id="profileImage" accept="image/*" hidden onchange="previewImage(event)" />
+        <img id="imagePreview" alt="Profile Preview" />
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="name" placeholder="Full Name" required />
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="businessName" placeholder="Business Name" required />
+      </div>
+
+      <div class="input-group">
+        <textarea id="businessInfo" placeholder="Enter 3 to 5 paragraphs (Max 150 words each) separated by a new line" rows="6" required></textarea>
+        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
+          <strong>Instructions:</strong> Write 3 to 5 paragraphs. Each paragraph must not exceed 150 words. Separate paragraphs with a new line.
+        </small>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="address" placeholder="Business Address" required />
+      </div>
+
+      <div class="input-group">
+        <input type="tel" id="phone" placeholder="Phone Number" required />
+      </div>
+
+      <div class="input-group">
+        <input type="email" id="email" placeholder="Email Address" required />
+      </div>
+
+      <div class="input-group">
+        <input type="url" id="facebook" placeholder="Facebook URL" />
+      </div>
+
+      <div class="input-group">
+        <input type="url" id="instagram" placeholder="Instagram URL" />
+      </div>
+
+      <div class="input-group">
+        <input type="url" id="youtube" placeholder="YouTube URL" />
+      </div>
+    </div>
+
+    <button id="generateCard">Generate Card</button>
+  </div>
+
+  <script>
+    // Image Preview Function
+    function previewImage(event) {
+      const reader = new FileReader();
+      const preview = document.getElementById('imagePreview');
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+
+    // Generate Card Function
+    document.getElementById('generateCard').onclick = function () {
+      // Get form values
+      const formData = {
+        name: document.getElementById('name').value,
+        businessName: document.getElementById('businessName').value,
+        businessInfo: document.getElementById('businessInfo').value,
+        address: document.getElementById('address').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        facebook: document.getElementById('facebook').value,
+        instagram: document.getElementById('instagram').value,
+        youtube: document.getElementById('youtube').value,
+        profileImage: document.getElementById('profileImage').files[0]
+      };
+
+      // Validate mandatory fields
+      if (!formData.name || !formData.businessName || !formData.businessInfo ||
+          !formData.address || !formData.phone || !formData.email) {
+        alert('Please fill all required fields');
+        return;
+      }
+
+      // Validate business info paragraphs
+      const businessInfoParagraphs = formData.businessInfo.split('\n').filter(p => p.trim() !== '');
+      if (businessInfoParagraphs.length < 3 || businessInfoParagraphs.length > 5) {
+        alert('Please enter 3 to 5 paragraphs for the business info.');
+        return;
+      }
+
+      // Validate word limit for each paragraph
+      for (const paragraph of businessInfoParagraphs) {
+        const words = paragraph.split(/\s+/).filter(word => word.length > 0);
+        if (words.length > 150) {
+          alert(`Each paragraph must not exceed 150 words. Please check: "${paragraph.substring(0, 30)}..."`);
+          return;
+        }
+      }
+
+      // Redirect to card.html with form data as URL parameters
+      const params = new URLSearchParams();
+      params.set('name', formData.name);
+      params.set('businessName', formData.businessName);
+      params.set('businessInfo', formData.businessInfo);
+      params.set('address', formData.address);
+      params.set('phone', formData.phone);
+      params.set('email', formData.email);
+      params.set('facebook', formData.facebook);
+      params.set('instagram', formData.instagram);
+      params.set('youtube', formData.youtube);
+      if (formData.profileImage) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          params.set('profileImage', e.target.result);
+          window.location.href = `card.html?${params.toString()}`;
+        };
+        reader.readAsDataURL(formData.profileImage);
+      } else {
+        window.location.href = `card.html?${params.toString()}`;
+      }
+    };
+  </script>
+</body>
+</html>
