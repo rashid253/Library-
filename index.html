@@ -247,6 +247,16 @@
         responsive: true,
         guides: true,
       });
+
+      // Destroy Cropper.js when interacting with other fields
+      document.querySelectorAll('input, textarea').forEach((field) => {
+        field.addEventListener('focus', () => {
+          if (cropper) {
+            cropper.destroy();
+            cropper = null;
+          }
+        });
+      });
     }
 
     // Change Image Button
@@ -278,7 +288,10 @@
 
       // Handle image cropping
       if (cropper) {
-        const croppedCanvas = cropper.getCroppedCanvas();
+        const croppedCanvas = cropper.getCroppedCanvas({
+          width: 500, // Set max width
+          height: 500, // Set max height
+        });
         croppedCanvas.toBlob((blob) => {
           const reader = new FileReader();
           reader.onload = (e) => {
