@@ -295,7 +295,7 @@
         croppedCanvas.toBlob((blob) => {
           const reader = new FileReader();
           reader.onload = (e) => {
-            formData.profileImage = e.target.result;
+            formData.profileImage = e.target.result; // Base64 image data
             generateCard(formData);
           };
           reader.readAsDataURL(blob);
