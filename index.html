@@ -87,6 +87,7 @@
       padding: 1rem;
       border-radius: 8px;
       cursor: pointer;
+      position: relative;
     }
 
     #imagePreview {
@@ -96,6 +97,17 @@
       object-fit: cover;
       margin: 0.5rem auto;
       display: none;
+    }
+
+    #changeImageButton {
+      display: none;
+      margin-top: 0.5rem;
+      background: var(--secondary-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
     }
 
     #generateCard {
@@ -133,6 +145,7 @@
         </label>
         <input type="file" id="profileImage" accept="image/*" hidden onchange="handleImageUpload(event)" />
         <img id="imagePreview" alt="Profile Preview" />
+        <button id="changeImageButton">Change Image</button>
       </div>
 
       <div class="input-group">
@@ -200,6 +213,7 @@
     function handleImageUpload(event) {
       const file = event.target.files[0];
       const preview = document.getElementById('imagePreview');
+      const changeImageButton = document.getElementById('changeImageButton');
 
       if (!file) return;
 
@@ -215,6 +229,7 @@
       reader.onload = (e) => {
         preview.src = e.target.result;
         preview.style.display = 'block';
+        changeImageButton.style.display = 'block';
         initCropper(preview);
       };
       reader.readAsDataURL(file);
@@ -233,6 +248,11 @@
         guides: true,
       });
     }
+
+    // Change Image Button
+    document.getElementById('changeImageButton').onclick = function () {
+      document.getElementById('profileImage').click(); // Trigger file input
+    };
 
     // Generate Card Function
     document.getElementById('generateCard').onclick = function () {
@@ -254,22 +274,6 @@
           !formData.address || !formData.phone || !formData.email) {
         alert('Please fill all required fields');
         return;
-      }
-
-      // Validate business info paragraphs
-      const businessInfoParagraphs = formData.businessInfo.split('\n').filter(p => p.trim() !== '');
-      if (businessInfoParagraphs.length < 3 || businessInfoParagraphs.length > 5) {
-        alert('Please enter 3 to 5 paragraphs for the business info.');
-        return;
-      }
-
-      // Validate word limit for each paragraph
-      for (const paragraph of businessInfoParagraphs) {
-        const words = paragraph.split(/\s+/).filter(word => word.length > 0);
-        if (words.length > 150) {
-          alert(`Each paragraph must not exceed 150 words. Please check: "${paragraph.substring(0, 30)}..."`);
-          return;
-        }
       }
 
       // Handle image cropping
