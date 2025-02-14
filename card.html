@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+card html= <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -6,7 +6,188 @@
   <title>Business Card</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
   <style>
-    /* Your existing CSS styles */
+    :root {
+      --primary-color: #2C3E50;    /* Professional Navy */
+      --secondary-color: #3498DB;  /* Trust Blue */
+      --accent-color: #E74C3C;     /* Alert Red */
+      --neutral-light: rgba(236, 240, 241, 0.9); /* Light Gray with transparency */
+      --neutral-dark: #34495E;     /* Dark Gray */
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .card-container {
+      width: 100%;
+      max-width: 400px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      padding: 1.5rem;
+      margin: 1rem;
+      transform: perspective(800px) rotateY(10deg);
+      transition: transform 0.5s ease;
+      border: 2px solid var(--secondary-color);
+      transform-style: preserve-3d;
+    }
+
+    .card-container:hover {
+      transform: perspective(800px) rotateY(10deg);
+    }
+
+    .mini-icons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-bottom: 2px solid var(--secondary-color);
+    }
+
+    .mini-icons .icon {
+      font-size: 1.5rem;
+      color: var(--neutral-dark);
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .mini-icons .icon:hover {
+      color: var(--secondary-color);
+    }
+
+    .profile-section {
+      display: flex;
+      padding: 1rem;
+      margin: 0.5rem;
+      border-bottom: 2px solid var(--secondary-color);
+    }
+
+    .profile-image-container {
+      width: 40%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-right: 1rem;
+    }
+
+    .profile-image {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 2px solid var(--neutral-light);
+      object-fit: cover;
+    }
+
+    .profile-name {
+      color: var(--primary-color);
+      margin: 0.5rem 0 0;
+      font-size: 1.1rem;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .profile-info {
+      width: 60%;
+      padding-left: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .contact-info {
+      color: var(--neutral-dark);
+      margin: 0.3rem 0;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+
+    .business-info-section {
+      padding: 1rem;
+      margin: 0.5rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      height: 150px;
+      overflow: hidden;
+      position: relative;
+      background: #E0F7FA;
+      border-bottom: 2px solid var(--secondary-color);
+      font-family: 'Georgia', serif;
+      border-radius: 8px;
+    }
+
+    .business-info-content {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      display: none;
+      text-align: center;
+      font-weight: bold;
+      color: var(--neutral-dark);
+      padding: 0.5rem;
+      overflow-y: auto;
+    }
+
+    .action-buttons {
+      display: grid;
+      gap: 0.5rem;
+      padding: 0.8rem;
+    }
+
+    .action-btn {
+      padding: 0.6rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .social-icon {
+      font-size: 1.5rem;
+      color: var(--neutral-dark);
+      visibility: hidden;
+    }
+
+    @media (max-width: 480px) {
+      .card-container {
+        max-width: 90%;
+        padding: 1rem;
+      }
+
+      .profile-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .profile-image-container, .profile-info {
+        width: 100%;
+        padding: 0;
+      }
+
+      .profile-info {
+        margin-top: 1rem;
+      }
+
+      .contact-info {
+        white-space: normal;
+      }
+    }
   </style>
 </head>
 <body>
@@ -56,27 +237,24 @@
   </div>
 
   <script>
-    // Retrieve form data from localStorage
-    const formData = JSON.parse(localStorage.getItem('formData'));
+    // Get URL parameters
+    const params = new URLSearchParams(window.location.search);
 
     // Set profile image (if available)
-    if (formData.profileImage) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        document.getElementById('cardProfileImage').src = e.target.result;
-      };
-      reader.readAsDataURL(formData.profileImage);
+    const profileImage = params.get('profileImage');
+    if (profileImage) {
+      document.getElementById('cardProfileImage').src = profileImage;
     }
 
     // Update card information
-    document.getElementById('cardName').textContent = formData.name;
-    document.getElementById('cardBusinessName').textContent = formData.businessName;
-    document.getElementById('cardAddress').textContent = formData.address;
-    document.getElementById('cardPhone').textContent = formData.phone;
-    document.getElementById('cardEmail').textContent = formData.email;
+    document.getElementById('cardName').textContent = params.get('name');
+    document.getElementById('cardBusinessName').textContent = params.get('businessName');
+    document.getElementById('cardAddress').textContent = params.get('address');
+    document.getElementById('cardPhone').textContent = params.get('phone');
+    document.getElementById('cardEmail').textContent = params.get('email');
 
     // Populate business info paragraphs
-    const businessInfoParagraphs = formData.businessInfo.split('\n').filter(p => p.trim() !== '');
+    const businessInfoParagraphs = params.get('businessInfo').split('\n').filter(p => p.trim() !== '');
     const businessInfoContainer = document.getElementById('businessInfoContent');
     businessInfoContainer.innerHTML = businessInfoParagraphs
       .map((p) => `<div class="business-info-content"><p>${p}</p></div>`)
@@ -102,7 +280,7 @@
     };
 
     Object.entries(socialLinks).forEach(([platform, element]) => {
-      const url = formData[platform];
+      const url = params.get(platform);
       if (url) {
         element.href = url;
         element.style.visibility = 'visible';
@@ -113,28 +291,28 @@
 
     // Mini Icons Functionality
     document.getElementById('miniCallButton').onclick = () => {
-      window.location.href = `tel:${formData.phone}`;
+      window.location.href = `tel:${params.get('phone')}`;
     };
 
     document.getElementById('miniEmailButton').onclick = () => {
-      window.location.href = `mailto:${formData.email}`;
+      window.location.href = `mailto:${params.get('email')}`;
     };
 
     document.getElementById('miniWhatsappButton').onclick = () => {
-      window.location.href = `https://wa.me/${formData.phone}`;
+      window.location.href = `https://wa.me/${params.get('phone')}`;
     };
 
     document.getElementById('miniMapButton').onclick = () => {
-      const address = encodeURIComponent(formData.address);
+      const address = encodeURIComponent(params.get('address'));
       window.open(`https://www.google.com/maps?q=${address}`, '_blank');
     };
 
     // Save to Contacts Functionality (vCard)
     document.getElementById('miniSaveButton').onclick = () => {
-      const name = formData.name;
-      const phone = formData.phone;
-      const email = formData.email;
-      const address = formData.address;
+      const name = params.get('name');
+      const phone = params.get('phone');
+      const email = params.get('email');
+      const address = params.get('address');
 
       // Generate vCard content with proper CRLF line breaks
       const vCardContent =
@@ -158,15 +336,15 @@
 
     // Button Actions in Section 3
     document.getElementById('callButton').onclick = () => {
-      window.location.href = `tel:${formData.phone}`;
+      window.location.href = `tel:${params.get('phone')}`;
     };
 
     document.getElementById('whatsappButton').onclick = () => {
-      window.location.href = `https://wa.me/${formData.phone}`;
+      window.location.href = `https://wa.me/${params.get('phone')}`;
     };
 
     document.getElementById('emailButton').onclick = () => {
-      window.location.href = `mailto:${formData.email}`;
+      window.location.href = `mailto:${params.get('email')}`;
     };
   </script>
 </body>
