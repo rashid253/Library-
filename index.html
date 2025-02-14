@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Business Card Generator</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet" />
   <style>
     :root {
       --primary-color: #2C3E50;    /* Professional Navy */
@@ -205,10 +204,7 @@
     <button id="generateCard">Generate Card</button>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
   <script>
-    let cropper;
-
     // Handle Image Upload
     function handleImageUpload(event) {
       const file = event.target.files[0];
@@ -227,36 +223,45 @@
       // Read and display the image
       const reader = new FileReader();
       reader.onload = (e) => {
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        changeImageButton.style.display = 'block';
-        initCropper(preview);
+        const img = new Image();
+        img.src = e.target.result;
+
+        img.onload = () => {
+          // Resize the image to a maximum of 500x500 pixels
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+
+          const maxWidth = 500;
+          const maxHeight = 500;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height *= maxWidth / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width *= maxHeight / height;
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert the resized image to a data URL
+          const resizedImage = canvas.toDataURL('image/jpeg', 0.8);
+
+          // Display the resized image in the round profile frame
+          preview.src = resizedImage;
+          preview.style.display = 'block';
+          changeImageButton.style.display = 'block';
+        };
       };
       reader.readAsDataURL(file);
-    }
-
-    // Initialize Cropper.js
-    function initCropper(image) {
-      if (cropper) {
-        cropper.destroy(); // Destroy existing cropper instance
-      }
-      cropper = new Cropper(image, {
-        aspectRatio: 1, // Square aspect ratio
-        viewMode: 1,
-        autoCropArea: 1,
-        responsive: true,
-        guides: true,
-      });
-
-      // Destroy Cropper.js when interacting with other fields
-      document.querySelectorAll('input, textarea').forEach((field) => {
-        field.addEventListener('focus', () => {
-          if (cropper) {
-            cropper.destroy();
-            cropper = null;
-          }
-        });
-      });
     }
 
     // Change Image Button
@@ -286,33 +291,23 @@
         return;
       }
 
-      // Handle image cropping
-      if (cropper) {
-        const croppedCanvas = cropper.getCroppedCanvas({
-          width: 500, // Set max width
-          height: 500, // Set max height
-        });
-        croppedCanvas.toBlob((blob) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            formData.profileImage = e.target.result; // Base64 image data
-            generateCard(formData);
-          };
-          reader.readAsDataURL(blob);
-        }, 'image/jpeg', 0.8); // Compress image to 80% quality
-      } else {
-        generateCard(formData);
+      // Get the uploaded image
+      const preview = document.getElementById('imagePreview');
+      if (!preview.src) {
+        alert('Please upload a profile image.');
+        return;
       }
-    };
 
-    // Redirect to card.html with form data
-    function generateCard(formData) {
+      // Add the image to form data
+      formData.profileImage = preview.src;
+
+      // Redirect to card.html with form data
       const params = new URLSearchParams();
       for (const key in formData) {
         params.set(key, formData[key]);
       }
       window.location.href = `card.html?${params.toString()}`;
-    }
+    };
   </script>
 </body>
 </html>
