@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Business Card Generator</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet" />
   <style>
     :root {
       --primary-color: #2C3E50;    /* Professional Navy */
@@ -54,12 +55,25 @@
       gap: 0.5rem;
     }
 
+    .input-group label {
+      font-weight: bold;
+    }
+
+    .input-group label.mandatory::after {
+      content: " *";
+      color: var(--accent-color);
+    }
+
     input, textarea {
       width: 100%;
       padding: 0.7rem;
       border: 1px solid var(--neutral-light);
       border-radius: 6px;
       font-size: 0.9rem;
+    }
+
+    input:invalid, textarea:invalid {
+      border-color: var(--accent-color);
     }
 
     textarea {
@@ -92,6 +106,7 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      margin-bottom: 1rem;
     }
 
     @media (max-width: 480px) {
@@ -116,19 +131,22 @@
           <i class="fas fa-camera fa-2x"></i>
           <p>Upload Profile Photo</p>
         </label>
-        <input type="file" id="profileImage" accept="image/*" hidden onchange="previewImage(event)" />
+        <input type="file" id="profileImage" accept="image/*" hidden onchange="handleImageUpload(event)" />
         <img id="imagePreview" alt="Profile Preview" />
       </div>
 
       <div class="input-group">
+        <label for="name" class="mandatory">Full Name</label>
         <input type="text" id="name" placeholder="Full Name" required />
       </div>
 
       <div class="input-group">
+        <label for="businessName" class="mandatory">Business Name</label>
         <input type="text" id="businessName" placeholder="Business Name" required />
       </div>
 
       <div class="input-group">
+        <label for="businessInfo" class="mandatory">Business Info</label>
         <textarea id="businessInfo" placeholder="Enter 3 to 5 paragraphs (Max 150 words each) separated by a new line" rows="6" required></textarea>
         <small style="color: var(--neutral-dark); font-size: 0.8rem;">
           <strong>Instructions:</strong> Write 3 to 5 paragraphs. Each paragraph must not exceed 150 words. Separate paragraphs with a new line.
@@ -136,26 +154,37 @@
       </div>
 
       <div class="input-group">
+        <label for="address" class="mandatory">Business Address</label>
         <input type="text" id="address" placeholder="Business Address" required />
       </div>
 
       <div class="input-group">
-        <input type="tel" id="phone" placeholder="Phone Number" required />
+        <label for="phone" class="mandatory">Phone Number</label>
+        <input type="tel" id="phone" placeholder="Phone Number" pattern="[0-9]{10,15}" required />
       </div>
 
       <div class="input-group">
+        <label for="email" class="mandatory">Email Address</label>
         <input type="email" id="email" placeholder="Email Address" required />
       </div>
 
       <div class="input-group">
+        <label for="website">Website URL</label>
+        <input type="url" id="website" placeholder="Website URL" />
+      </div>
+
+      <div class="input-group">
+        <label for="facebook">Facebook URL</label>
         <input type="url" id="facebook" placeholder="Facebook URL" />
       </div>
 
       <div class="input-group">
+        <label for="instagram">Instagram URL</label>
         <input type="url" id="instagram" placeholder="Instagram URL" />
       </div>
 
       <div class="input-group">
+        <label for="youtube">YouTube URL</label>
         <input type="url" id="youtube" placeholder="YouTube URL" />
       </div>
     </div>
@@ -163,21 +192,50 @@
     <button id="generateCard">Generate Card</button>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
   <script>
-    // Image Preview Function
-    function previewImage(event) {
-      const reader = new FileReader();
+    let cropper;
+
+    // Handle Image Upload
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
       const preview = document.getElementById('imagePreview');
+
+      if (!file) return;
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please upload an image file.');
+        event.target.value = ''; // Clear the input
+        return;
+      }
+
+      // Read and display the image
+      const reader = new FileReader();
       reader.onload = (e) => {
         preview.src = e.target.result;
         preview.style.display = 'block';
+        initCropper(preview);
       };
-      reader.readAsDataURL(event.target.files[0]);
+      reader.readAsDataURL(file);
+    }
+
+    // Initialize Cropper.js
+    function initCropper(image) {
+      if (cropper) {
+        cropper.destroy(); // Destroy existing cropper instance
+      }
+      cropper = new Cropper(image, {
+        aspectRatio: 1, // Square aspect ratio
+        viewMode: 1,
+        autoCropArea: 1,
+        responsive: true,
+        guides: true,
+      });
     }
 
     // Generate Card Function
     document.getElementById('generateCard').onclick = function () {
-      // Get form values
       const formData = {
         name: document.getElementById('name').value,
         businessName: document.getElementById('businessName').value,
@@ -185,10 +243,10 @@
         address: document.getElementById('address').value,
         phone: document.getElementById('phone').value,
         email: document.getElementById('email').value,
+        website: document.getElementById('website').value,
         facebook: document.getElementById('facebook').value,
         instagram: document.getElementById('instagram').value,
         youtube: document.getElementById('youtube').value,
-        profileImage: document.getElementById('profileImage').files[0]
       };
 
       // Validate mandatory fields
@@ -214,28 +272,30 @@
         }
       }
 
-      // Redirect to card.html with form data as URL parameters
-      const params = new URLSearchParams();
-      params.set('name', formData.name);
-      params.set('businessName', formData.businessName);
-      params.set('businessInfo', formData.businessInfo);
-      params.set('address', formData.address);
-      params.set('phone', formData.phone);
-      params.set('email', formData.email);
-      params.set('facebook', formData.facebook);
-      params.set('instagram', formData.instagram);
-      params.set('youtube', formData.youtube);
-      if (formData.profileImage) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          params.set('profileImage', e.target.result);
-          window.location.href = `card.html?${params.toString()}`;
-        };
-        reader.readAsDataURL(formData.profileImage);
+      // Handle image cropping
+      if (cropper) {
+        const croppedCanvas = cropper.getCroppedCanvas();
+        croppedCanvas.toBlob((blob) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            formData.profileImage = e.target.result;
+            generateCard(formData);
+          };
+          reader.readAsDataURL(blob);
+        }, 'image/jpeg', 0.8); // Compress image to 80% quality
       } else {
-        window.location.href = `card.html?${params.toString()}`;
+        generateCard(formData);
       }
     };
+
+    // Redirect to card.html with form data
+    function generateCard(formData) {
+      const params = new URLSearchParams();
+      for (const key in formData) {
+        params.set(key, formData[key]);
+      }
+      window.location.href = `card.html?${params.toString()}`;
+    }
   </script>
 </body>
 </html>
