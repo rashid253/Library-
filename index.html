@@ -120,7 +120,7 @@
           <i class="fas fa-camera fa-2x"></i>
           <p>Upload Profile Photo</p>
         </label>
-        <input type="file" id="profileImage" accept="image/*" hidden onchange="previewImage(event)" />
+        <input type="file" id="profileImage" accept="image/*" hidden onchange="uploadImage(event)" />
         <img id="imagePreview" alt="Profile Preview" />
       </div>
 
@@ -172,26 +172,35 @@
     let lastImageChange = localStorage.getItem('lastImageChange') || 0;
     let imageChangeCount = localStorage.getItem('imageChangeCount') || 0;
 
-    // Image Preview Function
-    function previewImage(event) {
-      const reader = new FileReader();
-      const preview = document.getElementById('imagePreview');
-      reader.onload = (e) => {
-        const img = new Image();
-        img.src = e.target.result;
-        img.onload = () => {
-          // Resize image to a minimum ideal size (90x90)
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          const size = 90; // Minimum size
-          canvas.width = size;
-          canvas.height = size;
-          ctx.drawImage(img, 0, 0, size, size);
-          preview.src = canvas.toDataURL();
-          preview.style.display = 'block';
-        };
-      };
-      reader.readAsDataURL(event.target.files[0]);
+    // Function to upload image to Imgur
+    function uploadImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('image', file);
+
+      fetch('https://api.imgur.com/3/image', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Client-ID 048d9400ce02b71' // Your Imgur Client ID
+        },
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const imageUrl = data.data.link; // Get the URL of the uploaded image
+          document.getElementById('imagePreview').src = imageUrl; // Show the uploaded image
+          document.getElementById('imagePreview').style.display = 'block'; // Display the image
+        } else {
+          alert('Image upload failed: ' + data.data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error uploading image:', error);
+        alert('An error occurred while uploading the image.');
+      });
     }
 
     // Generate Card Function
@@ -207,13 +216,13 @@
         facebook: document.getElementById('facebook').value,
         instagram: document.getElementById('instagram').value,
         youtube: document.getElementById('youtube').value,
-        profileImage: document.getElementById('profileImage').files[0]
+        profileImage: document.getElementById('imagePreview').src // Use the uploaded image URL
       };
 
       // Validate mandatory fields
       if (!formData.name || !formData.businessName || !formData.businessInfo ||
-          !formData.address || !formData.phone || !formData.email) {
-        alert('Please fill all required fields marked with *');
+          !formData.address || !formData.phone || !formData.email || !formData.profileImage) {
+        alert('Please fill all required fields marked with * and upload a profile image.');
         return;
       }
 
@@ -251,20 +260,11 @@
       params.set('facebook', formData.facebook);
       params.set('instagram', formData.instagram);
       params.set('youtube', formData.youtube);
-      
-      // Handle profile image
-      if (formData.profileImage) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          params.set('profileImage', e.target.result);
-          localStorage.setItem('lastImageChange', currentTime); // Update last image change time
-          localStorage.setItem('imageChangeCount', ++imageChangeCount); // Increment image change count
-          window.location.href = `card.html?${params.toString()}`;
-        };
-        reader.readAsDataURL(formData.profileImage);
-      } else {
-        alert('Please upload a profile image.');
-      }
+      params.set('profileImage', formData.profileImage); // Use the uploaded image URL
+
+      localStorage.setItem('lastImageChange', currentTime); // Update last image change time
+      localStorage.setItem('imageChangeCount', ++imageChangeCount); // Increment image change count
+      window.location.href = `card.html?${params.toString()}`;
     };
   </script>
 </body>
