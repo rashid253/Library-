@@ -118,7 +118,7 @@
       <div class="image-upload-group">
         <label for="profileImage">
           <i class="fas fa-camera fa-2x"></i>
-          <p>Upload Profile Photo</p>
+          <p>Upload Profile Photo (Optional)</p>
         </label>
         <input type="file" id="profileImage" accept="image/*" hidden onchange="uploadImage(event)" />
         <img id="imagePreview" alt="Profile Preview" />
@@ -169,9 +169,6 @@
   </div>
 
   <script>
-    let lastImageChange = localStorage.getItem('lastImageChange') || 0;
-    let imageChangeCount = localStorage.getItem('imageChangeCount') || 0;
-
     // Function to upload image to Imgur
     function uploadImage(event) {
       const file = event.target.files[0];
@@ -216,13 +213,13 @@
         facebook: document.getElementById('facebook').value,
         instagram: document.getElementById('instagram').value,
         youtube: document.getElementById('youtube').value,
-        profileImage: document.getElementById('imagePreview').src // Use the uploaded image URL
+        profileImage: document.getElementById('imagePreview').src || '' // Use the uploaded image URL or empty string if not uploaded
       };
 
       // Validate mandatory fields
       if (!formData.name || !formData.businessName || !formData.businessInfo ||
-          !formData.address || !formData.phone || !formData.email || !formData.profileImage) {
-        alert('Please fill all required fields marked with * and upload a profile image.');
+          !formData.address || !formData.phone || !formData.email) {
+        alert('Please fill all required fields marked with *.');
         return;
       }
 
@@ -242,13 +239,6 @@
         }
       }
 
-      // Check if the user is allowed to change the image
-      const currentTime = new Date().getTime();
-      if (currentTime - lastImageChange < 2592000000 && imageChangeCount >= 3) { // 30 days in milliseconds
-        alert('You can only change your profile image 3 times a month.');
-        return;
-      }
-
       // Redirect to card.html with form data as URL parameters
       const params = new URLSearchParams();
       params.set('name', formData.name);
@@ -260,10 +250,8 @@
       params.set('facebook', formData.facebook);
       params.set('instagram', formData.instagram);
       params.set('youtube', formData.youtube);
-      params.set('profileImage', formData.profileImage); // Use the uploaded image URL
+      params.set('profileImage', formData.profileImage); // Use the uploaded image URL or empty string
 
-      localStorage.setItem('lastImageChange', currentTime); // Update last image change time
-      localStorage.setItem('imageChangeCount', ++imageChangeCount); // Increment image change count
       window.location.href = `card.html?${params.toString()}`;
     };
   </script>
