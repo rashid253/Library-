@@ -150,13 +150,19 @@
       <!-- Full Name -->
       <div class="input-group">
         <label for="name">Full Name <span class="mandatory">*</span></label>
-        <input type="text" id="name" placeholder="Enter your full name" required />
+        <input type="text" id="name" placeholder="Enter your full name" required pattern="[A-Za-z\s]{2,}" />
+        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
+          Only alphabets and spaces are allowed. Minimum 2 characters.
+        </small>
       </div>
 
       <!-- Business Name -->
       <div class="input-group">
         <label for="businessName">Business Name <span class="mandatory">*</span></label>
-        <input type="text" id="businessName" placeholder="Enter your business name" required />
+        <input type="text" id="businessName" placeholder="Enter your business name" required pattern="[A-Za-z0-9\s]{2,}" />
+        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
+          Alphabets, numbers, and spaces are allowed. Minimum 2 characters.
+        </small>
       </div>
 
       <!-- Business Info -->
@@ -171,7 +177,10 @@
       <!-- Business Address -->
       <div class="input-group">
         <label for="address">Business Address <span class="mandatory">*</span></label>
-        <input type="text" id="address" placeholder="Enter your business address" required />
+        <input type="text" id="address" placeholder="Enter your business address" required pattern="[A-Za-z0-9\s\-,\.]{5,}" />
+        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
+          Alphabets, numbers, spaces, and common symbols (.,-) are allowed. Minimum 5 characters.
+        </small>
       </div>
 
       <!-- Phone Number -->
@@ -200,22 +209,34 @@
       <div class="input-group">
         <label for="email">Email Address <span class="mandatory">*</span></label>
         <input type="email" id="email" placeholder="Enter your email address" required />
+        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
+          Please enter a valid email address.
+        </small>
       </div>
 
       <!-- Social Media Links -->
       <div class="input-group">
         <label for="facebook">Facebook URL</label>
         <input type="url" id="facebook" placeholder="Enter your Facebook URL" pattern="https?://(www\.)?facebook\.com/.+" />
+        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
+          Example: https://www.facebook.com/yourprofile
+        </small>
       </div>
 
       <div class="input-group">
         <label for="instagram">Instagram URL</label>
         <input type="url" id="instagram" placeholder="Enter your Instagram URL" pattern="https?://(www\.)?instagram\.com/.+" />
+        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
+          Example: https://www.instagram.com/yourprofile
+        </small>
       </div>
 
       <div class="input-group">
         <label for="youtube">YouTube URL</label>
         <input type="url" id="youtube" placeholder="Enter your YouTube URL" pattern="https?://(www\.)?youtube\.com/.+" />
+        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
+          Example: https://www.youtube.com/yourchannel
+        </small>
       </div>
     </div>
 
