@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Business Card</title>
+  <title>Business Card Generator</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
   <style>
     :root {
       --primary-color: #2C3E50;    /* Professional Navy */
       --secondary-color: #3498DB;  /* Trust Blue */
-      --accent-color: #E74C3C;     /* Alert Red */
+      --accent-color: #E74C3E;     /* Alert Red */
       --neutral-light: rgba(236, 240, 241, 0.9); /* Light Gray with transparency */
       --neutral-dark: #34495E;     /* Dark Gray */
     }
@@ -25,7 +25,7 @@
       min-height: 100vh;
     }
 
-    .card-container {
+    .form-container {
       width: 100%;
       max-width: 400px;
       background: white;
@@ -33,305 +33,238 @@
       box-shadow: 0 8px 30px rgba(0,0,0,0.12);
       padding: 1.5rem;
       margin: 1rem;
-      border: 2px solid var(--secondary-color);
     }
 
-    .mini-icons {
-      display: flex;
-      justify-content: center;
+    .form-header {
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem;
-      padding: 1rem;
-      border-bottom: 2px solid var(--secondary-color);
+      margin-bottom: 1.5rem;
     }
 
-    .mini-icons .icon {
-      font-size: 1.5rem;
-      color: var(--neutral-dark);
-      cursor: pointer;
-      transition: color 0.3s ease;
-    }
-
-    .profile-section {
-      display: flex;
-      padding: 1rem;
-      margin: 0.5rem;
-      border-bottom: 2px solid var(--secondary-color);
-    }
-
-    .profile-image-container {
-      width: 40%;
+    .input-group {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding-right: 1rem;
+      gap: 0.5rem;
     }
 
-    .profile-image {
+    input, textarea {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1px solid var(--neutral-light);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .image-upload-group {
+      grid-column: 1 / -1;
+      text-align: center;
+      border: 2px dashed var(--neutral-light);
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #imagePreview {
       width: 90px;
       height: 90px;
       border-radius: 50%;
-      border: 2px solid var(--neutral-light);
       object-fit: cover;
-    }
-
-    .profile-name {
-      color: var(--primary-color);
-      margin: 0.5rem 0 0;
-      font-size: 1.1rem;
-      text-align: center;
-      word-break: keep-all;
-    }
-
-    .profile-info {
-      width: 60%;
-      padding-left: 1rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .contact-info {
-      color: var(--neutral-dark);
-      margin: 0.3rem 0;
-      font-size: 0.85rem;
-      line-height: 1.4;
-      white-space: nowrap;
-    }
-
-    .business-info-section {
-      padding: 1rem;
-      margin: 0.5rem;
-      font-size: 0.9rem;
-      line-height: 1.5;
-      height: 150px;
-      overflow: hidden;
-      position: relative;
-      background: #E0F7FA;
-      border-bottom: 2px solid var(--secondary-color);
-      font-family: 'Georgia', serif;
-      border-radius: 8px;
-    }
-
-    .business-info-content {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
+      margin: 0.5rem auto;
       display: none;
-      text-align: center;
-      font-weight: bold;
-      color: var(--neutral-dark);
-      padding: 0.5rem;
-      overflow-y: auto;
     }
 
-    .action-buttons {
-      display: grid;
-      gap: 0.5rem;
+    #generateCard {
+      background: var(--secondary-color);
+      color: white;
+      width: 100%;
       padding: 0.8rem;
-    }
-
-    .action-btn {
-      padding: 0.6rem;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
     }
 
-    .social-links {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      padding: 1rem;
-    }
-
-    .social-icon {
-      font-size: 1.5rem;
-      color: var(--neutral-dark);
-      visibility: hidden;
+    .mandatory {
+      color: red;
     }
 
     @media (max-width: 480px) {
-      .card-container {
+      .form-container {
         max-width: 90%;
         padding: 1rem;
-      }
-
-      .profile-section {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-      }
-
-      .profile-image-container, .profile-info {
-        width: 100%;
-        padding: 0;
-      }
-
-      .profile-info {
-        margin-top: 1rem;
-      }
-
-      .contact-info {
-        white-space: normal;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Business Card -->
-  <div class="card-container">
-    <!-- Mini Icons in Section 1 -->
-    <div class="mini-icons">
-      <i class="fas fa-phone icon" id="miniCallButton" title="Call"></i>
-      <i class="fas fa-envelope icon" id="miniEmailButton" title="Email"></i>
-      <i class="fab fa-whatsapp icon" id="miniWhatsappButton" title="WhatsApp"></i>
-      <i class="fas fa-map-marker-alt icon" id="miniMapButton" title="Open in Google Maps"></i>
-      <i class="fas fa-save icon" id="miniSaveButton" title="Save to Contacts"></i>
+  <!-- Form Section -->
+  <div class="form-container">
+    <div class="form-header">
+      <h2>Create Business Card</h2>
+      <p>Fill in all required information <span class="mandatory">*</span></p>
     </div>
 
-    <!-- Profile Section -->
-    <div class="profile-section">
-      <div class="profile-image-container">
-        <img id="cardProfileImage" class="profile-image" alt="Profile" />
-        <h3 class="profile-name" id="cardName"></h3>
+    <div class="form-grid">
+      <div class="image-upload-group">
+        <label for="profileImage">
+          <i class="fas fa-camera fa-2x"></i>
+          <p>Upload Profile Photo</p>
+        </label>
+        <input type="file" id="profileImage" accept="image/*" hidden onchange="previewImage(event)" />
+        <img id="imagePreview" alt="Profile Preview" />
       </div>
-      <div class="profile-info">
-        <p class="contact-info" id="cardBusinessName"></p>
-        <p class="contact-info" id="cardAddress"></p>
-        <p class="contact-info" id="cardPhone"></p>
-        <p class="contact-info" id="cardEmail"></p>
+
+      <div class="input-group">
+        <input type="text" id="name" placeholder="Full Name" required />
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="businessName" placeholder="Business Name" required />
+      </div>
+
+      <div class="input-group">
+        <textarea id="businessInfo" placeholder="Enter 3 to 5 paragraphs (Max 150 words each) separated by a new line" rows="6" required></textarea>
+        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
+          <strong>Instructions:</strong> Write 3 to 5 paragraphs. Each paragraph must not exceed 150 words. Separate paragraphs with a new line.
+        </small>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="address" placeholder="Business Address" required />
+      </div>
+
+      <div class="input-group">
+        <input type="tel" id="phone" placeholder="Phone Number" required pattern="^\+?[0-9]{1,4}?[-. ]?([0-9]{1,3}[-. ]?){1,3}[0-9]{1,4}$" />
+        <small style="color: var(--neutral-dark); font-size: 0.8rem;">Format: +123-456-7890</small>
+      </div>
+
+      <div class="input-group">
+        <input type="email" id="email" placeholder="Email Address" required />
+      </div>
+
+      <div class="input-group">
+        <input type="url" id="facebook" placeholder="Facebook URL" />
+      </div>
+
+      <div class="input-group">
+        <input type="url" id="instagram" placeholder="Instagram URL" />
+      </div>
+
+      <div class="input-group">
+        <input type="url" id="youtube" placeholder="YouTube URL" />
       </div>
     </div>
 
-    <!-- Business Info Section -->
-    <div class="business-info-section">
-      <div id="businessInfoContent"></div>
-    </div>
-
-    <!-- Action Buttons in Section 3 -->
-    <div class="action-buttons">
-      <button class="action-btn" id="callButton" style="background: var(--secondary-color); color: white;">Call</button>
-      <button class="action-btn" id="whatsappButton" style="background: #25D366; color: white;">WhatsApp</button>
-      <button class="action-btn" id="emailButton" style="background: var(--accent-color); color: white;">Email</button>
-    </div>
-
-    <!-- Social Links -->
-    <div class="social-links">
-      <a id="facebookButton" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-      <a id="instagramButton" class="social-icon"><i class="fab fa-instagram"></i></a>
-      <a id="youtubeButton" class="social-icon"><i class="fab fa-youtube"></i></a>
-    </div>
+    <button id="generateCard">Generate Card</button>
   </div>
 
   <script>
-    // Get URL parameters
-    const params = new URLSearchParams(window.location.search);
+    let lastImageChange = localStorage.getItem('lastImageChange') || 0;
+    let imageChangeCount = localStorage.getItem('imageChangeCount') || 0;
 
-    // Set profile image (if available)
-    const profileImage = params.get('profileImage') || 'https://i.imgur.com/048d9400ce02b71.jpg'; // Default image
-    document.getElementById('cardProfileImage').src = profileImage;
+    // Image Preview Function
+    function previewImage(event) {
+      const reader = new FileReader();
+      const preview = document.getElementById('imagePreview');
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = () => {
+          // Resize image to a minimum ideal size (90x90)
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const size = 90; // Minimum size
+          canvas.width = size;
+          canvas.height = size;
+          ctx.drawImage(img, 0, 0, size, size);
+          preview.src = canvas.toDataURL();
+          preview.style.display = 'block';
+        };
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
 
-    // Update card information
-    document.getElementById('cardName').textContent = params.get('name');
-    document.getElementById('cardBusinessName').textContent = params.get('businessName');
-    document.getElementById('cardAddress').textContent = params.get('address');
-    document.getElementById('cardPhone').textContent = params.get('phone');
-    document.getElementById('cardEmail').textContent = params.get('email');
+    // Generate Card Function
+    document.getElementById('generateCard').onclick = function () {
+      // Get form values
+      const formData = {
+        name: document.getElementById('name').value,
+        businessName: document.getElementById('businessName').value,
+        businessInfo: document.getElementById('businessInfo').value,
+        address: document.getElementById('address').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        facebook: document.getElementById('facebook').value,
+        instagram: document.getElementById('instagram').value,
+        youtube: document.getElementById('youtube').value,
+        profileImage: document.getElementById('profileImage').files[0]
+      };
 
-    // Populate business info paragraphs
-    const businessInfoParagraphs = params.get('businessInfo').split('\n').filter(p => p.trim() !== '');
-    const businessInfoContainer = document.getElementById('businessInfoContent');
-    businessInfoContainer.innerHTML = businessInfoParagraphs
-      .map((p) => `<div class="business-info-content"><p>${p}</p></div>`)
-      .join('');
-
-    // Show only the first paragraph; cycle every 8 seconds.
-    const paragraphs = businessInfoContainer.querySelectorAll('.business-info-content');
-    let currentIndex = 0;
-    paragraphs.forEach((div, index) => {
-      div.style.display = (index === 0) ? 'block' : 'none';
-    });
-    setInterval(() => {
-      paragraphs[currentIndex].style.display = 'none';
-      currentIndex = (currentIndex + 1) % paragraphs.length;
-      paragraphs[currentIndex].style.display = 'block';
-    }, 8000);
-
-    // Handle social media links
-    const socialLinks = {
-      facebook: document.getElementById('facebookButton'),
-      instagram: document.getElementById('instagramButton'),
-      youtube: document.getElementById('youtubeButton')
-    };
-
-    Object.entries(socialLinks).forEach(([platform, element]) => {
-      const url = params.get(platform);
-      if (url) {
-        element.href = url;
-        element.style.visibility = 'visible';
-      } else {
-        element.style.visibility = 'hidden';
+      // Validate mandatory fields
+      if (!formData.name || !formData.businessName || !formData.businessInfo ||
+          !formData.address || !formData.phone || !formData.email) {
+        alert('Please fill all required fields marked with *');
+        return;
       }
-    });
 
-    // Mini Icons Functionality
-    document.getElementById('miniCallButton').onclick = () => {
-      window.location.href = `tel:${params.get('phone')}`;
-    };
+      // Validate business info paragraphs
+      const businessInfoParagraphs = formData.businessInfo.split('\n').filter(p => p.trim() !== '');
+      if (businessInfoParagraphs.length < 3 || businessInfoParagraphs.length > 5) {
+        alert('Please enter 3 to 5 paragraphs for the business info.');
+        return;
+      }
 
-    document.getElementById('miniEmailButton').onclick = () => {
-      window.location.href = `mailto:${params.get('email')}`;
-    };
+      // Validate word limit for each paragraph
+      for (const paragraph of businessInfoParagraphs) {
+        const words = paragraph.split(/\s+/).filter(word => word.length > 0);
+        if (words.length > 150) {
+          alert(`Each paragraph must not exceed 150 words. Please check: "${paragraph.substring(0, 30)}..."`);
+          return;
+        }
+      }
 
-    document.getElementById('miniWhatsappButton').onclick = () => {
-      window.location.href = `https://wa.me/${params.get('phone')}`;
-    };
+      // Check if the user is allowed to change the image
+      const currentTime = new Date().getTime();
+      if (currentTime - lastImageChange < 2592000000 && imageChangeCount >= 3) { // 30 days in milliseconds
+        alert('You can only change your profile image 3 times a month.');
+        return;
+      }
 
-    document.getElementById('miniMapButton').onclick = () => {
-      const address = encodeURIComponent(params.get('address'));
-      window.open(`https://www.google.com/maps?q=${address}`, '_blank');
-    };
-
-    // Save to Contacts Functionality (vCard)
-    document.getElementById('miniSaveButton').onclick = () => {
-      const name = params.get('name');
-      const phone = params.get('phone');
-      const email = params.get('email');
-      const address = params.get('address');
-
-      // Generate vCard content with proper CRLF line breaks
-      const vCardContent =
-        "BEGIN:VCARD\r\n" +
-        "VERSION:3.0\r\n" +
-        "N:;" + name + ";;;\r\n" +
-        "FN:" + name + "\r\n" +
-        "TEL;TYPE=CELL:" + phone + "\r\n" +
-        "EMAIL;TYPE=INTERNET:" + email + "\r\n" +
-        "ADR;TYPE=WORK:;;" + address + ";;;;\r\n" +
-        "END:VCARD\r\n";
-
-      const blob = new Blob([vCardContent], { type: 'text/vcard' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${name}.vcf`;
-      link.click();
-      URL.revokeObjectURL(url);
-    };
-
-    // Button Actions in Section 3
-    document.getElementById('callButton').onclick = () => {
-      window.location.href = `tel:${params.get('phone')}`;
-    };
-
-    document.getElementById('whatsappButton').onclick = () => {
-      window.location.href = `https://wa.me/${params.get('phone')}`;
-    };
-
-    document.getElementById('emailButton').onclick = () => {
-      window.location.href = `mailto:${params.get('email')}`;
+      // Redirect to card.html with form data as URL parameters
+      const params = new URLSearchParams();
+      params.set('name', formData.name);
+      params.set('businessName', formData.businessName);
+      params.set('businessInfo', formData.businessInfo);
+      params.set('address', formData.address);
+      params.set('phone', formData.phone);
+      params.set('email', formData.email);
+      params.set('facebook', formData.facebook);
+      params.set('instagram', formData.instagram);
+      params.set('youtube', formData.youtube);
+      
+      // Handle profile image
+      if (formData.profileImage) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          params.set('profileImage', e.target.result);
+          localStorage.setItem('lastImageChange', currentTime); // Update last image change time
+          localStorage.setItem('imageChangeCount', ++imageChangeCount); // Increment image change count
+          window.location.href = `card.html?${params.toString()}`;
+        };
+        reader.readAsDataURL(formData.profileImage);
+      } else {
+        alert('Please upload a profile image.');
+      }
     };
   </script>
 </body>
