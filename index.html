@@ -242,6 +242,18 @@
   <script>
     // Track image uploads
     let uploadCount = localStorage.getItem('uploadCount') || 0;
+    let lastUploadDate = localStorage.getItem('lastUploadDate');
+
+    // Reset upload count if a new month has started
+    const currentDate = new Date();
+    if (lastUploadDate) {
+      const lastDate = new Date(lastUploadDate);
+      if (currentDate.getMonth() !== lastDate.getMonth() || currentDate.getFullYear() !== lastDate.getFullYear()) {
+        uploadCount = 0;
+        localStorage.setItem('uploadCount', uploadCount);
+      }
+    }
+    localStorage.setItem('lastUploadDate', currentDate.toISOString());
 
     // Function to upload image to Imgur
     function uploadImage(event) {
@@ -297,14 +309,21 @@
         }
       });
 
+      // Validate phone number
+      const countryCode = document.getElementById('countryCode').value;
+      const phoneNumber = countryCode + document.getElementById('phone').value;
+
+      if (!/^\+\d{1,3}\d{4,14}$/.test(phoneNumber)) {
+        document.getElementById('phone').classList.add('error');
+        isValid = false;
+      } else {
+        document.getElementById('phone').classList.remove('error');
+      }
+
       if (!isValid) {
         alert('Please fill all required fields marked with *.');
         return;
       }
-
-      // Validate phone number
-      const countryCode = document.getElementById('countryCode').value;
-      const phoneNumber = countryCode + document.getElementById('phone').value;
 
       // Get form values
       const formData = {
