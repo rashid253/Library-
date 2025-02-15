@@ -82,12 +82,12 @@
     }
 
     #imagePreview {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin: 0.5rem auto;
-      display: none;
+      width: 150px; /* Fixed width */
+      height: 150px; /* Fixed height */
+      border-radius: 50%; /* Circular shape */
+      object-fit: cover; /* Ensure the image covers the area */
+      margin: 0.5rem auto; /* Center the image */
+      display: none; /* Hidden by default */
     }
 
     #generateCard {
@@ -111,6 +111,13 @@
 
     .error {
       border: 1px solid var(--accent-color);
+    }
+
+    .upload-feedback {
+      color: var(--accent-color);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      text-align: center;
     }
 
     @media (max-width: 480px) {
@@ -138,18 +145,19 @@
         </label>
         <input type="file" id="profileImage" accept="image/*" hidden onchange="uploadImage(event)" />
         <img id="imagePreview" alt="Profile Preview" />
+        <div id="uploadFeedback" class="upload-feedback"></div>
       </div>
 
       <!-- Full Name -->
       <div class="input-group">
         <label for="name">Full Name <span class="mandatory">*</span></label>
-        <input type="text" id="name" placeholder="Enter your full name (Only alphabets and spaces, min 2 characters)" required pattern="[A-Za-z\s]{2,}" />
+        <input type="text" id="name" placeholder="Enter your full name (Only alphabets and spaces)" required pattern="[A-Za-z\s]{2,}" />
       </div>
 
       <!-- Business Name -->
       <div class="input-group">
         <label for="businessName">Business Name <span class="mandatory">*</span></label>
-        <input type="text" id="businessName" placeholder="Enter your business name (Alphabets, numbers, and spaces, min 2 characters)" required pattern="[A-Za-z0-9\s]{2,}" />
+        <input type="text" id="businessName" placeholder="Enter your business name (Alphabets, numbers, and spaces)" required pattern="[A-Za-z0-9\s]{2,}" />
       </div>
 
       <!-- Business Info -->
@@ -161,7 +169,7 @@
       <!-- Business Address -->
       <div class="input-group">
         <label for="address">Business Address <span class="mandatory">*</span></label>
-        <input type="text" id="address" placeholder="Enter your business address (Alphabets, numbers, spaces, and common symbols, min 5 characters)" required pattern="[A-Za-z0-9\s\-,\.]{5,}" />
+        <input type="text" id="address" placeholder="Enter your business address (Alphabets, numbers, spaces, and common symbols)" required pattern="[A-Za-z0-9\s\-,\.]{5,}" />
       </div>
 
       <!-- Phone Number -->
@@ -210,35 +218,97 @@
   </div>
 
   <script>
-    // Function to upload image to Imgur
+    // Function to compress and resize the profile image
+    function compressImage(file, maxWidth, maxHeight, quality, callback) {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+
+      img.onload = function () {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Calculate new dimensions while maintaining aspect ratio
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height);
+          width = width * ratio;
+          height = height * ratio;
+        }
+
+        // Set canvas dimensions
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw the image on the canvas
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert the canvas to a Blob with the specified quality
+        canvas.toBlob(
+          (blob) => {
+            callback(blob);
+          },
+          'image/jpeg', // Use JPEG for better compression
+          quality
+        );
+      };
+    }
+
+    // Function to upload profile image
     function uploadImage(event) {
       const file = event.target.files[0];
       if (!file) return;
 
-      const formData = new FormData();
-      formData.append('image', file);
+      // Validate image size (e.g., 2 MB limit for profile images)
+      const maxSize = 2 * 1024 * 1024; // 2 MB in bytes
+      if (file.size > maxSize) {
+        // Compress and resize the image
+        compressImage(file, 300, 300, 0.7, (compressedBlob) => {
+          if (compressedBlob.size > maxSize) {
+            document.getElementById('uploadFeedback').textContent = 'Image size must be less than 2 MB.';
+            return;
+          }
 
-      fetch('https://api.imgur.com/3/image', {
-        method: 'POST',
-        headers: {
-          Authorization: 'Client-ID YOUR_IMGUR_CLIENT_ID' // Replace with your Imgur Client ID
-        },
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          const imageUrl = data.data.link; // Get the URL of the uploaded image
-          document.getElementById('imagePreview').src = imageUrl; // Show the uploaded image
-          document.getElementById('imagePreview').style.display = 'block'; // Display the image
-        } else {
-          alert('Image upload failed: ' + data.data.error);
-        }
-      })
-      .catch(error => {
-        console.error('Error uploading image:', error);
-        alert('An error occurred while uploading the image.');
-      });
+          // Display the compressed image
+          displayImage(compressedBlob);
+
+          // Save the compressed image in localStorage
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            localStorage.setItem('uploadedImage', e.target.result);
+          };
+          reader.readAsDataURL(compressedBlob);
+        });
+      } else {
+        // If the image is already small enough, display it directly
+        displayImage(file);
+
+        // Save the image in localStorage
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          localStorage.setItem('uploadedImage', e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Function to display the image in the preview area
+    function displayImage(file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById('imagePreview').src = e.target.result;
+        document.getElementById('imagePreview').style.display = 'block';
+        document.getElementById('uploadFeedback').textContent = 'Image uploaded successfully!';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Check if an image was previously uploaded
+    const uploadedImage = localStorage.getItem('uploadedImage');
+    if (uploadedImage) {
+      document.getElementById('imagePreview').src = uploadedImage;
+      document.getElementById('imagePreview').style.display = 'block';
     }
 
     // Generate Card Function
