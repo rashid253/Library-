@@ -297,6 +297,26 @@
         }
       }
 
+      // Validate social media links
+      const facebook = document.getElementById('facebook').value;
+      const instagram = document.getElementById('instagram').value;
+      const youtube = document.getElementById('youtube').value;
+
+      if (facebook && !facebook.match(/https?:\/\/(www\.)?facebook\.com\/.+/)) {
+        alert('Please enter a valid Facebook URL.');
+        return;
+      }
+
+      if (instagram && !instagram.match(/https?:\/\/(www\.)?instagram\.com\/.+/)) {
+        alert('Please enter a valid Instagram URL.');
+        return;
+      }
+
+      if (youtube && !youtube.match(/https?:\/\/(www\.)?youtube\.com\/.+/)) {
+        alert('Please enter a valid YouTube URL.');
+        return;
+      }
+
       // Get form values
       const formData = {
         name: document.getElementById('name').value,
@@ -305,9 +325,9 @@
         address: document.getElementById('address').value,
         phone: phoneNumber,
         email: document.getElementById('email').value,
-        facebook: document.getElementById('facebook').value,
-        instagram: document.getElementById('instagram').value,
-        youtube: document.getElementById('youtube').value,
+        facebook: facebook,
+        instagram: instagram,
+        youtube: youtube,
         profileImage: document.getElementById('imagePreview').src || ''
       };
 
