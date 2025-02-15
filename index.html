@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Business Card Generator</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/6.6.6/css/flag-icons.min.css" rel="stylesheet" />
   <style>
     :root {
       --primary-color: #2C3E50;    /* Professional Navy */
@@ -54,7 +55,7 @@
       gap: 0.5rem;
     }
 
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 0.7rem;
       border: 1px solid var(--neutral-light);
@@ -73,6 +74,11 @@
       padding: 1rem;
       border-radius: 8px;
       cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .image-upload-group:hover {
+      background: rgba(236, 240, 241, 0.5);
     }
 
     #imagePreview {
@@ -92,10 +98,23 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    #generateCard:hover {
+      background: #2980B9;
     }
 
     .mandatory {
       color: red;
+    }
+
+    .error {
+      border: 1px solid var(--accent-color);
+    }
+
+    .country-flag {
+      margin-right: 8px;
     }
 
     @media (max-width: 480px) {
@@ -115,53 +134,88 @@
     </div>
 
     <div class="form-grid">
+      <!-- Image Upload Section -->
       <div class="image-upload-group">
         <label for="profileImage">
           <i class="fas fa-camera fa-2x"></i>
           <p>Upload Profile Photo (Optional)</p>
+          <small style="color: var(--neutral-dark); font-size: 0.8rem;">
+            <strong>Note:</strong> You can upload an image only 3 times per month.
+          </small>
         </label>
         <input type="file" id="profileImage" accept="image/*" hidden onchange="uploadImage(event)" />
         <img id="imagePreview" alt="Profile Preview" />
       </div>
 
+      <!-- Full Name -->
       <div class="input-group">
-        <input type="text" id="name" placeholder="Full Name" required />
+        <label for="name">Full Name <span class="mandatory">*</span></label>
+        <input type="text" id="name" placeholder="Enter your full name" required />
       </div>
 
+      <!-- Business Name -->
       <div class="input-group">
-        <input type="text" id="businessName" placeholder="Business Name" required />
+        <label for="businessName">Business Name <span class="mandatory">*</span></label>
+        <input type="text" id="businessName" placeholder="Enter your business name" required />
       </div>
 
+      <!-- Business Info -->
       <div class="input-group">
+        <label for="businessInfo">Business Info <span class="mandatory">*</span></label>
         <textarea id="businessInfo" placeholder="Enter 3 to 5 paragraphs (Max 150 words each) separated by a new line" rows="6" required></textarea>
         <small style="color: var(--neutral-dark); font-size: 0.8rem;">
           <strong>Instructions:</strong> Write 3 to 5 paragraphs. Each paragraph must not exceed 150 words. Separate paragraphs with a new line.
         </small>
       </div>
 
+      <!-- Business Address -->
       <div class="input-group">
-        <input type="text" id="address" placeholder="Business Address" required />
+        <label for="address">Business Address <span class="mandatory">*</span></label>
+        <input type="text" id="address" placeholder="Enter your business address" required />
+      </div>
+
+      <!-- Phone Number -->
+      <div class="input-group">
+        <label for="phone">Phone Number <span class="mandatory">*</span></label>
+        <div style="display: flex; gap: 0.5rem;">
+          <select id="countryCode" style="flex: 1;">
+            <option value="+92" data-flag="pk">🇵🇰 +92 (Pakistan)</option>
+            <option value="+91" data-flag="in">🇮🇳 +91 (India)</option>
+            <option value="+1" data-flag="us">🇺🇸 +1 (USA)</option>
+            <option value="+44" data-flag="gb">🇬🇧 +44 (UK)</option>
+            <option value="+86" data-flag="cn">🇨🇳 +86 (China)</option>
+            <option value="+49" data-flag="de">🇩🇪 +49 (Germany)</option>
+            <option value="+61" data-flag="au">🇦🇺 +61 (Australia)</option>
+            <option value="+966" data-flag="sa">🇸🇦 +966 (Saudi Arabia)</option>
+            <option value="+971" data-flag="ae">🇦🇪 +971 (UAE)</option>
+          </select>
+          <input type="tel" id="phone" placeholder="Enter phone number" required style="flex: 3;" />
+        </div>
+        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
+          Format: Depends on the selected country.
+        </small>
+      </div>
+
+      <!-- Email Address -->
+      <div class="input-group">
+        <label for="email">Email Address <span class="mandatory">*</span></label>
+        <input type="email" id="email" placeholder="Enter your email address" required />
+      </div>
+
+      <!-- Social Media Links -->
+      <div class="input-group">
+        <label for="facebook">Facebook URL</label>
+        <input type="url" id="facebook" placeholder="Enter your Facebook URL" pattern="https?://(www\.)?facebook\.com/.+" />
       </div>
 
       <div class="input-group">
-        <input type="tel" id="phone" placeholder="Phone Number" required pattern="^\+?[0-9]{1,4}?[-. ]?([0-9]{1,3}[-. ]?){1,3}[0-9]{1,4}$" />
-        <small style="color: var(--neutral-dark); font-size: 0.8rem;">Format: +123-456-7890</small>
+        <label for="instagram">Instagram URL</label>
+        <input type="url" id="instagram" placeholder="Enter your Instagram URL" pattern="https?://(www\.)?instagram\.com/.+" />
       </div>
 
       <div class="input-group">
-        <input type="email" id="email" placeholder="Email Address" required />
-      </div>
-
-      <div class="input-group">
-        <input type="url" id="facebook" placeholder="Facebook URL" />
-      </div>
-
-      <div class="input-group">
-        <input type="url" id="instagram" placeholder="Instagram URL" />
-      </div>
-
-      <div class="input-group">
-        <input type="url" id="youtube" placeholder="YouTube URL" />
+        <label for="youtube">YouTube URL</label>
+        <input type="url" id="youtube" placeholder="Enter your YouTube URL" pattern="https?://(www\.)?youtube\.com/.+" />
       </div>
     </div>
 
@@ -169,62 +223,66 @@
   </div>
 
   <script>
-    // Function to upload image to Imgur
+    // Track image uploads
+    let uploadCount = localStorage.getItem('uploadCount') || 0;
+
+    // Function to upload image
     function uploadImage(event) {
+      if (uploadCount >= 3) {
+        alert('You have reached the maximum number of image uploads this month.');
+        return;
+      }
+
       const file = event.target.files[0];
       if (!file) return;
 
-      const formData = new FormData();
-      formData.append('image', file);
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById('imagePreview').src = e.target.result;
+        document.getElementById('imagePreview').style.display = 'block';
+        uploadCount++;
+        localStorage.setItem('uploadCount', uploadCount);
 
-      fetch('https://api.imgur.com/3/image', {
-        method: 'POST',
-        headers: {
-          Authorization: 'Client-ID 048d9400ce02b71' // Your Imgur Client ID
-        },
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          const imageUrl = data.data.link; // Get the URL of the uploaded image
-          document.getElementById('imagePreview').src = imageUrl; // Show the uploaded image
-          document.getElementById('imagePreview').style.display = 'block'; // Display the image
-        } else {
-          alert('Image upload failed: ' + data.data.error);
+        if (uploadCount === 3) {
+          alert('You have reached the maximum number of image uploads this month.');
         }
-      })
-      .catch(error => {
-        console.error('Error uploading image:', error);
-        alert('An error occurred while uploading the image.');
-      });
+      };
+      reader.readAsDataURL(file);
     }
 
     // Generate Card Function
     document.getElementById('generateCard').onclick = function () {
-      // Get form values
-      const formData = {
-        name: document.getElementById('name').value,
-        businessName: document.getElementById('businessName').value,
-        businessInfo: document.getElementById('businessInfo').value,
-        address: document.getElementById('address').value,
-        phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
-        facebook: document.getElementById('facebook').value,
-        instagram: document.getElementById('instagram').value,
-        youtube: document.getElementById('youtube').value,
-        profileImage: document.getElementById('imagePreview').src || '' // Use the uploaded image URL or empty string if not uploaded
-      };
-
       // Validate mandatory fields
-      if (!formData.name || !formData.businessName || !formData.businessInfo ||
-          !formData.address || !formData.phone || !formData.email) {
+      const mandatoryFields = ['name', 'businessName', 'businessInfo', 'address', 'phone', 'email'];
+      let isValid = true;
+
+      mandatoryFields.forEach(field => {
+        const input = document.getElementById(field);
+        if (!input.value.trim()) {
+          input.classList.add('error');
+          isValid = false;
+        } else {
+          input.classList.remove('error');
+        }
+      });
+
+      if (!isValid) {
         alert('Please fill all required fields marked with *.');
         return;
       }
 
+      // Validate phone number
+      const countryCode = document.getElementById('countryCode').value;
+      const phoneNumber = countryCode + document.getElementById('phone').value;
+
+      if (!validatePhoneNumber(countryCode, phoneNumber)) {
+        alert(`Please enter a valid phone number for ${countryCode}.`);
+        return;
+      }
+
       // Validate business info paragraphs
-      const businessInfoParagraphs = formData.businessInfo.split('\n').filter(p => p.trim() !== '');
+      const businessInfo = document.getElementById('businessInfo').value;
+      const businessInfoParagraphs = businessInfo.split('\n').filter(p => p.trim() !== '');
       if (businessInfoParagraphs.length < 3 || businessInfoParagraphs.length > 5) {
         alert('Please enter 3 to 5 paragraphs for the business info.');
         return;
@@ -239,21 +297,45 @@
         }
       }
 
+      // Get form values
+      const formData = {
+        name: document.getElementById('name').value,
+        businessName: document.getElementById('businessName').value,
+        businessInfo: businessInfo,
+        address: document.getElementById('address').value,
+        phone: phoneNumber,
+        email: document.getElementById('email').value,
+        facebook: document.getElementById('facebook').value,
+        instagram: document.getElementById('instagram').value,
+        youtube: document.getElementById('youtube').value,
+        profileImage: document.getElementById('imagePreview').src || ''
+      };
+
       // Redirect to card.html with form data as URL parameters
       const params = new URLSearchParams();
-      params.set('name', formData.name);
-      params.set('businessName', formData.businessName);
-      params.set('businessInfo', formData.businessInfo);
-      params.set('address', formData.address);
-      params.set('phone', formData.phone);
-      params.set('email', formData.email);
-      params.set('facebook', formData.facebook);
-      params.set('instagram', formData.instagram);
-      params.set('youtube', formData.youtube);
-      params.set('profileImage', formData.profileImage); // Use the uploaded image URL or empty string
+      for (const [key, value] of Object.entries(formData)) {
+        params.set(key, value);
+      }
 
       window.location.href = `card.html?${params.toString()}`;
     };
+
+    // Function to validate phone number based on country code
+    function validatePhoneNumber(countryCode, phoneNumber) {
+      const phonePatterns = {
+        '+92': /^\+92\d{10}$/, // Pakistan: +92 followed by 10 digits
+        '+91': /^\+91\d{10}$/, // India: +91 followed by 10 digits
+        '+1': /^\+1\d{10}$/,   // USA/Canada: +1 followed by 10 digits
+        '+44': /^\+44\d{10}$/, // UK: +44 followed by 10 digits
+        '+86': /^\+86\d{11}$/, // China: +86 followed by 11 digits
+        '+49': /^\+49\d{10,11}$/, // Germany: +49 followed by 10-11 digits
+        '+61': /^\+61\d{9}$/,  // Australia: +61 followed by 9 digits
+        '+966': /^\+966\d{9}$/, // Saudi Arabia: +966 followed by 9 digits
+        '+971': /^\+971\d{9}$/, // UAE: +971 followed by 9 digits
+      };
+
+      return phonePatterns[countryCode].test(phoneNumber);
+    }
   </script>
 </body>
 </html>
