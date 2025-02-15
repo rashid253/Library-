@@ -7,122 +7,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/6.6.6/css/flag-icons.min.css" rel="stylesheet" />
   <style>
-    :root {
-      --primary-color: #2C3E50;    /* Professional Navy */
-      --secondary-color: #3498DB;  /* Trust Blue */
-      --accent-color: #E74C3E;     /* Alert Red */
-      --neutral-light: rgba(236, 240, 241, 0.9); /* Light Gray with transparency */
-      --neutral-dark: #34495E;     /* Dark Gray */
-    }
-
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      margin: 0;
-      padding: 1rem;
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    .form-container {
-      width: 100%;
-      max-width: 400px;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-      padding: 1.5rem;
-      margin: 1rem;
-    }
-
-    .form-header {
-      color: var(--primary-color);
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 0.7rem;
-      border: 1px solid var(--neutral-light);
-      border-radius: 6px;
-      font-size: 0.9rem;
-    }
-
-    textarea {
-      resize: vertical;
-    }
-
-    .image-upload-group {
-      grid-column: 1 / -1;
-      text-align: center;
-      border: 2px dashed var(--neutral-light);
-      padding: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .image-upload-group:hover {
-      background: rgba(236, 240, 241, 0.5);
-    }
-
-    #imagePreview {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin: 0.5rem auto;
-      display: none;
-    }
-
-    #generateCard {
-      background: var(--secondary-color);
-      color: white;
-      width: 100%;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    #generateCard:hover {
-      background: #2980B9;
-    }
-
-    .mandatory {
-      color: red;
-    }
-
-    .error {
-      border: 1px solid var(--accent-color);
-    }
-
-    .country-flag {
-      margin-right: 8px;
-    }
-
-    @media (max-width: 480px) {
-      .form-container {
-        max-width: 90%;
-        padding: 1rem;
-      }
-    }
+    /* Add your CSS styles here */
   </style>
 </head>
 <body>
@@ -247,7 +132,7 @@
     // Track image uploads
     let uploadCount = localStorage.getItem('uploadCount') || 0;
 
-    // Function to upload image
+    // Function to upload image to Imgur
     function uploadImage(event) {
       if (uploadCount >= 3) {
         alert('You have reached the maximum number of image uploads this month.');
@@ -257,18 +142,32 @@
       const file = event.target.files[0];
       if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        document.getElementById('imagePreview').src = e.target.result;
-        document.getElementById('imagePreview').style.display = 'block';
-        uploadCount++;
-        localStorage.setItem('uploadCount', uploadCount);
+      const formData = new FormData();
+      formData.append('image', file);
 
-        if (uploadCount === 3) {
-          alert('You have reached the maximum number of image uploads this month.');
+      fetch('https://api.imgur.com/3/image', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Client-ID YOUR_IMGUR_CLIENT_ID' // Replace with your Imgur Client ID
+        },
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const imageUrl = data.data.link; // Get the URL of the uploaded image
+          document.getElementById('imagePreview').src = imageUrl; // Show the uploaded image
+          document.getElementById('imagePreview').style.display = 'block'; // Display the image
+          uploadCount++;
+          localStorage.setItem('uploadCount', uploadCount);
+        } else {
+          alert('Image upload failed: ' + data.data.error);
         }
-      };
-      reader.readAsDataURL(file);
+      })
+      .catch(error => {
+        console.error('Error uploading image:', error);
+        alert('An error occurred while uploading the image.');
+      });
     }
 
     // Generate Card Function
