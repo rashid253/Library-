@@ -7,7 +7,118 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/6.6.6/css/flag-icons.min.css" rel="stylesheet" />
   <style>
-    /* Add your CSS styles here */
+    :root {
+      --primary-color: #2C3E50;    /* Professional Navy */
+      --secondary-color: #3498DB;  /* Trust Blue */
+      --accent-color: #E74C3E;     /* Alert Red */
+      --neutral-light: rgba(236, 240, 241, 0.9); /* Light Gray with transparency */
+      --neutral-dark: #34495E;     /* Dark Gray */
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 400px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      padding: 1.5rem;
+      margin: 1rem;
+    }
+
+    .form-header {
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1px solid var(--neutral-light);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .image-upload-group {
+      grid-column: 1 / -1;
+      text-align: center;
+      border: 2px dashed var(--neutral-light);
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .image-upload-group:hover {
+      background: rgba(236, 240, 241, 0.5);
+    }
+
+    #imagePreview {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0.5rem auto;
+      display: none;
+    }
+
+    #generateCard {
+      background: var(--secondary-color);
+      color: white;
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    #generateCard:hover {
+      background: #2980B9;
+    }
+
+    .mandatory {
+      color: red;
+    }
+
+    .error {
+      border: 1px solid var(--accent-color);
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        max-width: 90%;
+        padding: 1rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -195,60 +306,18 @@
       const countryCode = document.getElementById('countryCode').value;
       const phoneNumber = countryCode + document.getElementById('phone').value;
 
-      if (!validatePhoneNumber(countryCode, phoneNumber)) {
-        alert(`Please enter a valid phone number for ${countryCode}.`);
-        return;
-      }
-
-      // Validate business info paragraphs
-      const businessInfo = document.getElementById('businessInfo').value;
-      const businessInfoParagraphs = businessInfo.split('\n').filter(p => p.trim() !== '');
-      if (businessInfoParagraphs.length < 3 || businessInfoParagraphs.length > 5) {
-        alert('Please enter 3 to 5 paragraphs for the business info.');
-        return;
-      }
-
-      // Validate word limit for each paragraph
-      for (const paragraph of businessInfoParagraphs) {
-        const words = paragraph.split(/\s+/).filter(word => word.length > 0);
-        if (words.length > 150) {
-          alert(`Each paragraph must not exceed 150 words. Please check: "${paragraph.substring(0, 30)}..."`);
-          return;
-        }
-      }
-
-      // Validate social media links
-      const facebook = document.getElementById('facebook').value;
-      const instagram = document.getElementById('instagram').value;
-      const youtube = document.getElementById('youtube').value;
-
-      if (facebook && !facebook.match(/https?:\/\/(www\.)?facebook\.com\/.+/)) {
-        alert('Please enter a valid Facebook URL.');
-        return;
-      }
-
-      if (instagram && !instagram.match(/https?:\/\/(www\.)?instagram\.com\/.+/)) {
-        alert('Please enter a valid Instagram URL.');
-        return;
-      }
-
-      if (youtube && !youtube.match(/https?:\/\/(www\.)?youtube\.com\/.+/)) {
-        alert('Please enter a valid YouTube URL.');
-        return;
-      }
-
       // Get form values
       const formData = {
         name: document.getElementById('name').value,
         businessName: document.getElementById('businessName').value,
-        businessInfo: businessInfo,
+        businessInfo: document.getElementById('businessInfo').value,
         address: document.getElementById('address').value,
         phone: phoneNumber,
         email: document.getElementById('email').value,
-        facebook: facebook,
-        instagram: instagram,
-        youtube: youtube,
-        profileImage: document.getElementById('imagePreview').src || ''
+        facebook: document.getElementById('facebook').value,
+        instagram: document.getElementById('instagram').value,
+        youtube: document.getElementById('youtube').value,
+        profileImage: document.getElementById('imagePreview').src || '' // Use the uploaded image URL or empty string
       };
 
       // Redirect to card.html with form data as URL parameters
@@ -259,23 +328,6 @@
 
       window.location.href = `card.html?${params.toString()}`;
     };
-
-    // Function to validate phone number based on country code
-    function validatePhoneNumber(countryCode, phoneNumber) {
-      const phonePatterns = {
-        '+92': /^\+92\d{10}$/, // Pakistan: +92 followed by 10 digits
-        '+91': /^\+91\d{10}$/, // India: +91 followed by 10 digits
-        '+1': /^\+1\d{10}$/,   // USA/Canada: +1 followed by 10 digits
-        '+44': /^\+44\d{10}$/, // UK: +44 followed by 10 digits
-        '+86': /^\+86\d{11}$/, // China: +86 followed by 11 digits
-        '+49': /^\+49\d{10,11}$/, // Germany: +49 followed by 10-11 digits
-        '+61': /^\+61\d{9}$/,  // Australia: +61 followed by 9 digits
-        '+966': /^\+966\d{9}$/, // Saudi Arabia: +966 followed by 9 digits
-        '+971': /^\+971\d{9}$/, // UAE: +971 followed by 9 digits
-      };
-
-      return phonePatterns[countryCode].test(phoneNumber);
-    }
   </script>
 </body>
 </html>
