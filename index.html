@@ -135,9 +135,6 @@
         <label for="profileImage">
           <i class="fas fa-camera fa-2x"></i>
           <p>Upload Profile Photo (Optional)</p>
-          <small style="color: var(--neutral-dark); font-size: 0.8rem;">
-            <strong>Note:</strong> You can upload an image only 3 times per month.
-          </small>
         </label>
         <input type="file" id="profileImage" accept="image/*" hidden onchange="uploadImage(event)" />
         <img id="imagePreview" alt="Profile Preview" />
@@ -146,37 +143,25 @@
       <!-- Full Name -->
       <div class="input-group">
         <label for="name">Full Name <span class="mandatory">*</span></label>
-        <input type="text" id="name" placeholder="Enter your full name" required pattern="[A-Za-z\s]{2,}" />
-        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
-          Only alphabets and spaces are allowed. Minimum 2 characters.
-        </small>
+        <input type="text" id="name" placeholder="Enter your full name (Only alphabets and spaces, min 2 characters)" required pattern="[A-Za-z\s]{2,}" />
       </div>
 
       <!-- Business Name -->
       <div class="input-group">
         <label for="businessName">Business Name <span class="mandatory">*</span></label>
-        <input type="text" id="businessName" placeholder="Enter your business name" required pattern="[A-Za-z0-9\s]{2,}" />
-        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
-          Alphabets, numbers, and spaces are allowed. Minimum 2 characters.
-        </small>
+        <input type="text" id="businessName" placeholder="Enter your business name (Alphabets, numbers, and spaces, min 2 characters)" required pattern="[A-Za-z0-9\s]{2,}" />
       </div>
 
       <!-- Business Info -->
       <div class="input-group">
         <label for="businessInfo">Business Info <span class="mandatory">*</span></label>
-        <textarea id="businessInfo" placeholder="Enter 3 to 5 paragraphs (Max 150 words each) separated by a new line" rows="6" required></textarea>
-        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
-          <strong>Instructions:</strong> Write 3 to 5 paragraphs. Each paragraph must not exceed 150 words. Separate paragraphs with a new line.
-        </small>
+        <textarea id="businessInfo" placeholder="Enter 3 to 5 paragraphs (Max 150 words each, separated by a new line)" rows="6" required></textarea>
       </div>
 
       <!-- Business Address -->
       <div class="input-group">
         <label for="address">Business Address <span class="mandatory">*</span></label>
-        <input type="text" id="address" placeholder="Enter your business address" required pattern="[A-Za-z0-9\s\-,\.]{5,}" />
-        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
-          Alphabets, numbers, spaces, and common symbols (.,-) are allowed. Minimum 5 characters.
-        </small>
+        <input type="text" id="address" placeholder="Enter your business address (Alphabets, numbers, spaces, and common symbols, min 5 characters)" required pattern="[A-Za-z0-9\s\-,\.]{5,}" />
       </div>
 
       <!-- Phone Number -->
@@ -194,45 +179,30 @@
             <option value="+966" data-flag="sa">🇸🇦 +966 (Saudi Arabia)</option>
             <option value="+971" data-flag="ae">🇦🇪 +971 (UAE)</option>
           </select>
-          <input type="tel" id="phone" placeholder="Enter phone number" required style="flex: 3;" />
+          <input type="tel" id="phone" placeholder="Enter phone number (Format depends on selected country)" required style="flex: 3;" />
         </div>
-        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
-          Format: Depends on the selected country.
-        </small>
       </div>
 
       <!-- Email Address -->
       <div class="input-group">
         <label for="email">Email Address <span class="mandatory">*</span></label>
-        <input type="email" id="email" placeholder="Enter your email address" required />
-        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
-          Please enter a valid email address.
-        </small>
+        <input type="email" id="email" placeholder="Enter a valid email address" required />
       </div>
 
       <!-- Social Media Links -->
       <div class="input-group">
         <label for="facebook">Facebook URL</label>
-        <input type="url" id="facebook" placeholder="Enter your Facebook URL" pattern="https?://(www\.)?facebook\.com/.+" />
-        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
-          Example: https://www.facebook.com/yourprofile
-        </small>
+        <input type="url" id="facebook" placeholder="Enter your Facebook URL (e.g., https://www.facebook.com/yourprofile)" pattern="https?://(www\.)?facebook\.com/.+" />
       </div>
 
       <div class="input-group">
         <label for="instagram">Instagram URL</label>
-        <input type="url" id="instagram" placeholder="Enter your Instagram URL" pattern="https?://(www\.)?instagram\.com/.+" />
-        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
-          Example: https://www.instagram.com/yourprofile
-        </small>
+        <input type="url" id="instagram" placeholder="Enter your Instagram URL (e.g., https://www.instagram.com/yourprofile)" pattern="https?://(www\.)?instagram\.com/.+" />
       </div>
 
       <div class="input-group">
         <label for="youtube">YouTube URL</label>
-        <input type="url" id="youtube" placeholder="Enter your YouTube URL" pattern="https?://(www\.)?youtube\.com/.+" />
-        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
-          Example: https://www.youtube.com/yourchannel
-        </small>
+        <input type="url" id="youtube" placeholder="Enter your YouTube URL (e.g., https://www.youtube.com/yourchannel)" pattern="https?://(www\.)?youtube\.com/.+" />
       </div>
     </div>
 
@@ -240,28 +210,8 @@
   </div>
 
   <script>
-    // Track image uploads
-    let uploadCount = localStorage.getItem('uploadCount') || 0;
-    let lastUploadDate = localStorage.getItem('lastUploadDate');
-
-    // Reset upload count if a new month has started
-    const currentDate = new Date();
-    if (lastUploadDate) {
-      const lastDate = new Date(lastUploadDate);
-      if (currentDate.getMonth() !== lastDate.getMonth() || currentDate.getFullYear() !== lastDate.getFullYear()) {
-        uploadCount = 0;
-        localStorage.setItem('uploadCount', uploadCount);
-      }
-    }
-    localStorage.setItem('lastUploadDate', currentDate.toISOString());
-
     // Function to upload image to Imgur
     function uploadImage(event) {
-      if (uploadCount >= 3) {
-        alert('You have reached the maximum number of image uploads this month.');
-        return;
-      }
-
       const file = event.target.files[0];
       if (!file) return;
 
@@ -281,8 +231,6 @@
           const imageUrl = data.data.link; // Get the URL of the uploaded image
           document.getElementById('imagePreview').src = imageUrl; // Show the uploaded image
           document.getElementById('imagePreview').style.display = 'block'; // Display the image
-          uploadCount++;
-          localStorage.setItem('uploadCount', uploadCount);
         } else {
           alert('Image upload failed: ' + data.data.error);
         }
