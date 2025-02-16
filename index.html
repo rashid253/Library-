@@ -76,16 +76,6 @@
       cursor: pointer;
     }
 
-    #imagePreview {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      object-fit: cover; /* Ensures the image covers the circle */
-      margin: 0.5rem auto;
-      display: none; /* Initially hidden */
-      border: 2px solid var(--neutral-light); /* Optional: Add a border to the circle */
-    }
-
     #generateCard {
       background: var(--secondary-color);
       color: white;
@@ -94,6 +84,13 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
+    }
+
+    .upload-message {
+      color: var(--secondary-color);
+      text-align: center;
+      margin-top: 1rem;
+      display: none; /* Initially hidden */
     }
 
     @media (max-width: 480px) {
@@ -118,8 +115,7 @@
           <i class="fas fa-camera fa-2x"></i>
           <p>Upload Profile Photo</p>
         </label>
-        <input type="file" id="profileImage" accept="image/*" hidden onchange="previewImage(event)" />
-        <img id="imagePreview" alt="Profile Preview" />
+        <input type="file" id="profileImage" accept="image/*" hidden onchange="uploadImage(event)" />
       </div>
 
       <div class="input-group">
@@ -163,11 +159,12 @@
     </div>
 
     <button id="generateCard">Generate Card</button>
+    <div class="upload-message" id="uploadMessage">Image uploaded successfully!</div>
   </div>
 
   <script>
-    // Image Preview and Compression Function
-    async function previewImage(event) {
+    // Function to handle image upload
+    async function uploadImage(event) {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -177,17 +174,18 @@
           img.onload = async () => {
             const compress = new Compress();
             const result = await compress.compress([img], {
-              size: 0.5, // Size in MB (reduce to 0.5 MB for lower quality)
-              quality: 0.6, // Quality of the image (lower quality)
+              size: 0.5, // Size in MB
+              quality: 0.6, // Quality of the image
               maxWidth: 800, // Max width
               maxHeight: 800, // Max height
               resize: true // Resize the image
             });
 
             const base64str = result[0].data;
-            const imgPreview = document.getElementById('imagePreview');
-            imgPreview.src = base64str;
-            imgPreview.style.display = 'block'; // Ensure the image is displayed
+            // Store the image in local storage
+            localStorage.setItem('profileImage', base64str);
+            // Show confirmation message
+            document.getElementById('uploadMessage').style.display = 'block';
           };
         };
         reader.readAsDataURL(file);
@@ -207,7 +205,7 @@
         facebook: document.getElementById('facebook').value,
         instagram: document.getElementById('instagram').value,
         youtube: document.getElementById('youtube').value,
-        profileImage: document.getElementById('imagePreview').src // Get image from preview
+        profileImage: localStorage.getItem('profileImage') // Get image from local storage
       };
 
       // Validate mandatory fields
