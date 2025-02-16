@@ -186,7 +186,7 @@
             const base64str = result[0].data;
             const imgPreview = document.getElementById('imagePreview');
             imgPreview.src = base64str;
-            imgPreview.style.display = 'block';
+            imgPreview.style.display = 'block'; // Ensure the image is displayed
           };
         };
         reader.readAsDataURL(file);
