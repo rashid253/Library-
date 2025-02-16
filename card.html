@@ -33,7 +33,14 @@
       box-shadow: 0 8px 30px rgba(0,0,0,0.12);
       padding: 1.5rem;
       margin: 1rem;
+      transform: perspective(800px) rotateY(10deg);
+      transition: transform 0.5s ease;
       border: 2px solid var(--secondary-color);
+      transform-style: preserve-3d;
+    }
+
+    .card-container:hover {
+      transform: perspective(800px) rotateY(10deg);
     }
 
     .mini-icons {
@@ -49,6 +56,10 @@
       color: var(--neutral-dark);
       cursor: pointer;
       transition: color 0.3s ease;
+    }
+
+    .mini-icons .icon:hover {
+      color: var(--secondary-color);
     }
 
     .profile-section {
@@ -230,8 +241,10 @@
     const params = new URLSearchParams(window.location.search);
 
     // Set profile image (if available)
-    const profileImage = params.get('profileImage') || 'https://i.imgur.com/048d9400ce02b71.jpg'; // Default image
-    document.getElementById('cardProfileImage').src = profileImage;
+    const profileImage = params.get('profileImage');
+    if (profileImage) {
+      document.getElementById('cardProfileImage').src = profileImage;
+    }
 
     // Update card information
     document.getElementById('cardName').textContent = params.get('name');
