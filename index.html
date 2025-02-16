@@ -176,10 +176,10 @@
           img.onload = async () => {
             const compress = new Compress();
             const result = await compress.compress([img], {
-              size: 1, // Size in MB
-              quality: 0.75, // Quality of the image
-              maxWidth: 1920, // Max width
-              maxHeight: 1920, // Max height
+              size: 0.5, // Size in MB (reduce to 0.5 MB for lower quality)
+              quality: 0.6, // Quality of the image (lower quality)
+              maxWidth: 800, // Max width
+              maxHeight: 800, // Max height
               resize: true // Resize the image
             });
 
