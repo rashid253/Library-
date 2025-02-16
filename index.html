@@ -8,11 +8,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/compress.js/1.0.7/compress.min.js"></script>
   <style>
     :root {
-      --primary-color: #2C3E50;    /* Professional Navy */
-      --secondary-color: #3498DB;  /* Trust Blue */
-      --accent-color: #E74C3C;     /* Alert Red */
-      --neutral-light: rgba(236, 240, 241, 0.9); /* Light Gray with transparency */
-      --neutral-dark: #34495E;     /* Dark Gray */
+      --primary-color: #2C3E50;    
+      --secondary-color: #3498DB;  
+      --accent-color: #E74C3C;     
+      --neutral-light: rgba(236, 240, 241, 0.9); 
+      --neutral-dark: #34495E;     
     }
 
     body {
@@ -80,10 +80,10 @@
       width: 90px;
       height: 90px;
       border-radius: 50%;
-      object-fit: cover; /* Ensures the image covers the circle */
+      object-fit: cover; 
       margin: 0.5rem auto;
-      display: none; /* Initially hidden */
-      border: 2px solid var(--neutral-light); /* Optional: Add a border to the circle */
+      display: none; 
+      border: 2px solid var(--neutral-light); 
     }
 
     #generateCard {
@@ -105,7 +105,6 @@
   </style>
 </head>
 <body>
-  <!-- Form Section -->
   <div class="form-container">
     <div class="form-header">
       <h2>Create Business Card</h2>
@@ -166,6 +165,16 @@
   </div>
 
   <script>
+    // Load image from local storage if available
+    window.onload = function() {
+      const storedImage = localStorage.getItem('profileImage');
+      const imgPreview = document.getElementById('imagePreview');
+      if (storedImage) {
+        imgPreview.src = storedImage;
+        imgPreview.style.display = 'block'; // Show the image
+      }
+    };
+
     // Image Preview and Compression Function
     async function previewImage(event) {
       const file = event.target.files[0];
@@ -188,6 +197,9 @@
             const imgPreview = document.getElementById('imagePreview');
             imgPreview.src = base64str;
             imgPreview.style.display = 'block'; // Ensure the image is displayed
+
+            // Store the image in local storage
+            localStorage.setItem('profileImage', base64str);
           };
         };
         reader.readAsDataURL(file);
@@ -207,7 +219,7 @@
         facebook: document.getElementById('facebook').value,
         instagram: document.getElementById('instagram').value,
         youtube: document.getElementById('youtube').value,
-        profileImage: document.getElementById('profileImage').files[0]
+        profileImage: localStorage.getItem('profileImage') // Get image from local storage
       };
 
       // Validate mandatory fields
@@ -245,16 +257,11 @@
       params.set('instagram', formData.instagram);
       params.set('youtube', formData.youtube);
       if (formData.profileImage) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          params.set('profileImage', e.target.result);
-          // Upload to Imgur
-          uploadToImgur(e.target.result).then(imgUrl => {
-            params.set('profileImage', imgUrl);
-            window.location.href = `card.html?${params.toString()}`;
-          });
-        };
-        reader.readAsDataURL(formData.profileImage);
+        // Upload to Imgur
+        uploadToImgur(formData.profileImage).then(imgUrl => {
+          params.set('profileImage', imgUrl);
+          window.location.href = `card.html?${params.toString()}`;
+        });
       } else {
         window.location.href = `card.html?${params.toString()}`;
       }
