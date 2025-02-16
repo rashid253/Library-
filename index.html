@@ -5,9 +5,101 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Business Card Generator</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/6.6.6/css/flag-icons.min.css" rel="stylesheet" />
   <style>
-    /* Add your CSS styles here */
+    :root {
+      --primary-color: #2C3E50;    /* Professional Navy */
+      --secondary-color: #3498DB;  /* Trust Blue */
+      --accent-color: #E74C3C;     /* Alert Red */
+      --neutral-light: rgba(236, 240, 241, 0.9); /* Light Gray with transparency */
+      --neutral-dark: #34495E;     /* Dark Gray */
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 400px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      padding: 1.5rem;
+      margin: 1rem;
+    }
+
+    .form-header {
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1px solid var(--neutral-light);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .image-upload-group {
+      grid-column: 1 / -1;
+      text-align: center;
+      border: 2px dashed var(--neutral-light);
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #imagePreview {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0.5rem auto;
+      display: none;
+    }
+
+    #generateCard {
+      background: var(--secondary-color);
+      color: white;
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        max-width: 90%;
+        padding: 1rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -15,132 +107,158 @@
   <div class="form-container">
     <div class="form-header">
       <h2>Create Business Card</h2>
-      <p>Fill in all required information <span class="mandatory">*</span></p>
+      <p>Fill in all required information</p>
     </div>
 
     <div class="form-grid">
-      <!-- Image Upload Section -->
       <div class="image-upload-group">
         <label for="profileImage">
           <i class="fas fa-camera fa-2x"></i>
-          <p>Upload Profile Photo (Optional)</p>
+          <p>Upload Profile Photo</p>
         </label>
-        <input type="file" id="profileImage" accept="image/*" hidden onchange="uploadImage(event)" />
+        <input type="file" id="profileImage" accept="image/*" hidden onchange="previewImage(event)" />
         <img id="imagePreview" alt="Profile Preview" />
-        <div id="uploadFeedback" class="upload-feedback"></div>
       </div>
 
-      <!-- Other fields remain unchanged -->
+      <div class="input-group">
+        <input type="text" id="name" placeholder="Full Name" required pattern=".{2,}" title="Minimum 2 characters" />
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="businessName" placeholder="Business Name" required pattern=".{2,}" title="Minimum 2 characters" />
+      </div>
+
+      <div class="input-group">
+        <textarea id="businessInfo" placeholder="Enter 3 to 5 paragraphs (Max 150 words each) separated by a new line" rows="6" required></textarea>
+        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
+          <strong>Instructions:</strong> Write 3 to 5 paragraphs. Each paragraph must not exceed 150 words. Separate paragraphs with a new line.
+        </small>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="address" placeholder="Business Address" required pattern=".{5,}" title="Minimum 5 characters" />
+      </div>
+
+      <div class="input-group">
+        <input type="tel" id="phone" placeholder="Phone Number" required pattern="^\d{10}$" title="10 digit phone number" />
+      </div>
+
+      <div class="input-group">
+        <input type="email" id="email" placeholder="Email Address" required />
+      </div>
+
+      <div class="input-group">
+        <input type="url" id="facebook" placeholder="Facebook URL" />
+      </div>
+
+      <div class="input-group">
+        <input type="url" id="instagram" placeholder="Instagram URL" />
+      </div>
+
+      <div class="input-group">
+        <input type="url" id="youtube" placeholder="YouTube URL" />
+      </div>
     </div>
 
     <button id="generateCard">Generate Card</button>
   </div>
 
   <script>
-    // Replace with your Imgur Client ID
-    const IMGUR_CLIENT_ID = 'YOUR_IMGUR_CLIENT_ID';
-
-    // Function to upload image to Imgur
-    function uploadImage(event) {
+    // Image Preview Function
+    function previewImage(event) {
+      const reader = new FileReader();
+      const preview = document.getElementById('imagePreview');
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      };
       const file = event.target.files[0];
-      if (!file) return;
-
-      // Validate image size (e.g., 5 MB limit)
-      const maxSize = 5 * 1024 * 1024; // 5 MB in bytes
-      if (file.size > maxSize) {
-        document.getElementById('uploadFeedback').textContent = 'Image size must be less than 5 MB.';
-        return;
+      if (file && file.size <= 2 * 1024 * 1024) { // Limit to 2MB
+        reader.readAsDataURL(file);
+      } else {
+        alert('Image size should be less than 2MB.');
       }
-
-      const formData = new FormData();
-      formData.append('image', file);
-
-      // Show loading feedback
-      document.getElementById('uploadFeedback').textContent = 'Uploading image...';
-
-      fetch('https://api.imgur.com/3/image', {
-        method: 'POST',
-        headers: {
-          Authorization: `Client-ID ${IMGUR_CLIENT_ID}`,
-        },
-        body: formData,
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
-            const imageUrl = data.data.link; // Get the URL of the uploaded image
-            document.getElementById('imagePreview').src = imageUrl; // Show the uploaded image
-            document.getElementById('imagePreview').style.display = 'block'; // Display the image
-
-            // Save the image URL in localStorage
-            localStorage.setItem('uploadedImage', imageUrl);
-
-            // Update upload feedback
-            document.getElementById('uploadFeedback').textContent = 'Image uploaded successfully!';
-          } else {
-            document.getElementById('uploadFeedback').textContent = 'Image upload failed: ' + data.data.error;
-          }
-        })
-        .catch((error) => {
-          console.error('Error uploading image:', error);
-          document.getElementById('uploadFeedback').textContent = 'An error occurred while uploading the image.';
-        });
     }
 
     // Generate Card Function
     document.getElementById('generateCard').onclick = function () {
-      // Validate mandatory fields
-      const mandatoryFields = ['name', 'businessName', 'businessInfo', 'address', 'phone', 'email'];
-      let isValid = true;
-
-      mandatoryFields.forEach((field) => {
-        const input = document.getElementById(field);
-        if (!input.value.trim()) {
-          input.classList.add('error');
-          isValid = false;
-        } else {
-          input.classList.remove('error');
-        }
-      });
-
-      // Validate phone number
-      const countryCode = document.getElementById('countryCode').value;
-      const phoneNumber = countryCode + document.getElementById('phone').value;
-
-      if (!/^\+\d{1,3}\d{4,14}$/.test(phoneNumber)) {
-        document.getElementById('phone').classList.add('error');
-        isValid = false;
-      } else {
-        document.getElementById('phone').classList.remove('error');
-      }
-
-      if (!isValid) {
-        alert('Please fill all required fields marked with *.');
-        return;
-      }
-
       // Get form values
       const formData = {
         name: document.getElementById('name').value,
         businessName: document.getElementById('businessName').value,
         businessInfo: document.getElementById('businessInfo').value,
         address: document.getElementById('address').value,
-        phone: phoneNumber,
+        phone: document.getElementById('phone').value,
         email: document.getElementById('email').value,
         facebook: document.getElementById('facebook').value,
         instagram: document.getElementById('instagram').value,
         youtube: document.getElementById('youtube').value,
-        profileImage: document.getElementById('imagePreview').src || '', // Use the uploaded image URL or empty string
+        profileImage: document.getElementById('profileImage').files[0]
       };
+
+      // Validate mandatory fields
+      if (!formData.name || !formData.businessName || !formData.businessInfo ||
+          !formData.address || !formData.phone || !formData.email) {
+        alert('Please fill all required fields');
+        return;
+      }
+
+      // Validate business info paragraphs
+      const businessInfoParagraphs = formData.businessInfo.split('\n').filter(p => p.trim() !== '');
+      if (businessInfoParagraphs.length < 3 || businessInfoParagraphs.length > 5) {
+        alert('Please enter 3 to 5 paragraphs for the business info.');
+        return;
+      }
+
+      // Validate word limit for each paragraph
+      for (const paragraph of businessInfoParagraphs) {
+        const words = paragraph.split(/\s+/).filter(word => word.length > 0);
+        if (words.length > 150) {
+          alert(`Each paragraph must not exceed 150 words. Please check: "${paragraph.substring(0, 30)}..."`);
+          return;
+        }
+      }
 
       // Redirect to card.html with form data as URL parameters
       const params = new URLSearchParams();
-      for (const [key, value] of Object.entries(formData)) {
-        params.set(key, value);
+      params.set('name', formData.name);
+      params.set('businessName', formData.businessName);
+      params.set('businessInfo', formData.businessInfo);
+      params.set('address', formData.address);
+      params.set('phone', formData.phone);
+      params.set('email', formData.email);
+      params.set('facebook', formData.facebook);
+      params.set('instagram', formData.instagram);
+      params.set('youtube', formData.youtube);
+      if (formData.profileImage) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          params.set('profileImage', e.target.result);
+          // Upload to Imgur
+          uploadToImgur(e.target.result).then(imgUrl => {
+            params.set('profileImage', imgUrl);
+            window.location.href = `card.html?${params.toString()}`;
+          });
+        };
+        reader.readAsDataURL(formData.profileImage);
+      } else {
+        window.location.href = `card.html?${params.toString()}`;
       }
-
-      window.location.href = `card.html?${params.toString()}`;
     };
+
+    // Function to upload image to Imgur
+    async function uploadToImgur(base64Image) {
+      const response = await fetch('https://api.imgur.com/3/image', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Client-ID 048d9400ce02b71',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ image: base64Image.split(',')[1] })
+      });
+      const data = await response.json();
+      return data.data.link; // Return the image URL
+    }
   </script>
 </body>
 </html>
