@@ -175,14 +175,13 @@
         text-align: center;
       }
 
-      .profile-image-container
-            .profile-image-container, .profile-info {
+      .profile-image-container, .profile-info {
         width: 100%;
         padding: 0;
       }
 
       .profile-info {
-        margin-top: 1rem;
+                margin-top: 1rem;
       }
 
       .contact-info {
@@ -315,7 +314,7 @@
       const email = params.get('email');
       const address = params.get('address');
 
-      // Generate vCard content with proper CRLF line breaks
+            // Generate vCard content with proper CRLF line breaks
       const vCardContent =
         "BEGIN:VCARD\r\n" +
         "VERSION:3.0\r\n" +
