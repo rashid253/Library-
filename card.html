@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Business Card</title>
   <!-- Font Awesome for icons -->
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    rel="stylesheet"
-  />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
   <!-- Include QRCode.js Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
@@ -57,9 +54,10 @@
     }
     .top-share-icon,
     .top-qr-icon {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       color: var(--neutral-dark);
       cursor: pointer;
+      transition: color 0.3s;
     }
     .top-share-icon:hover,
     .top-qr-icon:hover {
@@ -79,7 +77,7 @@
       flex-direction: column;
     }
     #qrCodeContainer {
-      background: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.95);
       backdrop-filter: blur(5px);
       padding: 20px;
       border-radius: 10px;
@@ -94,6 +92,11 @@
       box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
       background: var(--accent-color);
       color: #fff;
+      transition: background 0.3s;
+    }
+    #downloadQrCode:hover,
+    #closeQrCode:hover {
+      background: #d43f1f;
     }
     /* Style Controls (top-left) */
     #styleControlsContainer {
@@ -109,6 +112,7 @@
       border-radius: 4px;
       background: #fff;
       cursor: pointer;
+      transition: background 0.3s, color 0.3s;
     }
     #styleButton:hover {
       background: var(--secondary-color);
@@ -142,6 +146,7 @@
     .dropdown-options li {
       padding: 0.2rem;
       cursor: pointer;
+      transition: background 0.3s, color 0.3s;
     }
     .dropdown-options li:hover {
       background: var(--secondary-color);
@@ -158,6 +163,7 @@
       cursor: pointer;
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;
+      transition: background 0.3s;
     }
     #applyStyleButton:hover {
       background: #d43f1f;
@@ -186,6 +192,7 @@
       padding: 0.5rem;
       background: rgba(255, 255, 255, 0.1);
       box-sizing: border-box;
+      transition: color 0.3s, background 0.3s;
     }
     .mini-icons .icon:hover {
       color: var(--secondary-color);
@@ -240,6 +247,10 @@
       font-size: 1.2rem;
       color: var(--secondary-color);
       cursor: pointer;
+      transition: color 0.3s;
+    }
+    .connect-btn:hover {
+      color: var(--accent-color);
     }
     /* Business Info Section */
     .business-info-section {
@@ -286,6 +297,7 @@
       overflow: hidden;
       color: #fff;
       box-sizing: border-box;
+      transition: filter 0.2s;
     }
     .action-btn:active {
       filter: brightness(90%);
@@ -307,9 +319,10 @@
       padding: 0.5rem;
       background: rgba(255, 255, 255, 0.1);
       box-sizing: border-box;
+      transition: color 0.3s, background 0.3s;
     }
     .social-icon:hover {
-      /* No hover transform */
+      color: var(--secondary-color);
     }
     @media (max-width: 480px) {
       .card-container {
@@ -567,8 +580,6 @@
             text: "Check out this business card",
             url: window.location.href
           });
-          // Optionally hide dropdown if needed:
-          // document.getElementById('styleControlsContainer').style.display = 'none';
         } else {
           alert("Sharing is not supported on this browser.");
         }
@@ -577,17 +588,20 @@
       }
     };
 
-    // 8) QR Code Button – Show Overlay and Generate QR Code
+    // 8) QR Code Button – Show Overlay and Generate QR Code with professional settings
     document.getElementById('topQrIcon').addEventListener('click', function() {
       const overlay = document.getElementById('qrCodeOverlay');
       overlay.style.display = 'flex';
       // Clear previous QR code content
       document.getElementById('qrCodeContainer').innerHTML = "";
-      // Generate QR Code for current page URL
+      // Generate a high-quality QR Code for current page URL
       new QRCode(document.getElementById("qrCodeContainer"), {
         text: window.location.href,
-        width: 150,
-        height: 150
+        width: 300,
+        height: 300,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
       });
     });
     document.getElementById('closeQrCode').addEventListener('click', function() {
