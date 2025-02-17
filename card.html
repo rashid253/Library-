@@ -11,7 +11,7 @@
   <style>
     :root {
       --primary-color: #1e1e1e;
-      --secondary-color: #009688;
+      --secondary-color: #1e90ff;
       --accent-color: #ff5722;
       --neutral-light: rgba(245,245,245,0.9);
       --neutral-dark: #333333;
@@ -54,14 +54,19 @@
     }
     .top-share-icon,
     .top-qr-icon {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       color: var(--neutral-dark);
+      background: var(--card-background);
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      padding: 8px;
       cursor: pointer;
-      transition: color 0.3s;
+      transition: background 0.3s, color 0.3s;
     }
     .top-share-icon:hover,
     .top-qr-icon:hover {
-      color: var(--secondary-color);
+      background: var(--secondary-color);
+      color: #fff;
     }
     /* QR Code Overlay */
     #qrCodeOverlay {
@@ -588,17 +593,17 @@
       }
     };
 
-    // 8) QR Code Button – Show Overlay and Generate QR Code with professional settings
+    // 8) QR Code Button – Show Overlay and Generate QR Code with updated size
     document.getElementById('topQrIcon').addEventListener('click', function() {
       const overlay = document.getElementById('qrCodeOverlay');
       overlay.style.display = 'flex';
       // Clear previous QR code content
       document.getElementById('qrCodeContainer').innerHTML = "";
-      // Generate a high-quality QR Code for current page URL
+      // Generate a QR Code for current page URL with smaller size (150x150)
       new QRCode(document.getElementById("qrCodeContainer"), {
         text: window.location.href,
-        width: 300,
-        height: 300,
+        width: 150,
+        height: 150,
         colorDark: "#000000",
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H
