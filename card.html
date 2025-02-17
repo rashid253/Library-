@@ -6,8 +6,6 @@
   <title>Business Card</title>
   <!-- Font Awesome for icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-  <!-- Include QRCode.js Library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     :root {
       --primary-color: #1e1e1e;
@@ -42,62 +40,23 @@
       padding: 1.5rem;
       margin: 1rem;
     }
-    /* Top Icons: Share & QR Code */
+    /* Top Icon: Share */
     .top-icons {
       position: absolute;
       top: 10px;
       right: 10px;
-      display: flex;
-      gap: 10px;
       z-index: 10;
     }
-    .top-share-icon,
-    .top-qr-icon {
-      font-size: 1.6rem;
-      color: var(--neutral-dark);
+    .top-share-icon {
+      font-size: 1.8rem;
+      color: var(--secondary-color);
       background: none;
       border: none;
       cursor: pointer;
       transition: color 0.3s;
     }
-    .top-share-icon:hover,
-    .top-qr-icon:hover {
-      color: var(--secondary-color);
-    }
-    /* QR Code Overlay */
-    #qrCodeOverlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-      flex-direction: column;
-    }
-    #qrCodeContainer {
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(5px);
-      padding: 20px;
-      border-radius: 10px;
-    }
-    #downloadQrCode,
-    #closeQrCode {
-      margin-top: 10px;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-      background: var(--accent-color);
-      color: #fff;
-      transition: background 0.3s;
-    }
-    #downloadQrCode:hover,
-    #closeQrCode:hover {
-      background: #d43f1f;
+    .top-share-icon:hover {
+      color: var(--accent-color);
     }
     /* Style Controls (top-left) */
     #styleControlsContainer {
@@ -169,14 +128,7 @@
     #applyStyleButton:hover {
       background: #d43f1f;
     }
-    /* New Mood Section */
-    .dropdown-mood-section {
-      margin-top: 0.5rem;
-    }
-    .dropdown-mood-section .dropdown-section-label {
-      background: #f0f0f0;
-    }
-    /* Mini Icons (top section) */
+    /* Mini Icons (Call, Email, WhatsApp, Map) */
     .mini-icons {
       display: flex;
       justify-content: center;
@@ -339,53 +291,43 @@
   </style>
 </head>
 <body>
-  <!-- Top Icons: Share & QR Code -->
+  <!-- Top Icon: Share -->
   <div class="top-icons">
-    <div class="top-share-icon" id="topShareIcon" title="Share">
+    <button class="top-share-icon" id="topShareIcon" title="Share">
       <i class="fas fa-share-alt"></i>
-    </div>
-    <div class="top-qr-icon" id="topQrIcon" title="Generate QR Code">
-      <i class="fas fa-qrcode"></i>
-    </div>
+    </button>
   </div>
 
-  <!-- QR Code Overlay -->
-  <div id="qrCodeOverlay">
-    <div id="qrCodeContainer"></div>
-    <button id="downloadQrCode">Download QR Code</button>
-    <button id="closeQrCode">Close</button>
+  <!-- Style Controls (top-left) -->
+  <div id="styleControlsContainer">
+    <button id="styleButton" class="dropdown-btn">
+      Style <i class="fas fa-caret-down"></i>
+    </button>
+    <div id="styleDropdown">
+      <!-- Theme Section -->
+      <div class="dropdown-section">
+        <div class="dropdown-section-label">Theme</div>
+        <ul class="dropdown-options">
+          <li data-theme="default">Default</li>
+          <li data-theme="blue">Blue</li>
+          <li data-theme="red">Red</li>
+          <li data-theme="green">Green</li>
+        </ul>
+      </div>
+      <!-- Mood Section -->
+      <div class="dropdown-mood-section">
+        <div class="dropdown-section-label">Mood</div>
+        <ul class="dropdown-options">
+          <li data-mood="day">Day</li>
+          <li data-mood="night">Night</li>
+        </ul>
+      </div>
+      <!-- Apply Button -->
+      <button id="applyStyleButton">Apply</button>
+    </div>
   </div>
 
   <div class="card-container" id="cardContainer">
-    <!-- Style Controls (top-left) -->
-    <div id="styleControlsContainer">
-      <button id="styleButton" class="dropdown-btn">
-        Style <i class="fas fa-caret-down"></i>
-      </button>
-      <div id="styleDropdown">
-        <!-- Theme Section -->
-        <div class="dropdown-section">
-          <div class="dropdown-section-label">Theme</div>
-          <ul class="dropdown-options">
-            <li data-theme="default">Default</li>
-            <li data-theme="blue">Blue</li>
-            <li data-theme="red">Red</li>
-            <li data-theme="green">Green</li>
-          </ul>
-        </div>
-        <!-- New Mood Section -->
-        <div class="dropdown-mood-section">
-          <div class="dropdown-section-label">Mood</div>
-          <ul class="dropdown-options">
-            <li data-mood="day">Day</li>
-            <li data-mood="night">Night</li>
-          </ul>
-        </div>
-        <!-- Apply Button -->
-        <button id="applyStyleButton">Apply</button>
-      </div>
-    </div>
-
     <!-- Mini Icons (Call, Email, WhatsApp, Map) -->
     <div class="mini-icons">
       <a id="miniCallButton" class="icon" title="Call">
@@ -452,7 +394,6 @@
       let selectedMood = "day";
       const params = new URLSearchParams(window.location.search);
       
-      // Debug: Log current URL (ensure it’s not empty)
       console.log("Current URL:", window.location.href);
 
       // 1) Populate Profile Image and Info
@@ -591,39 +532,7 @@
         }
       };
 
-      // 8) QR Code Button – Generate QR Code on click
-      document.getElementById('topQrIcon').addEventListener('click', function() {
-        const overlay = document.getElementById('qrCodeOverlay');
-        overlay.style.display = 'flex';
-        const qrContainer = document.getElementById('qrCodeContainer');
-        qrContainer.innerHTML = ""; // Clear previous QR code
-        new QRCode(qrContainer, {
-          text: window.location.href,
-          width: 150,
-          height: 150,
-          colorDark: "#000000",
-          colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.H
-        });
-      });
-      document.getElementById('closeQrCode').addEventListener('click', function() {
-        document.getElementById('qrCodeOverlay').style.display = 'none';
-      });
-      document.getElementById('downloadQrCode').addEventListener('click', function() {
-        const qrContainer = document.getElementById('qrCodeContainer');
-        const canvas = qrContainer.querySelector('canvas');
-        if (canvas) {
-          const dataURL = canvas.toDataURL('image/png');
-          const link = document.createElement('a');
-          link.href = dataURL;
-          link.download = 'qrcode.png';
-          link.click();
-        } else {
-          alert("QR code not generated yet.");
-        }
-      });
-
-      // 9) Style Dropdown Logic – Theme and Mood
+      // 8) Style Dropdown Logic – Theme and Mood
       const styleButton = document.getElementById('styleButton');
       const styleDropdown = document.getElementById('styleDropdown');
       styleButton.addEventListener('click', (e) => {
