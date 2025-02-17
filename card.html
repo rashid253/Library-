@@ -20,6 +20,7 @@
       --neutral-dark: #333333;
       --card-background: #ffffff;
       --body-bg: linear-gradient(135deg, #cfd8dc, #eceff1);
+      --business-info-bg: #e0f7fa;
     }
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -45,7 +46,7 @@
       margin: 1rem;
       transform: perspective(1000px) rotateY(0deg);
     }
-    /* Top Icons Container */
+    /* Top Icons: Share & QR Code */
     .top-icons {
       position: absolute;
       top: 10px;
@@ -75,6 +76,7 @@
       justify-content: center;
       align-items: center;
       z-index: 100;
+      flex-direction: column;
     }
     #qrCodeContainer {
       background: rgba(255,255,255,0.9);
@@ -82,6 +84,7 @@
       padding: 20px;
       border-radius: 10px;
     }
+    #downloadQrCode,
     #closeQrCode {
       margin-top: 10px;
       border: none;
@@ -247,7 +250,7 @@
       height: 150px;
       overflow: hidden;
       position: relative;
-      background: #e0f7fa;
+      background: var(--business-info-bg);
       border-bottom: 2px solid var(--secondary-color);
       font-family: 'Georgia', serif;
       border-radius: 8px;
@@ -332,7 +335,7 @@
   </style>
 </head>
 <body>
-  <!-- Top Icons: Share and QR Code -->
+  <!-- Top Icons: Share & QR Code -->
   <div class="top-icons">
     <div class="top-share-icon" id="topShareIcon" title="Share">
       <i class="fas fa-share-alt"></i>
@@ -344,6 +347,7 @@
   <!-- QR Code Overlay -->
   <div id="qrCodeOverlay">
     <div id="qrCodeContainer"></div>
+    <button id="downloadQrCode">Download QR Code</button>
     <button id="closeQrCode">Close</button>
   </div>
 
@@ -563,7 +567,8 @@
             text: "Check out this business card",
             url: window.location.href
           });
-          document.getElementById('styleControlsContainer').style.display = 'none';
+          // Optionally hide dropdown if needed:
+          // document.getElementById('styleControlsContainer').style.display = 'none';
         } else {
           alert("Sharing is not supported on this browser.");
         }
@@ -576,7 +581,7 @@
     document.getElementById('topQrIcon').addEventListener('click', function() {
       const overlay = document.getElementById('qrCodeOverlay');
       overlay.style.display = 'flex';
-      // Clear any previous QR code content
+      // Clear previous QR code content
       document.getElementById('qrCodeContainer').innerHTML = "";
       // Generate QR Code for current page URL
       new QRCode(document.getElementById("qrCodeContainer"), {
@@ -587,6 +592,20 @@
     });
     document.getElementById('closeQrCode').addEventListener('click', function() {
       document.getElementById('qrCodeOverlay').style.display = 'none';
+    });
+    // Download QR Code functionality
+    document.getElementById('downloadQrCode').addEventListener('click', function() {
+      const qrContainer = document.getElementById('qrCodeContainer');
+      const canvas = qrContainer.querySelector('canvas');
+      if(canvas) {
+        const dataURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = 'qrcode.png';
+        link.click();
+      } else {
+        alert("QR code not generated yet.");
+      }
     });
 
     // 9) Style Dropdown Logic – Theme and Mood
@@ -625,7 +644,7 @@
       if (selectedTheme === 'default') {
         document.documentElement.style.setProperty('--secondary-color', '#009688');
         document.documentElement.style.setProperty('--accent-color', '#FF5722');
-        // Set base values for day mood
+        // Set base values for Day mood
         document.documentElement.style.setProperty('--card-background', '#FFFFFF');
         document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #CFD8DC, #ECEFF1)');
         card.style.borderImage = `linear-gradient(45deg, #009688, #FF5722, #3F51B5) 1`;
@@ -658,18 +677,22 @@
         document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #1a1a1a, #333333)');
         document.documentElement.style.setProperty('--primary-color', '#f0f0f0');
         document.documentElement.style.setProperty('--neutral-dark', '#f0f0f0');
+        // Update business info background for better contrast in night mode
+        document.documentElement.style.setProperty('--business-info-bg', '#444');
       } else {
-        // Reset to default day values
+        // Reset to day values
         document.documentElement.style.setProperty('--card-background', '#FFFFFF');
         document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #cfd8dc, #eceff1)');
         document.documentElement.style.setProperty('--primary-color', '#1e1e1e');
         document.documentElement.style.setProperty('--neutral-dark', '#333333');
+        document.documentElement.style.setProperty('--business-info-bg', '#e0f7fa');
       }
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.set('theme', selectedTheme);
       newUrl.searchParams.set('mood', selectedMood);
       history.replaceState(null, "", newUrl.toString());
-      document.getElementById('styleControlsContainer').style.display = 'none';
+      // Close only the dropdown (do not hide the entire style controls)
+      styleDropdown.style.display = 'none';
     }
     document.getElementById('applyStyleButton').addEventListener('click', applyTheme);
     window.addEventListener('DOMContentLoaded', () => {
