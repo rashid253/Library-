@@ -41,7 +41,6 @@
       box-shadow: 0 8px 30px rgba(0,0,0,0.2);
       padding: 1.5rem;
       margin: 1rem;
-      transform: perspective(1000px) rotateY(0deg);
     }
     /* Top Icons: Share & QR Code */
     .top-icons {
@@ -56,17 +55,14 @@
     .top-qr-icon {
       font-size: 1.6rem;
       color: var(--neutral-dark);
-      background: var(--card-background);
-      border: 1px solid #ccc;
-      border-radius: 50%;
-      padding: 8px;
+      background: none;
+      border: none;
       cursor: pointer;
-      transition: background 0.3s, color 0.3s;
+      transition: color 0.3s;
     }
     .top-share-icon:hover,
     .top-qr-icon:hover {
-      background: var(--secondary-color);
-      color: #fff;
+      color: var(--secondary-color);
     }
     /* QR Code Overlay */
     #qrCodeOverlay {
@@ -192,11 +188,9 @@
       font-size: 1.5rem;
       color: var(--neutral-dark);
       cursor: pointer;
-      position: relative;
       border-radius: 50%;
       padding: 0.5rem;
       background: rgba(255, 255, 255, 0.1);
-      box-sizing: border-box;
       transition: color 0.3s, background 0.3s;
     }
     .mini-icons .icon:hover {
@@ -204,7 +198,6 @@
     }
     /* Profile Section */
     .profile-section {
-      position: relative;
       display: flex;
       padding: 1rem;
       margin: 0.5rem;
@@ -246,9 +239,7 @@
       white-space: nowrap;
     }
     .connect-btn {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
+      align-self: flex-end;
       font-size: 1.2rem;
       color: var(--secondary-color);
       cursor: pointer;
@@ -265,17 +256,17 @@
       line-height: 1.5;
       height: 150px;
       overflow: hidden;
-      position: relative;
       background: var(--business-info-bg);
       border-bottom: 2px solid var(--secondary-color);
       font-family: 'Georgia', serif;
       border-radius: 8px;
+      position: relative;
     }
     .business-info-content {
       position: absolute;
+      top: 0;
       left: 0;
       right: 0;
-      top: 0;
       bottom: 0;
       display: none;
       text-align: center;
@@ -291,17 +282,13 @@
       padding: 0.8rem;
     }
     .action-btn {
-      display: inline-block;
       text-align: center;
       text-decoration: none;
       padding: 0.6rem;
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      position: relative;
-      overflow: hidden;
       color: #fff;
-      box-sizing: border-box;
       transition: filter 0.2s;
     }
     .action-btn:active {
@@ -318,12 +305,10 @@
       font-size: 1.5rem;
       color: var(--neutral-dark);
       visibility: hidden;
-      position: relative;
       border-radius: 50%;
       text-decoration: none;
       padding: 0.5rem;
       background: rgba(255, 255, 255, 0.1);
-      box-sizing: border-box;
       transition: color 0.3s, background 0.3s;
     }
     .social-icon:hover {
@@ -339,7 +324,8 @@
         align-items: center;
         text-align: center;
       }
-      .profile-image-container, .profile-info {
+      .profile-image-container,
+      .profile-info {
         width: 100%;
         padding: 0;
       }
@@ -362,6 +348,7 @@
       <i class="fas fa-qrcode"></i>
     </div>
   </div>
+
   <!-- QR Code Overlay -->
   <div id="qrCodeOverlay">
     <div id="qrCodeContainer"></div>
@@ -398,6 +385,7 @@
         <button id="applyStyleButton">Apply</button>
       </div>
     </div>
+
     <!-- Mini Icons (Call, Email, WhatsApp, Map) -->
     <div class="mini-icons">
       <a id="miniCallButton" class="icon" title="Call">
@@ -413,6 +401,7 @@
         <i class="fas fa-map-marker-alt"></i>
       </a>
     </div>
+
     <!-- Profile Section -->
     <div class="profile-section">
       <div class="profile-image-container">
@@ -430,10 +419,12 @@
         <i class="fas fa-save"></i>
       </div>
     </div>
+
     <!-- Business Info Section -->
     <div class="business-info-section">
       <div id="businessInfoContent"></div>
     </div>
+
     <!-- Action Buttons Section -->
     <div class="action-buttons">
       <a id="callButton" class="action-btn" style="background: var(--secondary-color);">
@@ -446,6 +437,7 @@
         Email
       </a>
     </div>
+
     <!-- Social Links Section -->
     <div class="social-links">
       <a id="facebookButton" class="social-icon"><i class="fab fa-facebook-f"></i></a>
@@ -453,275 +445,276 @@
       <a id="youtubeButton" class="social-icon"><i class="fab fa-youtube"></i></a>
     </div>
   </div>
+
   <script>
-    let selectedTheme = "default";
-    let selectedMood = "day";
-    const params = new URLSearchParams(window.location.search);
+    document.addEventListener("DOMContentLoaded", function() {
+      let selectedTheme = "default";
+      let selectedMood = "day";
+      const params = new URLSearchParams(window.location.search);
+      
+      // Debug: Log current URL (ensure it’s not empty)
+      console.log("Current URL:", window.location.href);
 
-    // 1) Populate Profile Image and Info
-    if (params.get('profileImage')) {
-      document.getElementById('cardProfileImage').src = params.get('profileImage');
-    }
-    document.getElementById('cardName').textContent          = params.get('name')         || "";
-    document.getElementById('cardBusinessName').textContent  = params.get('businessName') || "";
-    document.getElementById('cardAddress').textContent       = params.get('address')      || "";
-    document.getElementById('cardPhone').textContent         = params.get('phone')        || "";
-    document.getElementById('cardEmail').textContent         = params.get('email')        || "";
-
-    // 2) Business Info Section
-    const businessInfo = params.get('businessInfo') || "";
-    const paragraphs = businessInfo.split('\n').filter(p => p.trim() !== '');
-    const businessInfoContainer = document.getElementById('businessInfoContent');
-    businessInfoContainer.innerHTML = paragraphs
-      .map(p => `<div class="business-info-content"><p>${p}</p></div>`)
-      .join('');
-    const paragraphDivs = businessInfoContainer.querySelectorAll('.business-info-content');
-    let currentIndex = 0;
-    paragraphDivs.forEach((div, idx) => {
-      div.style.display = idx === 0 ? 'block' : 'none';
-    });
-    setInterval(() => {
-      paragraphDivs[currentIndex].style.display = 'none';
-      currentIndex = (currentIndex + 1) % paragraphDivs.length;
-      paragraphDivs[currentIndex].style.display = 'block';
-    }, 8000);
-
-    // 3) Social Links
-    const socialLinks = {
-      facebook: document.getElementById('facebookButton'),
-      instagram: document.getElementById('instagramButton'),
-      youtube: document.getElementById('youtubeButton')
-    };
-    Object.entries(socialLinks).forEach(([platform, element]) => {
-      const url = params.get(platform);
-      if (url) {
-        element.href = url;
-        element.style.visibility = 'visible';
-        element.target = "_blank";
-      } else {
-        element.style.visibility = 'hidden';
-      }
-    });
-
-    // 4) Mini Icons Functionality
-    const phoneParam = params.get('phone') || "";
-    const emailParam = params.get('email') || "";
-    const addressParam = params.get('address') || "";
-    document.getElementById('miniCallButton').onclick = () => {
-      if (phoneParam) {
-        window.location.href = `tel:${phoneParam}`;
-      }
-    };
-    document.getElementById('miniEmailButton').onclick = () => {
-      if (emailParam) {
-        window.location.href = `mailto:${emailParam}`;
-      }
-    };
-    document.getElementById('miniWhatsappButton').onclick = () => {
-      if (phoneParam) {
-        window.location.href = `https://wa.me/${phoneParam}`;
-      }
-    };
-    document.getElementById('miniMapButton').onclick = () => {
-      if (addressParam) {
-        const encodedAddr = encodeURIComponent(addressParam);
-        window.open(`https://www.google.com/maps?q=${encodedAddr}`, '_blank');
-      }
-    };
-
-    // 5) Connect Button (vCard)
-    document.getElementById('connectButton').onclick = () => {
-      const name = params.get('name') || "Contact";
-      const phone = phoneParam;
-      const email = emailParam;
-      const address = addressParam;
-      const vCardContent =
-        "BEGIN:VCARD\r\n" +
-        "VERSION:3.0\r\n" +
-        `N:;${name};;;\r\n` +
-        `FN:${name}\r\n` +
-        `TEL;TYPE=CELL:${phone}\r\n` +
-        `EMAIL;TYPE=INTERNET:${email}\r\n` +
-        `ADR;TYPE=WORK:;;${address};;;;\r\n` +
-        "END:VCARD\r\n";
-      const blob = new Blob([vCardContent], { type: 'text/vcard' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${name}.vcf`;
-      link.click();
-      URL.revokeObjectURL(url);
-    };
-
-    // 6) Action Buttons – Set HREF and add click intercept for Call button
-    const callButton = document.getElementById('callButton');
-    const whatsappButton = document.getElementById('whatsappButton');
-    const emailButton = document.getElementById('emailButton');
-    if (phoneParam) {
-      callButton.href = `tel:${phoneParam}`;
-      whatsappButton.href = `https://wa.me/${phoneParam}`;
-    } else {
-      callButton.removeAttribute('href');
-      whatsappButton.removeAttribute('href');
-    }
-    if (emailParam) {
-      emailButton.href = `mailto:${emailParam}`;
-    } else {
-      emailButton.removeAttribute('href');
-    }
-    callButton.addEventListener('click', function(e) {
-      e.preventDefault();
-      setTimeout(() => {
-        window.location.href = callButton.href;
-      }, 100);
-    });
-
-    // 7) Share Icon (Web Share API)
-    document.getElementById('topShareIcon').onclick = async () => {
-      try {
-        if (navigator.share) {
-          await navigator.share({
-            title: params.get('name') || "My Business Card",
-            text: "Check out this business card",
-            url: window.location.href
-          });
-        } else {
-          alert("Sharing is not supported on this browser.");
-        }
-      } catch (err) {
-        console.error("Error sharing:", err);
-      }
-    };
-
-    // 8) QR Code Button – Show Overlay and Generate QR Code with updated size
-    document.getElementById('topQrIcon').addEventListener('click', function() {
-      const overlay = document.getElementById('qrCodeOverlay');
-      overlay.style.display = 'flex';
-      // Clear previous QR code content
-      document.getElementById('qrCodeContainer').innerHTML = "";
-      // Generate a QR Code for current page URL with smaller size (150x150)
-      new QRCode(document.getElementById("qrCodeContainer"), {
-        text: window.location.href,
-        width: 150,
-        height: 150,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
+      // 1) Populate Profile Image and Info
+      const profileImage = params.get('profileImage') || "";
+      document.getElementById('cardProfileImage').src = profileImage;
+      document.getElementById('cardName').textContent = params.get('name') || "";
+      document.getElementById('cardBusinessName').textContent = params.get('businessName') || "";
+      document.getElementById('cardAddress').textContent = params.get('address') || "";
+      document.getElementById('cardPhone').textContent = params.get('phone') || "";
+      document.getElementById('cardEmail').textContent = params.get('email') || "";
+      
+      // 2) Business Info Section
+      const businessInfo = params.get('businessInfo') || "";
+      const paragraphs = businessInfo.split('\n').filter(p => p.trim() !== '');
+      const businessInfoContainer = document.getElementById('businessInfoContent');
+      businessInfoContainer.innerHTML = paragraphs
+        .map(p => `<div class="business-info-content"><p>${p}</p></div>`)
+        .join('');
+      const paragraphDivs = businessInfoContainer.querySelectorAll('.business-info-content');
+      let currentIndex = 0;
+      paragraphDivs.forEach((div, idx) => {
+        div.style.display = idx === 0 ? 'block' : 'none';
       });
-    });
-    document.getElementById('closeQrCode').addEventListener('click', function() {
-      document.getElementById('qrCodeOverlay').style.display = 'none';
-    });
-    // Download QR Code functionality
-    document.getElementById('downloadQrCode').addEventListener('click', function() {
-      const qrContainer = document.getElementById('qrCodeContainer');
-      const canvas = qrContainer.querySelector('canvas');
-      if(canvas) {
-        const dataURL = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = dataURL;
-        link.download = 'qrcode.png';
-        link.click();
-      } else {
-        alert("QR code not generated yet.");
+      if (paragraphDivs.length > 0) {
+        setInterval(() => {
+          paragraphDivs[currentIndex].style.display = 'none';
+          currentIndex = (currentIndex + 1) % paragraphDivs.length;
+          paragraphDivs[currentIndex].style.display = 'block';
+        }, 8000);
       }
-    });
+      
+      // 3) Social Links
+      const socialLinks = {
+        facebook: document.getElementById('facebookButton'),
+        instagram: document.getElementById('instagramButton'),
+        youtube: document.getElementById('youtubeButton')
+      };
+      Object.entries(socialLinks).forEach(([platform, element]) => {
+        const url = params.get(platform);
+        if (url) {
+          element.href = url;
+          element.style.visibility = 'visible';
+          element.target = "_blank";
+        } else {
+          element.style.visibility = 'hidden';
+        }
+      });
+      
+      // 4) Mini Icons Functionality
+      const phoneParam = params.get('phone') || "";
+      const emailParam = params.get('email') || "";
+      const addressParam = params.get('address') || "";
+      document.getElementById('miniCallButton').onclick = () => {
+        if (phoneParam) {
+          window.location.href = `tel:${phoneParam}`;
+        }
+      };
+      document.getElementById('miniEmailButton').onclick = () => {
+        if (emailParam) {
+          window.location.href = `mailto:${emailParam}`;
+        }
+      };
+      document.getElementById('miniWhatsappButton').onclick = () => {
+        if (phoneParam) {
+          window.location.href = `https://wa.me/${phoneParam}`;
+        }
+      };
+      document.getElementById('miniMapButton').onclick = () => {
+        if (addressParam) {
+          const encodedAddr = encodeURIComponent(addressParam);
+          window.open(`https://www.google.com/maps?q=${encodedAddr}`, '_blank');
+        }
+      };
 
-    // 9) Style Dropdown Logic – Theme and Mood
-    const styleButton = document.getElementById('styleButton');
-    const styleDropdown = document.getElementById('styleDropdown');
-    styleButton.addEventListener('click', (e) => {
-      e.stopPropagation();
-      styleDropdown.style.display = styleDropdown.style.display === 'block' ? 'none' : 'block';
-    });
-    document.addEventListener('click', (e) => {
-      if (!document.getElementById('styleControlsContainer').contains(e.target)) {
+      // 5) Connect Button (vCard)
+      document.getElementById('connectButton').onclick = () => {
+        const name = params.get('name') || "Contact";
+        const phone = phoneParam;
+        const email = emailParam;
+        const address = addressParam;
+        const vCardContent =
+          "BEGIN:VCARD\r\n" +
+          "VERSION:3.0\r\n" +
+          `N:;${name};;;\r\n` +
+          `FN:${name}\r\n` +
+          `TEL;TYPE=CELL:${phone}\r\n` +
+          `EMAIL;TYPE=INTERNET:${email}\r\n` +
+          `ADR;TYPE=WORK:;;${address};;;;\r\n` +
+          "END:VCARD\r\n";
+        const blob = new Blob([vCardContent], { type: 'text/vcard' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${name}.vcf`;
+        link.click();
+        URL.revokeObjectURL(url);
+      };
+
+      // 6) Action Buttons – Set HREF
+      const callButton = document.getElementById('callButton');
+      const whatsappButton = document.getElementById('whatsappButton');
+      const emailButton = document.getElementById('emailButton');
+      if (phoneParam) {
+        callButton.href = `tel:${phoneParam}`;
+        whatsappButton.href = `https://wa.me/${phoneParam}`;
+      } else {
+        callButton.removeAttribute('href');
+        whatsappButton.removeAttribute('href');
+      }
+      if (emailParam) {
+        emailButton.href = `mailto:${emailParam}`;
+      } else {
+        emailButton.removeAttribute('href');
+      }
+      callButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        setTimeout(() => {
+          window.location.href = callButton.href;
+        }, 100);
+      });
+
+      // 7) Share Icon (Web Share API)
+      document.getElementById('topShareIcon').onclick = async () => {
+        try {
+          if (navigator.share) {
+            await navigator.share({
+              title: params.get('name') || "My Business Card",
+              text: "Check out this business card",
+              url: window.location.href
+            });
+          } else {
+            alert("Sharing is not supported on this browser.");
+          }
+        } catch (err) {
+          console.error("Error sharing:", err);
+        }
+      };
+
+      // 8) QR Code Button – Generate QR Code on click
+      document.getElementById('topQrIcon').addEventListener('click', function() {
+        const overlay = document.getElementById('qrCodeOverlay');
+        overlay.style.display = 'flex';
+        const qrContainer = document.getElementById('qrCodeContainer');
+        qrContainer.innerHTML = ""; // Clear previous QR code
+        new QRCode(qrContainer, {
+          text: window.location.href,
+          width: 150,
+          height: 150,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      });
+      document.getElementById('closeQrCode').addEventListener('click', function() {
+        document.getElementById('qrCodeOverlay').style.display = 'none';
+      });
+      document.getElementById('downloadQrCode').addEventListener('click', function() {
+        const qrContainer = document.getElementById('qrCodeContainer');
+        const canvas = qrContainer.querySelector('canvas');
+        if (canvas) {
+          const dataURL = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.href = dataURL;
+          link.download = 'qrcode.png';
+          link.click();
+        } else {
+          alert("QR code not generated yet.");
+        }
+      });
+
+      // 9) Style Dropdown Logic – Theme and Mood
+      const styleButton = document.getElementById('styleButton');
+      const styleDropdown = document.getElementById('styleDropdown');
+      styleButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        styleDropdown.style.display = styleDropdown.style.display === 'block' ? 'none' : 'block';
+      });
+      document.addEventListener('click', (e) => {
+        if (!document.getElementById('styleControlsContainer').contains(e.target)) {
+          styleDropdown.style.display = 'none';
+        }
+      });
+      // Theme selection
+      const themeOpts = styleDropdown.querySelectorAll('[data-theme]');
+      themeOpts.forEach(opt => {
+        opt.addEventListener('click', () => {
+          selectedTheme = opt.getAttribute('data-theme');
+          themeOpts.forEach(o => o.style.background = '');
+          opt.style.background = "#ddd";
+        });
+      });
+      // Mood selection
+      const moodOpts = styleDropdown.querySelectorAll('[data-mood]');
+      moodOpts.forEach(opt => {
+        opt.addEventListener('click', () => {
+          selectedMood = opt.getAttribute('data-mood');
+          moodOpts.forEach(o => o.style.background = '');
+          opt.style.background = "#ddd";
+        });
+      });
+      // Apply Theme & Mood
+      function applyTheme() {
+        const card = document.querySelector('.card-container');
+        if (selectedTheme === 'default') {
+          document.documentElement.style.setProperty('--secondary-color', '#009688');
+          document.documentElement.style.setProperty('--accent-color', '#FF5722');
+          document.documentElement.style.setProperty('--card-background', '#FFFFFF');
+          document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #CFD8DC, #ECEFF1)');
+          card.style.borderImage = `linear-gradient(45deg, #009688, #FF5722, #3F51B5) 1`;
+          card.style.boxShadow = "0 8px 30px rgba(0,0,0,0.2)";
+        } else if (selectedTheme === 'blue') {
+          document.documentElement.style.setProperty('--secondary-color', '#2196F3');
+          document.documentElement.style.setProperty('--accent-color', '#E91E63');
+          document.documentElement.style.setProperty('--card-background', '#F0F8FF');
+          document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #BBDEFB, #E3F2FD)');
+          card.style.borderImage = `linear-gradient(45deg, #2196F3, #E91E63, #3F51B5) 1`;
+          card.style.boxShadow = "0 8px 30px rgba(33,150,243,0.4)";
+        } else if (selectedTheme === 'red') {
+          document.documentElement.style.setProperty('--secondary-color', '#F44336');
+          document.documentElement.style.setProperty('--accent-color', '#9C27B0');
+          document.documentElement.style.setProperty('--card-background', '#FFF0F0');
+          document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #FFCDD2, #FFEBEE)');
+          card.style.borderImage = `linear-gradient(45deg, #F44336, #9C27B0, #FF9800) 1`;
+          card.style.boxShadow = "0 8px 30px rgba(244,67,54,0.4)";
+        } else if (selectedTheme === 'green') {
+          document.documentElement.style.setProperty('--secondary-color', '#4CAF50');
+          document.documentElement.style.setProperty('--accent-color', '#8BC34A');
+          document.documentElement.style.setProperty('--card-background', '#E8F5E9');
+          document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #C8E6C9, #E8F5E9)');
+          card.style.borderImage = `linear-gradient(45deg, #4CAF50, #8BC34A, #388E3C) 1`;
+          card.style.boxShadow = "0 8px 30px rgba(76,175,80,0.4)";
+        }
+        // Apply Mood adjustments
+        if (selectedMood === 'night') {
+          document.documentElement.style.setProperty('--card-background', '#2b2b2b');
+          document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #1a1a1a, #333333)');
+          document.documentElement.style.setProperty('--primary-color', '#f0f0f0');
+          document.documentElement.style.setProperty('--neutral-dark', '#f0f0f0');
+          document.documentElement.style.setProperty('--business-info-bg', '#444');
+        } else {
+          document.documentElement.style.setProperty('--card-background', '#FFFFFF');
+          document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #cfd8dc, #eceff1)');
+          document.documentElement.style.setProperty('--primary-color', '#1e1e1e');
+          document.documentElement.style.setProperty('--neutral-dark', '#333333');
+          document.documentElement.style.setProperty('--business-info-bg', '#e0f7fa');
+        }
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.set('theme', selectedTheme);
+        newUrl.searchParams.set('mood', selectedMood);
+        history.replaceState(null, "", newUrl.toString());
         styleDropdown.style.display = 'none';
       }
-    });
-    // Theme selection
-    const themeOpts = styleDropdown.querySelectorAll('[data-theme]');
-    themeOpts.forEach(opt => {
-      opt.addEventListener('click', () => {
-        selectedTheme = opt.getAttribute('data-theme');
-        themeOpts.forEach(o => o.style.background = '');
-        opt.style.background = "#ddd";
+      document.getElementById('applyStyleButton').addEventListener('click', applyTheme);
+      window.addEventListener('DOMContentLoaded', () => {
+        const lockedTheme = params.get('theme');
+        const lockedMood = params.get('mood');
+        if (lockedTheme) selectedTheme = lockedTheme;
+        if (lockedMood) selectedMood = lockedMood;
+        if (lockedTheme || lockedMood) {
+          applyTheme();
+        }
       });
-    });
-    // Mood selection
-    const moodOpts = styleDropdown.querySelectorAll('[data-mood]');
-    moodOpts.forEach(opt => {
-      opt.addEventListener('click', () => {
-        selectedMood = opt.getAttribute('data-mood');
-        moodOpts.forEach(o => o.style.background = '');
-        opt.style.background = "#ddd";
-      });
-    });
-    // 10) Apply Theme & Mood
-    function applyTheme() {
-      const card = document.querySelector('.card-container');
-      if (selectedTheme === 'default') {
-        document.documentElement.style.setProperty('--secondary-color', '#009688');
-        document.documentElement.style.setProperty('--accent-color', '#FF5722');
-        // Set base values for Day mood
-        document.documentElement.style.setProperty('--card-background', '#FFFFFF');
-        document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #CFD8DC, #ECEFF1)');
-        card.style.borderImage = `linear-gradient(45deg, #009688, #FF5722, #3F51B5) 1`;
-        card.style.boxShadow = "0 8px 30px rgba(0,0,0,0.2)";
-      } else if (selectedTheme === 'blue') {
-        document.documentElement.style.setProperty('--secondary-color', '#2196F3');
-        document.documentElement.style.setProperty('--accent-color', '#E91E63');
-        document.documentElement.style.setProperty('--card-background', '#F0F8FF');
-        document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #BBDEFB, #E3F2FD)');
-        card.style.borderImage = `linear-gradient(45deg, #2196F3, #E91E63, #3F51B5) 1`;
-        card.style.boxShadow = "0 8px 30px rgba(33,150,243,0.4)";
-      } else if (selectedTheme === 'red') {
-        document.documentElement.style.setProperty('--secondary-color', '#F44336');
-        document.documentElement.style.setProperty('--accent-color', '#9C27B0');
-        document.documentElement.style.setProperty('--card-background', '#FFF0F0');
-        document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #FFCDD2, #FFEBEE)');
-        card.style.borderImage = `linear-gradient(45deg, #F44336, #9C27B0, #FF9800) 1`;
-        card.style.boxShadow = "0 8px 30px rgba(244,67,54,0.4)";
-      } else if (selectedTheme === 'green') {
-        document.documentElement.style.setProperty('--secondary-color', '#4CAF50');
-        document.documentElement.style.setProperty('--accent-color', '#8BC34A');
-        document.documentElement.style.setProperty('--card-background', '#E8F5E9');
-        document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #C8E6C9, #E8F5E9)');
-        card.style.borderImage = `linear-gradient(45deg, #4CAF50, #8BC34A, #388E3C) 1`;
-        card.style.boxShadow = "0 8px 30px rgba(76,175,80,0.4)";
-      }
-      // Apply Mood adjustments
-      if (selectedMood === 'night') {
-        document.documentElement.style.setProperty('--card-background', '#2b2b2b');
-        document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #1a1a1a, #333333)');
-        document.documentElement.style.setProperty('--primary-color', '#f0f0f0');
-        document.documentElement.style.setProperty('--neutral-dark', '#f0f0f0');
-        // Update business info background for better contrast in night mode
-        document.documentElement.style.setProperty('--business-info-bg', '#444');
-      } else {
-        // Reset to day values
-        document.documentElement.style.setProperty('--card-background', '#FFFFFF');
-        document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #cfd8dc, #eceff1)');
-        document.documentElement.style.setProperty('--primary-color', '#1e1e1e');
-        document.documentElement.style.setProperty('--neutral-dark', '#333333');
-        document.documentElement.style.setProperty('--business-info-bg', '#e0f7fa');
-      }
-      const newUrl = new URL(window.location.href);
-      newUrl.searchParams.set('theme', selectedTheme);
-      newUrl.searchParams.set('mood', selectedMood);
-      history.replaceState(null, "", newUrl.toString());
-      // Close only the dropdown (do not hide the entire style controls)
-      styleDropdown.style.display = 'none';
-    }
-    document.getElementById('applyStyleButton').addEventListener('click', applyTheme);
-    window.addEventListener('DOMContentLoaded', () => {
-      const lockedTheme = params.get('theme');
-      const lockedMood = params.get('mood');
-      if (lockedTheme) selectedTheme = lockedTheme;
-      if (lockedMood) selectedMood = lockedMood;
-      if (lockedTheme || lockedMood) {
-        applyTheme();
-      }
     });
   </script>
 </body>
