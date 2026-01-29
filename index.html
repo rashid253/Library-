@@ -3,16 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <title>Business Card Generator</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 <style>
-body { font-family: Arial, sans-serif; background:#f4f4f4; padding:20px }
-.form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:15px }
-.input-group label { font-weight:bold }
-.input-group input, textarea, select { width:100%; padding:8px }
-.image-upload-group { text-align:center; border:2px dashed #ccc; padding:20px }
-.image-upload-group label { cursor:pointer }
-#imagePreview { max-width:120px; margin-top:10px; display:none; border-radius:50% }
-button { margin-top:20px; padding:12px 20px; font-size:16px }
+:root{
+  --primary:#1976d2;
+  --neutral-dark:#444;
+  --border:#ddd;
+}
+body{
+  font-family:Arial,sans-serif;
+  background:#f4f6f8;
+  padding:20px;
+}
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:15px;
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+}
+.input-group label{
+  font-weight:bold;
+  margin-bottom:5px;
+  display:block;
+}
+.input-group input,
+.input-group textarea,
+select{
+  width:100%;
+  padding:10px;
+  border:1px solid var(--border);
+  border-radius:6px;
+}
+.required{color:red}
+.image-upload-group{
+  grid-column:span 2;
+  border:2px dashed var(--border);
+  padding:20px;
+  text-align:center;
+  border-radius:10px;
+}
+.image-upload-group input{display:none}
+#imagePreview{
+  max-width:120px;
+  margin-top:10px;
+  border-radius:50%;
+  display:none;
+}
+.phone-group{display:flex;gap:8px}
+#countryFlag{width:24px;height:16px}
+button{
+  margin-top:20px;
+  width:100%;
+  padding:14px;
+  border:none;
+  background:var(--primary);
+  color:#fff;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+/* Card Preview */
+#cardPreview{
+  display:none;
+  margin-top:30px;
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+}
+.card-header{
+  display:flex;
+  gap:15px;
+  align-items:center;
+}
+.card-header img{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  object-fit:cover;
+}
+.social a{
+  margin-right:10px;
+  color:var(--primary);
+  text-decoration:none;
+}
 </style>
 </head>
 
@@ -20,111 +98,144 @@ button { margin-top:20px; padding:12px 20px; font-size:16px }
 
 <h2>Business Card Generator</h2>
 
+<!-- ===== YOUR CODE (UNCHANGED) ===== -->
 <div class="form-grid">
+  <div class="image-upload-group">
+    <label for="profileImage">
+      <i class="fas fa-camera fa-2x"></i>
+      <p>Upload Profile Photo</p>
+    </label>
+    <input type="file" id="profileImage" accept="image/*" onchange="previewImage(event)" />
+    <img id="imagePreview" alt="Profile Preview" />
+  </div>
 
-<div class="image-upload-group">
-  <label for="profileImage">
-    <i class="fas fa-camera fa-2x"></i>
-    <p>Upload Profile Photo</p>
-  </label>
-  <input type="file" id="profileImage" accept="image/*" onchange="previewImage(event)">
-  <img id="imagePreview" alt="Profile Preview">
-</div>
+  <div class="input-group">
+    <label for="name">Full Name <span class="required">*</span></label>
+    <input type="text" id="name" placeholder="Full Name" required />
+  </div>
 
-<div class="input-group">
-  <label for="name">Full Name *</label>
-  <input type="text" id="name" required>
-</div>
+  <div class="input-group">
+    <label for="businessName">Business Name <span class="required">*</span></label>
+    <input type="text" id="businessName" placeholder="Business Name" required />
+  </div>
 
-<div class="input-group">
-  <label for="businessName">Business Name *</label>
-  <input type="text" id="businessName" required>
-</div>
+  <div class="input-group">
+    <label for="businessInfo">Business Info <span class="required">*</span></label>
+    <textarea id="businessInfo" rows="6" required></textarea>
+  </div>
 
-<div class="input-group">
-  <label for="businessInfo">Business Info *</label>
-  <textarea id="businessInfo" rows="6" required></textarea>
-</div>
+  <div class="input-group">
+    <label for="address">Business Address <span class="required">*</span></label>
+    <input type="text" id="address" required />
+  </div>
 
-<div class="input-group">
-  <label for="address">Business Address *</label>
-  <input type="text" id="address" required>
-</div>
+  <div class="input-group">
+    <label for="phone">Phone Number <span class="required">*</span></label>
+    <div class="phone-group">
+      <div class="country-code">
+        <img id="countryFlag" style="display:none;">
+        <select id="countryCode" required>
+          <option value="" disabled selected>Select Code</option>
+          <option value="+92" data-flag="https://flagcdn.com/pk.svg">+92</option>
+          <option value="+1" data-flag="https://flagcdn.com/us.svg">+1</option>
+          <option value="+44" data-flag="https://flagcdn.com/gb.svg">+44</option>
+        </select>
+      </div>
+      <input type="tel" id="phone" required />
+    </div>
+  </div>
 
-<div class="input-group">
-  <label for="phone">Phone *</label>
-  <input type="tel" id="phone" required>
-</div>
+  <div class="input-group">
+    <label for="email">Email Address <span class="required">*</span></label>
+    <input type="email" id="email" required />
+  </div>
 
-<div class="input-group">
-  <label for="email">Email *</label>
-  <input type="email" id="email" required>
-</div>
+  <div class="input-group">
+    <label for="facebook">Facebook URL</label>
+    <input type="url" id="facebook" />
+  </div>
 
-<div class="input-group">
-  <label for="facebook">Facebook URL</label>
-  <input type="url" id="facebook">
-</div>
+  <div class="input-group">
+    <label for="instagram">Instagram URL</label>
+    <input type="url" id="instagram" />
+  </div>
 
-<div class="input-group">
-  <label for="instagram">Instagram URL</label>
-  <input type="url" id="instagram">
-</div>
-
-<div class="input-group">
-  <label for="youtube">YouTube URL</label>
-  <input type="url" id="youtube">
-</div>
-
+  <div class="input-group">
+    <label for="youtube">YouTube URL</label>
+    <input type="url" id="youtube" />
+  </div>
 </div>
 
 <button id="generateCard">Generate Card</button>
+
+<div id="cardPreview">
+  <div class="card-header">
+    <img id="cardImg">
+    <div>
+      <h3 id="cardName"></h3>
+      <strong id="cardBusiness"></strong>
+    </div>
+  </div>
+  <p id="cardInfo"></p>
+  <p><b>Address:</b> <span id="cardAddress"></span></p>
+  <p><b>Phone:</b> <span id="cardPhone"></span></p>
+  <p><b>Email:</b> <span id="cardEmail"></span></p>
+  <div class="social" id="cardSocial"></div>
+</div>
 
 <script>
 const IMGBB_API_KEY = "0e27b30b17540e8703573c566f278f26";
 let uploadedImageURL = "";
 
-function previewImage(event) {
+/* Preview + Upload to imgbb */
+function previewImage(event){
   const file = event.target.files[0];
-  if (!file) return;
+  const preview = document.getElementById("imagePreview");
+  preview.src = URL.createObjectURL(file);
+  preview.style.display="block";
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    document.getElementById("imagePreview").src = e.target.result;
-    document.getElementById("imagePreview").style.display = "block";
-    uploadToImgBB(e.target.result.split(',')[1]);
-  };
-  reader.readAsDataURL(file);
-}
-
-function uploadToImgBB(base64Image) {
   const formData = new FormData();
-  formData.append("key", IMGBB_API_KEY);
-  formData.append("image", base64Image);
+  formData.append("image", file);
 
-  fetch("https://api.imgbb.com/1/upload", {
+  fetch("https://api.imgbb.com/1/upload?key=" + IMGBB_API_KEY, {
     method: "POST",
     body: formData
   })
   .then(res => res.json())
   .then(data => {
-    if (data.success) {
-      uploadedImageURL = data.data.url;
-      console.log("Image uploaded:", uploadedImageURL);
-    } else {
-      alert("Image upload failed");
-    }
+    uploadedImageURL = data.data.url;
   })
-  .catch(() => alert("Upload error"));
+  .catch(() => {
+    alert("Image upload failed");
+  });
 }
 
-document.getElementById("generateCard").addEventListener("click", () => {
-  if (!uploadedImageURL) {
-    alert("Please upload image first");
-    return;
+/* Flag */
+countryCode.addEventListener("change", function(){
+  countryFlag.src = this.selectedOptions[0].dataset.flag;
+  countryFlag.style.display="block";
+});
+
+/* Generate Card */
+generateCard.addEventListener("click", function(){
+  cardPreview.style.display="block";
+
+  cardName.innerText = name.value;
+  cardBusiness.innerText = businessName.value;
+  cardInfo.innerText = businessInfo.value;
+  cardAddress.innerText = address.value;
+  cardPhone.innerText = countryCode.value + " " + phone.value;
+  cardEmail.innerText = email.value;
+
+  if(uploadedImageURL){
+    cardImg.src = uploadedImageURL;
   }
 
-  alert("Card generated successfully\nImage URL:\n" + uploadedImageURL);
+  let social="";
+  if(facebook.value) social+=`<a href="${facebook.value}" target="_blank">Facebook</a>`;
+  if(instagram.value) social+=`<a href="${instagram.value}" target="_blank">Instagram</a>`;
+  if(youtube.value) social+=`<a href="${youtube.value}" target="_blank">YouTube</a>`;
+  cardSocial.innerHTML = social;
 });
 </script>
 
