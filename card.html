@@ -9,6 +9,10 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
       rel="stylesheet"
     />
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff6b6b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
       :root {
         --primary-color: #1e1e1e;
@@ -744,7 +748,7 @@
             styleDropdown.style.display = "none";
           }
         });
-        // Toggle each group’s content on header click
+        // Toggle each group's content on header click
         document.querySelectorAll(".setting-header").forEach((header) => {
           header.addEventListener("click", () => {
             const content = header.nextElementSibling;
@@ -851,7 +855,7 @@
               el.style.backgroundColor = "rgba(233,30,99,0.2)";
             });
           } else {
-            // "none" – revert to CSS defaults
+            // "none" - revert to CSS defaults
             document.querySelectorAll(".icon").forEach((el) => {
               el.style.borderRadius = "";
               el.style.backgroundColor = "";
@@ -931,21 +935,23 @@
             chatModal.style.display = "none";
           }
         });
-      });
-    
-    <!-- Add this script to both card.html and index.html -->
-  // Register service worker for PWA
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('./sw.js')
-        .then(function(registration) {
-          console.log('ServiceWorker registration successful with scope: ', registration.scope);
-        })
-        .catch(function(error) {
-          console.log('ServiceWorker registration failed: ', error);
-        });
-    });
-  }
-</script>
+        
+        // ========== SERVICE WORKER REGISTRATION ==========
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function() {
+            navigator.serviceWorker.register('./sw.js')
+              .then(function(registration) {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+              })
+              .catch(function(error) {
+                console.log('ServiceWorker registration failed: ', error);
+              });
+          });
+        }
+        // ========== END SERVICE WORKER ==========
+        
+      }); // End of DOMContentLoaded
+    </script>
   </body>
 </html>
