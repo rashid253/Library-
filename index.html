@@ -1,134 +1,459 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Business Card Generator</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Business Card Generator</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-color: #2C3E50;    /* Professional Navy */
+      --secondary-color: #3498DB;  /* Trust Blue */
+      --accent-color: #E74C3E;     /* Alert Red */
+      --neutral-light: rgba(236, 240, 241, 0.9); /* Light Gray with transparency */
+      --neutral-dark: #34495E;     /* Dark Gray */
+    }
 
-<!-- Font Awesome (camera icon ke liye) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: linear-gradient(135deg, #e9ecef, #f0f4f8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 450px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      padding: 1.5rem;
+      margin: 1rem;
+    }
+
+    .form-header {
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .input-group label {
+      font-weight: 600;
+      color: var(--neutral-dark);
+    }
+
+    .input-group .required {
+      color: var(--accent-color);
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1px solid var(--neutral-light);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--secondary-color);
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .error {
+      border: 2px solid var(--accent-color);
+    }
+
+    /* Phone group styling with country code on LHS */
+    .phone-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .phone-group .country-code {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex: 0 0 90px; /* Fixed width for country code */
+    }
+    .phone-group .country-code select {
+      width: 100%;
+      padding: 0.5rem;
+    }
+    .phone-group input {
+      flex: 1;
+    }
+    .country-code img {
+      width: 20px;
+      height: 15px;
+    }
+
+    .image-upload-group {
+      grid-column: 1 / -1;
+      text-align: center;
+      border: 2px dashed var(--neutral-light);
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    #profileImage {
+      display: none;
+    }
+
+    #imagePreview {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0.5rem auto;
+      display: none;
+    }
+
+    #generateCard {
+      background: var(--secondary-color);
+      color: white;
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        max-width: 90%;
+        padding: 1rem;
+      }
+    }
+  </style>
 </head>
-
 <body>
-
-<h2>Business Card Generator</h2>
-
-<!-- ===== YOUR CODE (ABSOLUTELY UNCHANGED) ===== -->
-<div class="form-grid">
-  <div class="image-upload-group">
-    <label for="profileImage">
-      <i class="fas fa-camera fa-2x"></i>
-      <p>Upload Profile Photo</p>
-    </label>
-    <input type="file" id="profileImage" accept="image/*" onchange="previewImage(event)" />
-    <img id="imagePreview" alt="Profile Preview" />
-  </div>
-
-  <div class="input-group">
-    <label for="name">Full Name <span class="required">*</span></label>
-    <input type="text" id="name" placeholder="Full Name" required />
-  </div>
-
-  <div class="input-group">
-    <label for="businessName">Business Name <span class="required">*</span></label>
-    <input type="text" id="businessName" placeholder="Business Name" required />
-  </div>
-
-  <div class="input-group">
-    <label for="businessInfo">Business Info <span class="required">*</span></label>
-    <textarea id="businessInfo" placeholder="Enter 3 to 5 paragraphs (Max 150 words each) separated by a new line" rows="6" required></textarea>
-    <small style="color: var(--neutral-dark); font-size: 0.8rem;">
-      <strong>Instructions:</strong> Write 3 to 5 paragraphs. Each paragraph must not exceed 150 words. Separate paragraphs with a new line.
-    </small>
-  </div>
-
-  <div class="input-group">
-    <label for="address">Business Address <span class="required">*</span></label>
-    <input type="text" id="address" placeholder="Business Address" required />
-  </div>
-
-  <div class="input-group">
-    <label for="phone">Phone Number <span class="required">*</span></label>
-    <div class="phone-group">
-      <div class="country-code">
-        <img id="countryFlag" src="" alt="Country Flag" style="display:none;" />
-        <select id="countryCode" required>
-          <option value="" disabled selected>Select Code</option>
-          <option value="+61" data-flag="https://flagcdn.com/au.svg">+61</option>
-          <option value="+86" data-flag="https://flagcdn.com/cn.svg">+86</option>
-          <option value="+33" data-flag="https://flagcdn.com/fr.svg">+33</option>
-          <option value="+49" data-flag="https://flagcdn.com/de.svg">+49</option>
-          <option value="+91" data-flag="https://flagcdn.com/in.svg">+91</option>
-          <option value="+92" data-flag="https://flagcdn.com/pk.svg">+92</option>
-          <option value="+44" data-flag="https://flagcdn.com/gb.svg">+44</option>
-          <option value="+1" data-flag="https://flagcdn.com/us.svg">+1</option>
-        </select>
-      </div>
-      <input type="tel" id="phone" placeholder="Phone Number" required pattern="^\d{9,15}$" />
+  <!-- Form Section -->
+  <div class="form-container">
+    <div class="form-header">
+      <h2>Create Business Card</h2>
+      <p>Fill in all required information</p>
     </div>
+
+    <div class="form-grid">
+      <div class="image-upload-group">
+        <label for="profileImage">
+          <i class="fas fa-camera fa-2x"></i>
+          <p>Upload Profile Photo</p>
+        </label>
+        <input type="file" id="profileImage" accept="image/*" onchange="previewImage(event)" />
+        <img id="imagePreview" alt="Profile Preview" />
+      </div>
+
+      <div class="input-group">
+        <label for="name">Full Name <span class="required">*</span></label>
+        <input type="text" id="name" placeholder="Full Name" required />
+      </div>
+
+      <div class="input-group">
+        <label for="businessName">Business Name <span class="required">*</span></label>
+        <input type="text" id="businessName" placeholder="Business Name" required />
+      </div>
+
+      <div class="input-group">
+        <label for="businessInfo">Business Info <span class="required">*</span></label>
+        <textarea id="businessInfo" placeholder="Enter 3 to 5 paragraphs (Max 150 words each) separated by a new line" rows="6" required></textarea>
+        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
+          <strong>Instructions:</strong> Write 3 to 5 paragraphs. Each paragraph must not exceed 150 words. Separate paragraphs with a new line.
+        </small>
+      </div>
+
+      <div class="input-group">
+        <label for="address">Business Address <span class="required">*</span></label>
+        <input type="text" id="address" placeholder="Business Address" required />
+      </div>
+
+      <div class="input-group">
+        <label for="phone">Phone Number <span class="required">*</span></label>
+        <div class="phone-group">
+          <div class="country-code">
+            <img id="countryFlag" src="" alt="Country Flag" style="display:none;" />
+            <select id="countryCode" required>
+              <option value="" disabled selected>Select Code</option>
+              <!-- Options now display only the code (without brackets) -->
+              <option value="+61" data-flag="https://flagcdn.com/au.svg">+61</option>
+              <option value="+86" data-flag="https://flagcdn.com/cn.svg">+86</option>
+              <option value="+33" data-flag="https://flagcdn.com/fr.svg">+33</option>
+              <option value="+49" data-flag="https://flagcdn.com/de.svg">+49</option>
+              <option value="+91" data-flag="https://flagcdn.com/in.svg">+91</option>
+              <option value="+92" data-flag="https://flagcdn.com/pk.svg">+92</option>
+              <option value="+44" data-flag="https://flagcdn.com/gb.svg">+44</option>
+              <option value="+1" data-flag="https://flagcdn.com/us.svg">+1</option>
+            </select>
+          </div>
+          <input type="tel" id="phone" placeholder="Phone Number" required pattern="^\d{9,15}$" title="Phone number must be 9 to 15 digits without country code." />
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="email">Email Address <span class="required">*</span></label>
+        <input type="email" id="email" placeholder="Email Address" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address." />
+      </div>
+
+      <div class="input-group">
+        <label for="facebook">Facebook URL</label>
+        <input type="url" id="facebook" placeholder="Facebook URL" pattern="https?://(www\.)?facebook\.com/.*" title="Please enter a valid Facebook URL." />
+      </div>
+
+      <div class="input-group">
+        <label for="instagram">Instagram URL</label>
+        <input type="url" id="instagram" placeholder="Instagram URL" pattern="https?://(www\.)?instagram\.com/.*" title="Please enter a valid Instagram URL." />
+      </div>
+
+      <div class="input-group">
+        <label for="youtube">YouTube URL</label>
+        <input type="url" id="youtube" placeholder="YouTube URL" pattern="https?://(www\.)?youtube\.com/.*" title="Please enter a valid YouTube URL." />
+      </div>
+    </div>
+
+    <button id="generateCard">Generate Card</button>
   </div>
 
-  <div class="input-group">
-    <label for="email">Email Address <span class="required">*</span></label>
-    <input type="email" id="email" placeholder="Email Address" required />
-  </div>
+  <script>
+    // Image Preview Function
+    function previewImage(event) {
+      const reader = new FileReader();
+      const preview = document.getElementById('imagePreview');
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
 
-  <div class="input-group">
-    <label for="facebook">Facebook URL</label>
-    <input type="url" id="facebook" placeholder="Facebook URL" />
-  </div>
+    // Update country flag based on selected country code
+    document.getElementById('countryCode').addEventListener('change', function() {
+      const selectedOption = this.options[this.selectedIndex];
+      const flagUrl = selectedOption.getAttribute('data-flag');
+      const countryFlag = document.getElementById('countryFlag');
+      countryFlag.src = flagUrl;
+      countryFlag.style.display = 'inline';
+    });
 
-  <div class="input-group">
-    <label for="instagram">Instagram URL</label>
-    <input type="url" id="instagram" placeholder="Instagram URL" />
-  </div>
+    // Resize and compress image for upload (lower resolution & quality)
+    function resizeImage(file, callback) {
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.src = e.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 150;  // Reduced maximum width
+          const MAX_HEIGHT = 150; // Reduced maximum height
+          let width = img.width;
+          let height = img.height;
 
-  <div class="input-group">
-    <label for="youtube">YouTube URL</label>
-    <input type="url" id="youtube" placeholder="YouTube URL" />
-  </div>
-</div>
+          // Calculate new dimensions while preserving aspect ratio
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = height * (MAX_WIDTH / width);
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = width * (MAX_HEIGHT / height);
+              height = MAX_HEIGHT;
+            }
+          }
 
-<button id="generateCard">Generate Card</button>
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          // Compress to JPEG at 40% quality
+          canvas.toBlob((blob) => {
+            callback(blob);
+          }, 'image/jpeg', 0.4);
+        };
+      };
+      reader.readAsDataURL(file);
+    }
 
-<!-- ===== ONLY JAVASCRIPT ADDED ===== -->
-<script>
-const IMGBB_API_KEY = "0e27b30b17540e8703573c566f278f26";
+    // Validate mandatory and optional fields
+    function validateForm() {
+      let valid = true;
+      // Clear any previous error highlighting
+      const fields = ['name', 'businessName', 'businessInfo', 'address', 'phone', 'email', 'countryCode'];
+      fields.forEach(id => {
+        const elem = document.getElementById(id);
+        if (elem) elem.classList.remove('error');
+      });
+      
+      // Check mandatory fields are not empty
+      fields.forEach(id => {
+        const elem = document.getElementById(id);
+        if (!elem.value.trim()) {
+          valid = false;
+          elem.classList.add('error');
+        }
+      });
+      if (!valid) {
+        alert("Please fill all required fields.");
+        return false;
+      }
+      
+      // Validate phone number (digits only, 9 to 15 characters)
+      const phoneValue = document.getElementById('phone').value.trim();
+      if (!/^\d{9,15}$/.test(phoneValue)) {
+        document.getElementById('phone').classList.add('error');
+        alert("Phone number must be 9 to 15 digits.");
+        return false;
+      }
+      
+      // Validate email
+      const emailValue = document.getElementById('email').value.trim();
+      if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(emailValue)) {
+        document.getElementById('email').classList.add('error');
+        alert("Please enter a valid email address.");
+        return false;
+      }
+      
+      // Validate optional social media URLs if provided
+      const facebookValue = document.getElementById('facebook').value.trim();
+      if (facebookValue && !/^https?:\/\/(www\.)?facebook\.com\/.+$/i.test(facebookValue)) {
+        document.getElementById('facebook').classList.add('error');
+        alert("Please enter a valid Facebook URL.");
+        return false;
+      }
+      
+      const instagramValue = document.getElementById('instagram').value.trim();
+      if (instagramValue && !/^https?:\/\/(www\.)?instagram\.com\/.+$/i.test(instagramValue)) {
+        document.getElementById('instagram').classList.add('error');
+        alert("Please enter a valid Instagram URL.");
+        return false;
+      }
+      
+      const youtubeValue = document.getElementById('youtube').value.trim();
+      if (youtubeValue && !/^https?:\/\/(www\.)?youtube\.com\/.+$/i.test(youtubeValue)) {
+        document.getElementById('youtube').classList.add('error');
+        alert("Please enter a valid YouTube URL.");
+        return false;
+      }
+      
+      // Validate business info: 3 to 5 paragraphs, each up to 150 words
+      const businessInfo = document.getElementById('businessInfo').value.trim();
+      const paragraphs = businessInfo.split('\n').filter(p => p.trim() !== '');
+      if (paragraphs.length < 3 || paragraphs.length > 5) {
+        document.getElementById('businessInfo').classList.add('error');
+        alert("Please enter 3 to 5 paragraphs for the business info.");
+        return false;
+      }
+      for (const paragraph of paragraphs) {
+        const words = paragraph.split(/\s+/).filter(word => word.length > 0);
+        if (words.length > 150) {
+          document.getElementById('businessInfo').classList.add('error');
+          alert("Each paragraph must not exceed 150 words. Please review your business info.");
+          return false;
+        }
+      }
+      
+      return true;
+    }
 
-/*
-  This function ALREADY exists in your HTML:
-  onchange="previewImage(event)"
-  So we ONLY define it here.
-*/
+    // Generate Card Function
+    document.getElementById('generateCard').onclick = function () {
+      if (!validateForm()) {
+        return;
+      }
 
-function previewImage(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+      // Get form values
+      const formData = {
+        name: document.getElementById('name').value.trim(),
+        businessName: document.getElementById('businessName').value.trim(),
+        businessInfo: document.getElementById('businessInfo').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        // Concatenate the selected country code and the phone number
+        phone: document.getElementById('countryCode').value + document.getElementById('phone').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        facebook: document.getElementById('facebook').value.trim(),
+        instagram: document.getElementById('instagram').value.trim(),
+        youtube: document.getElementById('youtube').value.trim(),
+        profileImage: document.getElementById('profileImage').files[0]
+      };
 
-  // local preview (existing img tag)
-  const preview = document.getElementById("imagePreview");
-  preview.src = URL.createObjectURL(file);
-  preview.style.display = "block";
+      // If an image was selected, resize and upload it first
+      if (formData.profileImage) {
+        resizeImage(formData.profileImage, (resizedImage) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const base64Image = e.target.result.split(',')[1]; // Get base64 string
+            uploadImageToImgur(base64Image, formData);
+          };
+          reader.readAsDataURL(resizedImage);
+        });
+      } else {
+        redirectToCard(formData);
+      }
+    };
 
-  // upload to imgbb
-  const formData = new FormData();
-  formData.append("image", file);
+    function uploadImageToImgur(base64Image, formData) {
+      const clientId = '048d9400ce02b71'; // Imgur Client ID
+      fetch('https://api.imgur.com/3/image', {
+        method: 'POST',
+        headers: {
+          Authorization: `Client-ID ${clientId}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ image: base64Image, type: 'base64' })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          formData.profileImage = data.data.link; // Get the Imgur link
+          redirectToCard(formData);
+        } else {
+          alert('Image upload failed. Please try again.');
+        }
+      })
+      .catch(error => {
+        console.error('Error uploading image:', error);
+        alert('Image upload failed. Please try again.');
+      });
+    }
 
-  fetch("https://api.imgbb.com/1/upload?key=" + IMGBB_API_KEY, {
-    method: "POST",
-    body: formData
-  })
-  .then(res => res.json())
-  .then(data => {
-    // imgbb image URL (important result)
-    window.uploadedImageURL = data.data.url;
-    console.log("IMGBB Image URL:", window.uploadedImageURL);
-  })
-  .catch(err => {
-    console.error("Image upload failed", err);
-  });
-}
-</script>
-
+    function redirectToCard(formData) {
+      const params = new URLSearchParams();
+      params.set('name', formData.name);
+      params.set('businessName', formData.businessName);
+      params.set('businessInfo', formData.businessInfo);
+      params.set('address', formData.address);
+      params.set('phone', formData.phone);
+      params.set('email', formData.email);
+      params.set('facebook', formData.facebook);
+      params.set('instagram', formData.instagram);
+      params.set('youtube', formData.youtube);
+      params.set('profileImage', formData.profileImage);
+      window.location.href = `card.html?${params.toString()}`;
+    }
+  </script>
 </body>
 </html>
