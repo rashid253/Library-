@@ -2,629 +2,291 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#2C3E50">
+  <meta name="description" content="Business Card Generator">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BizCard">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
   <title>Business Card</title>
-  <!-- Font Awesome for icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
   <style>
     :root {
-      --primary-color: #1e1e1e;
-      --secondary-color: #1e90ff;
-      --accent-color: #ff5722;
-      --neutral-light: rgba(245,245,245,0.9);
-      --neutral-dark: #333333;
-      --card-background: #ffffff;
-      --body-bg: linear-gradient(135deg, #cfd8dc, #eceff1);
-      --business-info-bg: #e0f7fa;
+      --primary-color: #2C3E50;
+      --secondary-color: #3498DB;
+      --accent-color: #E74C3E;
+      --neutral-light: #ECF0F1;
     }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', system-ui, sans-serif;
       margin: 0;
-      padding: 1rem;
-      background: var(--body-bg);
+      padding: 20px;
+      background: linear-gradient(135deg, #e9ecef, #f0f4f8);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
     }
-    /* Card Container with Glassmorphism */
+
     .card-container {
-      position: relative;
       width: 100%;
       max-width: 400px;
-      background: var(--card-background);
+      background: white;
       border-radius: 20px;
-      border: 2px solid transparent;
-      border-image: linear-gradient(45deg, var(--secondary-color), var(--accent-color), #3f51b5) 1;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-      padding: 1.5rem;
-      margin: 1rem;
-    }
-    /* Top Icon: Share */
-    .top-icons {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 10;
-    }
-    .top-share-icon {
-      font-size: 1.8rem;
-      color: var(--secondary-color);
-      background: none;
-      border: none;
-      cursor: pointer;
-      transition: color 0.3s;
-    }
-    .top-share-icon:hover {
-      color: var(--accent-color);
-    }
-    /* Style Controls (top-left) */
-    #styleControlsContainer {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 10;
-    }
-    #styleButton {
-      padding: 0.2rem 0.3rem;
-      font-size: 0.65rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background: #fff;
-      cursor: pointer;
-      transition: background 0.3s, color 0.3s;
-    }
-    #styleButton:hover {
-      background: var(--secondary-color);
-      color: #fff;
-    }
-    #styleButton i { margin-left: 0.2rem; }
-    /* Style Dropdown */
-    #styleDropdown {
-      display: none;
-      position: absolute;
-      top: 110%;
-      left: 0;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      width: 180px;
-      z-index: 10;
-      font-size: 0.65rem;
-    }
-    .dropdown-section-label {
-      padding: 0.2rem;
-      background: #f0f0f0;
-      font-weight: bold;
-      border-bottom: 1px solid #ccc;
-    }
-    .dropdown-options {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-    .dropdown-options li {
-      padding: 0.2rem;
-      cursor: pointer;
-      transition: background 0.3s, color 0.3s;
-    }
-    .dropdown-options li:hover {
-      background: var(--secondary-color);
-      color: #fff;
-    }
-    #applyStyleButton {
-      width: 100%;
-      padding: 0.25rem;
-      font-size: 0.65rem;
-      border: none;
-      border-top: 1px solid #ccc;
-      background: var(--accent-color);
-      color: #fff;
-      cursor: pointer;
-      border-bottom-left-radius: 4px;
-      border-bottom-right-radius: 4px;
-      transition: background 0.3s;
-    }
-    #applyStyleButton:hover {
-      background: #d43f1f;
-    }
-    /* Mini Icons (Call, Email, WhatsApp, Map) */
-    .mini-icons {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      padding: 1rem;
-      border-bottom: 2px solid var(--secondary-color);
-    }
-    .mini-icons .icon {
-      font-size: 1.5rem;
-      color: var(--neutral-dark);
-      cursor: pointer;
-      border-radius: 50%;
-      padding: 0.5rem;
-      background: rgba(255, 255, 255, 0.1);
-      transition: color 0.3s, background 0.3s;
-    }
-    .mini-icons .icon:hover {
-      color: var(--secondary-color);
-    }
-    /* Profile Section */
-    .profile-section {
-      display: flex;
-      padding: 1rem;
-      margin: 0.5rem;
-      border-bottom: 2px solid var(--secondary-color);
-    }
-    .profile-image-container {
-      width: 40%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-right: 1rem;
-    }
-    .profile-image {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      border: 2px solid var(--neutral-light);
-      object-fit: cover;
-    }
-    .profile-name {
-      color: var(--primary-color);
-      margin: 0.5rem 0 0;
-      font-size: 1.1rem;
-      text-align: center;
-      word-break: keep-all;
-    }
-    .profile-info {
-      width: 60%;
-      padding-left: 1rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .contact-info {
-      color: var(--neutral-dark);
-      margin: 0.3rem 0;
-      font-size: 0.85rem;
-      line-height: 1.4;
-      white-space: nowrap;
-    }
-    .connect-btn {
-      align-self: flex-end;
-      font-size: 1.2rem;
-      color: var(--secondary-color);
-      cursor: pointer;
-      transition: color 0.3s;
-    }
-    .connect-btn:hover {
-      color: var(--accent-color);
-    }
-    /* Business Info Section */
-    .business-info-section {
-      padding: 1rem;
-      margin: 0.5rem;
-      font-size: 0.9rem;
-      line-height: 1.5;
-      height: 150px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
       overflow: hidden;
-      background: var(--business-info-bg);
-      border-bottom: 2px solid var(--secondary-color);
-      font-family: 'Georgia', serif;
-      border-radius: 8px;
       position: relative;
     }
-    .business-info-content {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      display: none;
+
+    .card-header {
+      background: var(--primary-color);
+      color: white;
+      padding: 2rem 1.5rem;
       text-align: center;
-      font-weight: bold;
-      color: var(--neutral-dark);
-      padding: 0.5rem;
-      overflow-y: auto;
+      position: relative;
     }
-    /* Action Buttons Section (Call, WhatsApp, Email) */
-    .action-buttons {
-      display: grid;
+
+    .profile-image {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 5px solid white;
+      object-fit: cover;
+      margin: 0 auto 1rem;
+      display: block;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .name {
+      font-size: 1.8rem;
+      margin: 0.5rem 0;
+      font-weight: 700;
+    }
+
+    .business-name {
+      color: var(--neutral-light);
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-body {
+      padding: 2rem 1.5rem;
+    }
+
+    .section {
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      color: var(--primary-color);
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
       gap: 0.5rem;
-      padding: 0.8rem;
     }
-    .action-btn {
-      text-align: center;
-      text-decoration: none;
-      padding: 0.6rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      color: #fff;
-      transition: filter 0.2s;
+
+    .section-content {
+      color: var(--neutral-dark);
+      line-height: 1.6;
     }
-    .action-btn:active {
-      filter: brightness(90%);
+
+    .contact-info {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.8rem;
     }
-    /* Social Links Section */
-    .social-links {
+
+    .contact-info i {
+      color: var(--secondary-color);
+      width: 20px;
+    }
+
+    .social-icons {
       display: flex;
       justify-content: center;
       gap: 1rem;
-      padding: 1rem;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--neutral-light);
     }
-    .social-icon {
+
+    .social-icons a {
+      color: var(--primary-color);
       font-size: 1.5rem;
-      color: var(--neutral-dark);
-      visibility: hidden;
-      border-radius: 50%;
-      text-decoration: none;
-      padding: 0.5rem;
-      background: rgba(255, 255, 255, 0.1);
-      transition: color 0.3s, background 0.3s;
+      transition: color 0.3s;
     }
-    .social-icon:hover {
+
+    .social-icons a:hover {
       color: var(--secondary-color);
     }
+
+    .install-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--secondary-color);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+      display: none;
+      z-index: 1000;
+    }
+
     @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
       .card-container {
-        max-width: 90%;
-        padding: 1rem;
-      }
-      .profile-section {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-      }
-      .profile-image-container,
-      .profile-info {
-        width: 100%;
-        padding: 0;
-      }
-      .profile-info {
-        margin-top: 1rem;
-      }
-      .contact-info {
-        white-space: normal;
+        max-width: 95%;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Top Icon: Share -->
-  <div class="top-icons">
-    <button class="top-share-icon" id="topShareIcon" title="Share">
-      <i class="fas fa-share-alt"></i>
-    </button>
+  <div class="card-container">
+    <div class="card-header">
+      <img id="profileImg" class="profile-image" src="" alt="Profile" />
+      <h1 class="name" id="name">John Doe</h1>
+      <p class="business-name" id="businessName">Business Name</p>
+    </div>
+
+    <div class="card-body">
+      <div class="section">
+        <h3 class="section-title"><i class="fas fa-info-circle"></i> Business Information</h3>
+        <div class="section-content" id="businessInfo"></div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title"><i class="fas fa-address-card"></i> Contact Details</h3>
+        <div class="contact-info">
+          <i class="fas fa-map-marker-alt"></i>
+          <span id="address">123 Business Street</span>
+        </div>
+        <div class="contact-info">
+          <i class="fas fa-phone"></i>
+          <span id="phone">+1234567890</span>
+        </div>
+        <div class="contact-info">
+          <i class="fas fa-envelope"></i>
+          <span id="email">email@example.com</span>
+        </div>
+      </div>
+
+      <div class="social-icons" id="socialIcons">
+        <!-- Social icons will be added dynamically -->
+      </div>
+    </div>
   </div>
 
-  <!-- Style Controls (top-left) -->
-  <div id="styleControlsContainer">
-    <button id="styleButton" class="dropdown-btn">
-      Style <i class="fas fa-caret-down"></i>
-    </button>
-    <div id="styleDropdown">
-      <!-- Theme Section -->
-      <div class="dropdown-section">
-        <div class="dropdown-section-label">Theme</div>
-        <ul class="dropdown-options">
-          <li data-theme="default">Default</li>
-          <li data-theme="blue">Blue</li>
-          <li data-theme="red">Red</li>
-          <li data-theme="green">Green</li>
-        </ul>
-      </div>
-      <!-- Mood Section -->
-      <div class="dropdown-mood-section">
-        <div class="dropdown-section-label">Mood</div>
-        <ul class="dropdown-options">
-          <li data-mood="day">Day</li>
-          <li data-mood="night">Night</li>
-        </ul>
-      </div>
-      <!-- Apply Button -->
-      <button id="applyStyleButton">Apply</button>
-    </div>
-  </div>
-
-  <div class="card-container" id="cardContainer">
-    <!-- Mini Icons (Call, Email, WhatsApp, Map) -->
-    <div class="mini-icons">
-      <a id="miniCallButton" class="icon" title="Call">
-        <i class="fas fa-phone"></i>
-      </a>
-      <a id="miniEmailButton" class="icon" title="Email">
-        <i class="fas fa-envelope"></i>
-      </a>
-      <a id="miniWhatsappButton" class="icon" title="WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-      </a>
-      <a id="miniMapButton" class="icon" title="Open in Google Maps">
-        <i class="fas fa-map-marker-alt"></i>
-      </a>
-    </div>
-
-    <!-- Profile Section -->
-    <div class="profile-section">
-      <div class="profile-image-container">
-        <img id="cardProfileImage" class="profile-image" alt="Profile" />
-        <h3 class="profile-name" id="cardName"></h3>
-      </div>
-      <div class="profile-info">
-        <p class="contact-info" id="cardBusinessName"></p>
-        <p class="contact-info" id="cardAddress"></p>
-        <p class="contact-info" id="cardPhone"></p>
-        <p class="contact-info" id="cardEmail"></p>
-      </div>
-      <!-- Connect Button (vCard) -->
-      <div class="connect-btn" id="connectButton" title="Save Contact">
-        <i class="fas fa-save"></i>
-      </div>
-    </div>
-
-    <!-- Business Info Section -->
-    <div class="business-info-section">
-      <div id="businessInfoContent"></div>
-    </div>
-
-    <!-- Action Buttons Section -->
-    <div class="action-buttons">
-      <a id="callButton" class="action-btn" style="background: var(--secondary-color);">
-        Call
-      </a>
-      <a id="whatsappButton" class="action-btn" style="background: #25d366;">
-        WhatsApp
-      </a>
-      <a id="emailButton" class="action-btn" style="background: var(--accent-color);">
-        Email
-      </a>
-    </div>
-
-    <!-- Social Links Section -->
-    <div class="social-links">
-      <a id="facebookButton" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-      <a id="instagramButton" class="social-icon"><i class="fab fa-instagram"></i></a>
-      <a id="youtubeButton" class="social-icon"><i class="fab fa-youtube"></i></a>
-    </div>
-  </div>
+  <button id="installBtn" class="install-btn">
+    <i class="fas fa-download"></i> Install App
+  </button>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      let selectedTheme = "default";
-      let selectedMood = "day";
-      const params = new URLSearchParams(window.location.search);
-      
-      console.log("Current URL:", window.location.href);
-
-      // 1) Populate Profile Image and Info
-      const profileImage = params.get('profileImage') || "";
-      document.getElementById('cardProfileImage').src = profileImage;
-      document.getElementById('cardName').textContent = params.get('name') || "";
-      document.getElementById('cardBusinessName').textContent = params.get('businessName') || "";
-      document.getElementById('cardAddress').textContent = params.get('address') || "";
-      document.getElementById('cardPhone').textContent = params.get('phone') || "";
-      document.getElementById('cardEmail').textContent = params.get('email') || "";
-      
-      // 2) Business Info Section
-      const businessInfo = params.get('businessInfo') || "";
-      const paragraphs = businessInfo.split('\n').filter(p => p.trim() !== '');
-      const businessInfoContainer = document.getElementById('businessInfoContent');
-      businessInfoContainer.innerHTML = paragraphs
-        .map(p => `<div class="business-info-content"><p>${p}</p></div>`)
-        .join('');
-      const paragraphDivs = businessInfoContainer.querySelectorAll('.business-info-content');
-      let currentIndex = 0;
-      paragraphDivs.forEach((div, idx) => {
-        div.style.display = idx === 0 ? 'block' : 'none';
-      });
-      if (paragraphDivs.length > 0) {
-        setInterval(() => {
-          paragraphDivs[currentIndex].style.display = 'none';
-          currentIndex = (currentIndex + 1) % paragraphDivs.length;
-          paragraphDivs[currentIndex].style.display = 'block';
-        }, 8000);
-      }
-      
-      // 3) Social Links
-      const socialLinks = {
-        facebook: document.getElementById('facebookButton'),
-        instagram: document.getElementById('instagramButton'),
-        youtube: document.getElementById('youtubeButton')
-      };
-      Object.entries(socialLinks).forEach(([platform, element]) => {
-        const url = params.get(platform);
-        if (url) {
-          element.href = url;
-          element.style.visibility = 'visible';
-          element.target = "_blank";
-        } else {
-          element.style.visibility = 'hidden';
-        }
-      });
-      
-      // 4) Mini Icons Functionality
-      const phoneParam = params.get('phone') || "";
-      const emailParam = params.get('email') || "";
-      const addressParam = params.get('address') || "";
-      document.getElementById('miniCallButton').onclick = () => {
-        if (phoneParam) {
-          window.location.href = `tel:${phoneParam}`;
-        }
-      };
-      document.getElementById('miniEmailButton').onclick = () => {
-        if (emailParam) {
-          window.location.href = `mailto:${emailParam}`;
-        }
-      };
-      document.getElementById('miniWhatsappButton').onclick = () => {
-        if (phoneParam) {
-          window.location.href = `https://wa.me/${phoneParam}`;
-        }
-      };
-      document.getElementById('miniMapButton').onclick = () => {
-        if (addressParam) {
-          const encodedAddr = encodeURIComponent(addressParam);
-          window.open(`https://www.google.com/maps?q=${encodedAddr}`, '_blank');
-        }
-      };
-
-      // 5) Connect Button (vCard)
-      document.getElementById('connectButton').onclick = () => {
-        const name = params.get('name') || "Contact";
-        const phone = phoneParam;
-        const email = emailParam;
-        const address = addressParam;
-        const vCardContent =
-          "BEGIN:VCARD\r\n" +
-          "VERSION:3.0\r\n" +
-          `N:;${name};;;\r\n` +
-          `FN:${name}\r\n` +
-          `TEL;TYPE=CELL:${phone}\r\n` +
-          `EMAIL;TYPE=INTERNET:${email}\r\n` +
-          `ADR;TYPE=WORK:;;${address};;;;\r\n` +
-          "END:VCARD\r\n";
-        const blob = new Blob([vCardContent], { type: 'text/vcard' });
-        const url = URL.createObjectURL(blob);
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Populate card with data
+    document.getElementById('name').textContent = urlParams.get('name') || 'Not Provided';
+    document.getElementById('businessName').textContent = urlParams.get('businessName') || 'Not Provided';
+    
+    // Format business info with paragraphs
+    const businessInfo = urlParams.get('businessInfo') || '';
+    const paragraphs = businessInfo.split('\n').filter(p => p.trim() !== '');
+    const businessInfoDiv = document.getElementById('businessInfo');
+    paragraphs.forEach(paragraph => {
+      const p = document.createElement('p');
+      p.textContent = paragraph;
+      p.style.marginBottom = '1rem';
+      businessInfoDiv.appendChild(p);
+    });
+    
+    document.getElementById('address').textContent = urlParams.get('address') || 'Not Provided';
+    document.getElementById('phone').textContent = urlParams.get('phone') || 'Not Provided';
+    document.getElementById('email').textContent = urlParams.get('email') || 'Not Provided';
+    
+    // Set profile image
+    const profileImg = document.getElementById('profileImg');
+    const imgUrl = urlParams.get('profileImage');
+    if (imgUrl && imgUrl !== 'undefined') {
+      profileImg.src = imgUrl;
+    } else {
+      profileImg.src = 'https://via.placeholder.com/120/2C3E50/FFFFFF?text=No+Image';
+    }
+    
+    // Add social media icons
+    const socialIcons = document.getElementById('socialIcons');
+    const socialLinks = {
+      facebook: urlParams.get('facebook'),
+      instagram: urlParams.get('instagram'),
+      youtube: urlParams.get('youtube')
+    };
+    
+    for (const [platform, url] of Object.entries(socialLinks)) {
+      if (url && url !== 'undefined') {
+        const iconMap = {
+          facebook: 'fab fa-facebook',
+          instagram: 'fab fa-instagram',
+          youtube: 'fab fa-youtube'
+        };
         const link = document.createElement('a');
         link.href = url;
-        link.download = `${name}.vcf`;
-        link.click();
-        URL.revokeObjectURL(url);
-      };
-
-      // 6) Action Buttons – Set HREF
-      const callButton = document.getElementById('callButton');
-      const whatsappButton = document.getElementById('whatsappButton');
-      const emailButton = document.getElementById('emailButton');
-      if (phoneParam) {
-        callButton.href = `tel:${phoneParam}`;
-        whatsappButton.href = `https://wa.me/${phoneParam}`;
-      } else {
-        callButton.removeAttribute('href');
-        whatsappButton.removeAttribute('href');
+        link.target = '_blank';
+        link.innerHTML = `<i class="${iconMap[platform]}"></i>`;
+        socialIcons.appendChild(link);
       }
-      if (emailParam) {
-        emailButton.href = `mailto:${emailParam}`;
-      } else {
-        emailButton.removeAttribute('href');
-      }
-      callButton.addEventListener('click', function(e) {
-        e.preventDefault();
-        setTimeout(() => {
-          window.location.href = callButton.href;
-        }, 100);
-      });
-
-      // 7) Share Icon (Web Share API)
-      document.getElementById('topShareIcon').onclick = async () => {
-        try {
-          if (navigator.share) {
-            await navigator.share({
-              title: params.get('name') || "My Business Card",
-              text: "Check out this business card",
-              url: window.location.href
-            });
-          } else {
-            alert("Sharing is not supported on this browser.");
-          }
-        } catch (err) {
-          console.error("Error sharing:", err);
-        }
-      };
-
-      // 8) Style Dropdown Logic – Theme and Mood
-      const styleButton = document.getElementById('styleButton');
-      const styleDropdown = document.getElementById('styleDropdown');
-      styleButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        styleDropdown.style.display = styleDropdown.style.display === 'block' ? 'none' : 'block';
-      });
-      document.addEventListener('click', (e) => {
-        if (!document.getElementById('styleControlsContainer').contains(e.target)) {
-          styleDropdown.style.display = 'none';
-        }
-      });
-      // Theme selection
-      const themeOpts = styleDropdown.querySelectorAll('[data-theme]');
-      themeOpts.forEach(opt => {
-        opt.addEventListener('click', () => {
-          selectedTheme = opt.getAttribute('data-theme');
-          themeOpts.forEach(o => o.style.background = '');
-          opt.style.background = "#ddd";
-        });
-      });
-      // Mood selection
-      const moodOpts = styleDropdown.querySelectorAll('[data-mood]');
-      moodOpts.forEach(opt => {
-        opt.addEventListener('click', () => {
-          selectedMood = opt.getAttribute('data-mood');
-          moodOpts.forEach(o => o.style.background = '');
-          opt.style.background = "#ddd";
-        });
-      });
-      // Apply Theme & Mood
-      function applyTheme() {
-        const card = document.querySelector('.card-container');
-        if (selectedTheme === 'default') {
-          document.documentElement.style.setProperty('--secondary-color', '#009688');
-          document.documentElement.style.setProperty('--accent-color', '#FF5722');
-          document.documentElement.style.setProperty('--card-background', '#FFFFFF');
-          document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #CFD8DC, #ECEFF1)');
-          card.style.borderImage = `linear-gradient(45deg, #009688, #FF5722, #3F51B5) 1`;
-          card.style.boxShadow = "0 8px 30px rgba(0,0,0,0.2)";
-        } else if (selectedTheme === 'blue') {
-          document.documentElement.style.setProperty('--secondary-color', '#2196F3');
-          document.documentElement.style.setProperty('--accent-color', '#E91E63');
-          document.documentElement.style.setProperty('--card-background', '#F0F8FF');
-          document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #BBDEFB, #E3F2FD)');
-          card.style.borderImage = `linear-gradient(45deg, #2196F3, #E91E63, #3F51B5) 1`;
-          card.style.boxShadow = "0 8px 30px rgba(33,150,243,0.4)";
-        } else if (selectedTheme === 'red') {
-          document.documentElement.style.setProperty('--secondary-color', '#F44336');
-          document.documentElement.style.setProperty('--accent-color', '#9C27B0');
-          document.documentElement.style.setProperty('--card-background', '#FFF0F0');
-          document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #FFCDD2, #FFEBEE)');
-          card.style.borderImage = `linear-gradient(45deg, #F44336, #9C27B0, #FF9800) 1`;
-          card.style.boxShadow = "0 8px 30px rgba(244,67,54,0.4)";
-        } else if (selectedTheme === 'green') {
-          document.documentElement.style.setProperty('--secondary-color', '#4CAF50');
-          document.documentElement.style.setProperty('--accent-color', '#8BC34A');
-          document.documentElement.style.setProperty('--card-background', '#E8F5E9');
-          document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #C8E6C9, #E8F5E9)');
-          card.style.borderImage = `linear-gradient(45deg, #4CAF50, #8BC34A, #388E3C) 1`;
-          card.style.boxShadow = "0 8px 30px rgba(76,175,80,0.4)";
-        }
-        // Apply Mood adjustments
-        if (selectedMood === 'night') {
-          document.documentElement.style.setProperty('--card-background', '#2b2b2b');
-          document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #1a1a1a, #333333)');
-          document.documentElement.style.setProperty('--primary-color', '#f0f0f0');
-          document.documentElement.style.setProperty('--neutral-dark', '#f0f0f0');
-          document.documentElement.style.setProperty('--business-info-bg', '#444');
-        } else {
-          document.documentElement.style.setProperty('--card-background', '#FFFFFF');
-          document.documentElement.style.setProperty('--body-bg', 'linear-gradient(135deg, #cfd8dc, #eceff1)');
-          document.documentElement.style.setProperty('--primary-color', '#1e1e1e');
-          document.documentElement.style.setProperty('--neutral-dark', '#333333');
-          document.documentElement.style.setProperty('--business-info-bg', '#e0f7fa');
-        }
-        const newUrl = new URL(window.location.href);
-        newUrl.searchParams.set('theme', selectedTheme);
-        newUrl.searchParams.set('mood', selectedMood);
-        history.replaceState(null, "", newUrl.toString());
-        styleDropdown.style.display = 'none';
-      }
-      document.getElementById('applyStyleButton').addEventListener('click', applyTheme);
-      window.addEventListener('DOMContentLoaded', () => {
-        const lockedTheme = params.get('theme');
-        const lockedMood = params.get('mood');
-        if (lockedTheme) selectedTheme = lockedTheme;
-        if (lockedMood) selectedMood = lockedMood;
-        if (lockedTheme || lockedMood) {
-          applyTheme();
-        }
-      });
+    }
+    
+    // PWA Installation
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'block';
     });
+    
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          installBtn.style.display = 'none';
+        }
+        deferredPrompt = null;
+      }
+    });
+    
+    // Check if already installed
+    window.addEventListener('appinstalled', () => {
+      installBtn.style.display = 'none';
+    });
+    
+    // Service Worker Registration for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then(registration => {
+          console.log('ServiceWorker registered');
+        }).catch(error => {
+          console.log('ServiceWorker registration failed:', error);
+        });
+      });
+    }
   </script>
 </body>
 </html>
