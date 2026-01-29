@@ -7,80 +7,86 @@
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#3498db">
+<meta name="theme-color" content="#1e88e5">
 
 <style>
 :root{
-  --primary:#2c3e50;
-  --secondary:#3498db;
-  --light:#f4f6f8;
+  --primary:#1e88e5;
+  --dark:#1f2937;
+  --muted:#6b7280;
+  --bg:#f3f4f6;
 }
+
+*{box-sizing:border-box}
 
 body{
   margin:0;
-  font-family:Segoe UI, system-ui, sans-serif;
-  background:var(--light);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  background:var(--bg);
   display:flex;
   justify-content:center;
 }
 
 .card{
   width:100%;
-  max-width:420px;
+  max-width:430px;
   background:#fff;
-  margin:16px;
-  border-radius:18px;
-  box-shadow:0 12px 35px rgba(0,0,0,.15);
+  margin:14px;
+  border-radius:20px;
+  box-shadow:0 15px 40px rgba(0,0,0,.15);
   overflow:hidden;
 }
 
 .header{
-  background:linear-gradient(135deg,#3498db,#2c3e50);
-  color:#fff;
+  background:linear-gradient(135deg,#1e88e5,#0d47a1);
+  padding:34px 20px 60px;
   text-align:center;
-  padding:30px 20px 50px;
+  color:#fff;
   position:relative;
 }
 
 .header img{
-  width:100px;
-  height:100px;
+  width:108px;
+  height:108px;
   border-radius:50%;
   object-fit:cover;
   border:4px solid #fff;
   position:absolute;
   left:50%;
-  bottom:-50px;
+  bottom:-54px;
   transform:translateX(-50%);
   background:#fff;
 }
 
 .content{
-  padding:70px 20px 20px;
+  padding:72px 22px 22px;
 }
 
 h2{
   margin:0;
   text-align:center;
-  color:var(--primary);
+  color:var(--dark);
+  font-size:22px;
 }
 
 h4{
-  margin:4px 0 16px;
+  margin:6px 0 18px;
   text-align:center;
-  color:#666;
+  color:var(--muted);
   font-weight:500;
+  font-size:14px;
 }
 
 .section{
   margin-bottom:16px;
   font-size:14px;
-  color:#333;
+  color:#374151;
 }
 
 .section strong{
   display:block;
   margin-bottom:4px;
+  font-size:13px;
   color:var(--primary);
 }
 
@@ -88,26 +94,31 @@ h4{
   display:grid;
   grid-template-columns:repeat(2,1fr);
   gap:10px;
-  margin-top:20px;
+  margin-top:22px;
 }
 
-.actions a, .actions button{
-  text-decoration:none;
-  background:var(--secondary);
+.actions a,
+.actions button{
+  background:var(--primary);
   color:#fff;
-  padding:10px;
-  border-radius:8px;
-  text-align:center;
+  text-decoration:none;
+  padding:11px;
+  border-radius:10px;
   font-size:14px;
+  text-align:center;
   border:none;
   cursor:pointer;
+}
+
+.actions a.secondary{
+  background:#374151;
 }
 
 .footer{
   text-align:center;
   font-size:12px;
-  color:#777;
-  padding:12px;
+  color:#6b7280;
+  padding:14px;
 }
 </style>
 </head>
@@ -116,8 +127,7 @@ h4{
 
 <div class="card">
   <div class="header">
-    <div id="headerName"></div>
-    <img id="profileImg" style="display:none;">
+    <img id="profileImg" style="display:none">
   </div>
 
   <div class="content">
@@ -151,51 +161,45 @@ h4{
   </div>
 
   <div class="footer">
-    Digital Visiting Card
+    Smart Digital Visiting Card
   </div>
 </div>
 
 <script>
-// Read URL data
 const q = new URLSearchParams(location.search);
+const val = k => q.get(k) || "";
 
-const data = Object.fromEntries(q.entries());
+name.textContent         = val("name");
+businessName.textContent = val("businessName");
+businessInfo.textContent = val("businessInfo");
+address.textContent      = val("address");
+phone.textContent        = val("phone");
+email.textContent        = val("email");
 
-// Fill data
-name.innerText = data.name || "";
-businessName.innerText = data.businessName || "";
-businessInfo.innerText = data.businessInfo || "";
-address.innerText = data.address || "";
-phone.innerText = data.phone || "";
-email.innerText = data.email || "";
-
-if(data.profileImage){
-  profileImg.src = data.profileImage;
+if(val("profileImage")){
+  profileImg.src = val("profileImage");
   profileImg.style.display="block";
 }
 
-// Action buttons
-callBtn.href = "tel:" + (data.phone || "");
-whatsappBtn.href = "https://wa.me/" + (data.phone || "").replace("+","");
+callBtn.href     = "tel:" + val("phone");
+whatsappBtn.href = "https://wa.me/" + val("phone").replace("+","");
 
-if(data.facebook) fbBtn.href = data.facebook; else fbBtn.style.display="none";
-if(data.instagram) igBtn.href = data.instagram; else igBtn.style.display="none";
-if(data.youtube) ytBtn.href = data.youtube; else ytBtn.style.display="none";
+val("facebook")  ? fbBtn.href = val("facebook")   : fbBtn.style.display="none";
+val("instagram") ? igBtn.href = val("instagram")  : igBtn.style.display="none";
+val("youtube")   ? ytBtn.href = val("youtube")    : ytBtn.style.display="none";
 
-// Share API
 function shareCard(){
   if(navigator.share){
     navigator.share({
       title: document.title,
-      text: data.name + " - Digital Visiting Card",
+      text: name.textContent + " – Digital Visiting Card",
       url: location.href
     });
   }else{
-    alert("Share not supported on this browser");
+    alert("Share not supported");
   }
 }
 
-// Service Worker
 if("serviceWorker" in navigator){
   navigator.serviceWorker.register("service-worker.js");
 }
