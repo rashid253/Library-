@@ -1,158 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Business Card Generator</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-  <style>
-    :root {
-      --primary-color: #2C3E50;
-      --secondary-color: #3498DB;
-      --accent-color: #E74C3E;
-      --neutral-light: rgba(236, 240, 241, 0.9);
-      --neutral-dark: #34495E;
-    }
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      margin: 0;
-      padding: 1rem;
-      background: linear-gradient(135deg, #e9ecef, #f0f4f8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-    .form-container {
-      width: 100%;
-      max-width: 450px;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-      padding: 1.5rem;
-    }
-    .image-upload-group {
-      text-align: center;
-      border: 2px dashed #ccc;
-      padding: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    #profileImage { display: none; }
-    #imagePreview {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      object-fit: cover;
-      display: none;
-      margin: auto;
-    }
-    #generateCard {
-      background: #3498DB;
-      color: white;
-      width: 100%;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Business Card Generator</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+body { font-family: Arial, sans-serif; background:#f4f4f4; padding:20px }
+.form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:15px }
+.input-group label { font-weight:bold }
+.input-group input, textarea, select { width:100%; padding:8px }
+.image-upload-group { text-align:center; border:2px dashed #ccc; padding:20px }
+.image-upload-group label { cursor:pointer }
+#imagePreview { max-width:120px; margin-top:10px; display:none; border-radius:50% }
+button { margin-top:20px; padding:12px 20px; font-size:16px }
+</style>
 </head>
+
 <body>
 
-<div class="form-container">
-  <div class="image-upload-group">
-    <label for="profileImage">
-      <i class="fas fa-camera fa-2x"></i>
-      <p>Upload Profile Photo</p>
-    </label>
-    <input type="file" id="profileImage" accept="image/*" onchange="previewImage(event)" />
-    <img id="imagePreview" />
-  </div>
+<h2>Business Card Generator</h2>
 
-  <input id="name" placeholder="Name" /><br><br>
-  <input id="businessName" placeholder="Business Name" /><br><br>
-  <textarea id="businessInfo" placeholder="Business Info"></textarea><br><br>
-  <input id="address" placeholder="Address" /><br><br>
-  <input id="phone" placeholder="Phone" /><br><br>
-  <input id="email" placeholder="Email" /><br><br>
+<div class="form-grid">
 
-  <button id="generateCard">Generate Card</button>
+<div class="image-upload-group">
+  <label for="profileImage">
+    <i class="fas fa-camera fa-2x"></i>
+    <p>Upload Profile Photo</p>
+  </label>
+  <input type="file" id="profileImage" accept="image/*" onchange="previewImage(event)">
+  <img id="imagePreview" alt="Profile Preview">
 </div>
 
-<script>
-function previewImage(event) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = document.getElementById("imagePreview");
-    img.src = e.target.result;
-    img.style.display = "block";
-  };
-  reader.readAsDataURL(event.target.files[0]);
-}
+<div class="input-group">
+  <label for="name">Full Name *</label>
+  <input type="text" id="name" required>
+</div>
 
-function resizeImage(file, callback) {
-  const img = new Image();
+<div class="input-group">
+  <label for="businessName">Business Name *</label>
+  <input type="text" id="businessName" required>
+</div>
+
+<div class="input-group">
+  <label for="businessInfo">Business Info *</label>
+  <textarea id="businessInfo" rows="6" required></textarea>
+</div>
+
+<div class="input-group">
+  <label for="address">Business Address *</label>
+  <input type="text" id="address" required>
+</div>
+
+<div class="input-group">
+  <label for="phone">Phone *</label>
+  <input type="tel" id="phone" required>
+</div>
+
+<div class="input-group">
+  <label for="email">Email *</label>
+  <input type="email" id="email" required>
+</div>
+
+<div class="input-group">
+  <label for="facebook">Facebook URL</label>
+  <input type="url" id="facebook">
+</div>
+
+<div class="input-group">
+  <label for="instagram">Instagram URL</label>
+  <input type="url" id="instagram">
+</div>
+
+<div class="input-group">
+  <label for="youtube">YouTube URL</label>
+  <input type="url" id="youtube">
+</div>
+
+</div>
+
+<button id="generateCard">Generate Card</button>
+
+<script>
+const IMGBB_API_KEY = "0e27b30b17540e8703573c566f278f26";
+let uploadedImageURL = "";
+
+function previewImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
   const reader = new FileReader();
-  reader.onload = e => {
-    img.src = e.target.result;
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = 150;
-      canvas.height = 150;
-      canvas.getContext("2d").drawImage(img, 0, 0, 150, 150);
-      canvas.toBlob(blob => callback(blob), "image/jpeg", 0.4);
-    };
+  reader.onload = function(e) {
+    document.getElementById("imagePreview").src = e.target.result;
+    document.getElementById("imagePreview").style.display = "block";
+    uploadToImgBB(e.target.result.split(',')[1]);
   };
   reader.readAsDataURL(file);
 }
 
-document.getElementById("generateCard").onclick = function () {
-  const formData = {
-    name: name.value,
-    businessName: businessName.value,
-    businessInfo: businessInfo.value,
-    address: address.value,
-    phone: phone.value,
-    email: email.value,
-    profileImage: profileImage.files[0]
-  };
+function uploadToImgBB(base64Image) {
+  const formData = new FormData();
+  formData.append("key", IMGBB_API_KEY);
+  formData.append("image", base64Image);
 
-  if (formData.profileImage) {
-    resizeImage(formData.profileImage, blob => {
-      const reader = new FileReader();
-      reader.onload = e => {
-        const base64 = e.target.result.split(",")[1];
-        uploadImageToImgBB(base64, formData);
-      };
-      reader.readAsDataURL(blob);
-    });
-  } else {
-    redirectToCard(formData);
-  }
-};
-
-function uploadImageToImgBB(base64Image, formData) {
-  const apiKey = "0e27b30b17540e8703573c566f278f26";
-  const form = new FormData();
-  form.append("image", base64Image);
-
-  fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+  fetch("https://api.imgbb.com/1/upload", {
     method: "POST",
-    body: form
+    body: formData
   })
   .then(res => res.json())
   .then(data => {
-    formData.profileImage = data.data.url;
-    redirectToCard(formData);
+    if (data.success) {
+      uploadedImageURL = data.data.url;
+      console.log("Image uploaded:", uploadedImageURL);
+    } else {
+      alert("Image upload failed");
+    }
   })
-  .catch(() => alert("Image upload failed"));
+  .catch(() => alert("Upload error"));
 }
 
-function redirectToCard(data) {
-  const p = new URLSearchParams(data);
-  location.href = "card.html?" + p.toString();
-}
+document.getElementById("generateCard").addEventListener("click", () => {
+  if (!uploadedImageURL) {
+    alert("Please upload image first");
+    return;
+  }
+
+  alert("Card generated successfully\nImage URL:\n" + uploadedImageURL);
+});
 </script>
 
 </body>
