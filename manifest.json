@@ -1,8 +1,8 @@
 {
-  "name": "Shopping Card",
-  "short_name": "ShopCard",
-  "description": "Shopping Business Card",
-  "start_url": "./card.html",
+  "name": "Smart Business Card",
+  "short_name": "BizCard",
+  "description": "Digital Business Card PWA",
+  "start_url": "https://rashid253.github.io/Library-/",
   "display": "standalone",
   "background_color": "#ff6b6b",
   "theme_color": "#ff6b6b",
