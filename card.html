@@ -3,17 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    
+    <!-- PWA Meta Tags - ADD THESE LINES -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#1e90ff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BizCard">
+    
     <title>Business Card</title>
     <!-- Font Awesome for icons -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
       rel="stylesheet"
     />
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#ff6b6b">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
       :root {
         --primary-color: #1e1e1e;
@@ -324,6 +330,28 @@
         transform: translateY(-2px);
         box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
       }
+      
+      /* PWA Install Button - ADD THIS CSS */
+      .pwa-install-btn {
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        background: #25d366;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 24px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        display: none;
+        z-index: 1000;
+        font-weight: bold;
+      }
+      .pwa-install-btn i {
+        margin-right: 8px;
+      }
+      
       /* Floating Feedback Button (fixed) */
       .floating-btn {
         position: fixed;
@@ -454,10 +482,6 @@
         }
         .contact-info {
           white-space: normal;
-        }
-        #floatingChatBtn {
-          right: 10px;
-          top: 10px;
         }
       }
     </style>
@@ -591,6 +615,12 @@
         <i class="fas fa-comments"></i>
       </button>
     </div>
+    
+    <!-- PWA Install Button - ADD THIS HTML -->
+    <button id="pwaInstallBtn" class="pwa-install-btn">
+      <i class="fas fa-download"></i> Install App
+    </button>
+    
     <!-- Floating Feedback Button (fixed) -->
     <button class="floating-btn feedback" title="Feedback" onclick="window.location.href='mailto:rashidncit@gmail.com?subject=Feedback on Business Card'">
       <i class="fas fa-comment-dots"></i>
@@ -609,6 +639,47 @@
     </div>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
+        
+        /* ========== PWA INSTALLATION CODE - ADD THIS SECTION ========== */
+        let deferredPrompt;
+        const installBtn = document.getElementById('pwaInstallBtn');
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          deferredPrompt = e;
+          installBtn.style.display = 'block';
+        });
+        
+        installBtn.addEventListener('click', async () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+              installBtn.style.display = 'none';
+              alert('App installed successfully! Check your home screen.');
+            }
+            deferredPrompt = null;
+          }
+        });
+        
+        window.addEventListener('appinstalled', () => {
+          installBtn.style.display = 'none';
+        });
+        
+        // Check if already installed
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+          installBtn.style.display = 'none';
+        }
+        
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('sw.js')
+            .then(() => console.log('Service Worker Registered'))
+            .catch(err => console.log('Service Worker Error:', err));
+        }
+        
+        /* ========== EXISTING CODE CONTINUES ========== */
+        
         // Variables for settings
         let selectedTheme = "default";
         let selectedMood = "day";
@@ -618,40 +689,14 @@
         
         /* -------------------- Populate Card Info -------------------- */
         const profileImage = params.get("profileImage") || "";
+        document.getElementById("cardProfileImage").src = profileImage;
+        document.getElementById("cardName").textContent = params.get("name") || "";
+        document.getElementById("cardBusinessName").textContent = params.get("businessName") || "";
+        document.getElementById("cardAddress").textContent = params.get("address") || "";
+        document.getElementById("cardPhone").textContent = params.get("phone") || "";
+        document.getElementById("cardEmail").textContent = params.get("email") || "";
         
-        // Fix image URL for PWA - decode and ensure it's valid
-        let imageUrl = "";
-        if (profileImage) {
-          try {
-            // Decode the URL
-            const decodedUrl = decodeURIComponent(profileImage);
-            imageUrl = decodedUrl;
-            
-            // Check if it's a valid URL
-            if (!decodedUrl.startsWith('http') && !decodedUrl.startsWith('data:')) {
-              // If it's a relative path, make it absolute
-              imageUrl = new URL(decodedUrl, window.location.origin).href;
-            }
-          } catch (e) {
-            console.error("Error processing image URL:", e);
-            imageUrl = profileImage; // Fallback to original
-          }
-        }
-        
-        document.getElementById("cardProfileImage").src = imageUrl;
-        document.getElementById("cardProfileImage").onerror = function() {
-          // If image fails to load, show a placeholder
-          this.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23e0e0e0'/%3E%3Ctext x='50' y='55' text-anchor='middle' font-family='Arial' font-size='30' fill='%23777'%3E👤%3C/text%3E%3C/svg%3E";
-        };
-        
-        // Decode other parameters
-        document.getElementById("cardName").textContent = decodeURIComponent(params.get("name") || "");
-        document.getElementById("cardBusinessName").textContent = decodeURIComponent(params.get("businessName") || "");
-        document.getElementById("cardAddress").textContent = decodeURIComponent(params.get("address") || "");
-        document.getElementById("cardPhone").textContent = decodeURIComponent(params.get("phone") || "");
-        document.getElementById("cardEmail").textContent = decodeURIComponent(params.get("email") || "");
-        
-        const businessInfo = decodeURIComponent(params.get("businessInfo") || "");
+        const businessInfo = params.get("businessInfo") || "";
         const paragraphs = businessInfo.split("\n").filter((p) => p.trim() !== "");
         const businessInfoContainer = document.getElementById("businessInfoContent");
         businessInfoContainer.innerHTML = paragraphs
@@ -677,68 +722,40 @@
           youtube: document.getElementById("youtubeButton"),
         };
         Object.entries(socialLinks).forEach(([platform, element]) => {
-          const urlParam = params.get(platform);
-          if (urlParam && urlParam.trim() !== "") {
-            try {
-              const decodedUrl = decodeURIComponent(urlParam);
-              element.href = decodedUrl;
-              element.style.visibility = "visible";
-              element.target = "_blank";
-              // Add click handler for PWA compatibility
-              element.onclick = function(e) {
-                e.preventDefault();
-                window.open(decodedUrl, '_blank', 'noopener,noreferrer');
-              };
-            } catch (e) {
-              console.error("Error processing", platform, "URL:", e);
-              element.style.visibility = "hidden";
-            }
+          const url = params.get(platform);
+          if (url) {
+            element.href = url;
+            element.style.visibility = "visible";
+            element.target = "_blank";
           } else {
             element.style.visibility = "hidden";
           }
         });
         
         /* -------------------- Mini Icons -------------------- */
-        const phoneParam = decodeURIComponent(params.get("phone") || "");
-        const emailParam = decodeURIComponent(params.get("email") || "");
-        const addressParam = decodeURIComponent(params.get("address") || "");
-        
-        // Mini Call Button
+        const phoneParam = params.get("phone") || "";
+        const emailParam = params.get("email") || "";
+        const addressParam = params.get("address") || "";
         document.getElementById("miniCallButton").onclick = () => {
-          if (phoneParam) {
-            window.location.href = `tel:${phoneParam}`;
-          }
+          if (phoneParam) window.location.href = `tel:${phoneParam}`;
         };
-        
-        // Mini Email Button
         document.getElementById("miniEmailButton").onclick = () => {
-          if (emailParam) {
-            window.location.href = `mailto:${emailParam}`;
-          }
+          if (emailParam) window.location.href = `mailto:${emailParam}`;
         };
-        
-        // Mini WhatsApp Button
         document.getElementById("miniWhatsappButton").onclick = () => {
-          if (phoneParam) {
-            // Clean phone number (remove + and spaces)
-            const cleanPhone = phoneParam.replace(/\D/g, '');
-            const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent("I am contacting by smart link visiting card")}`;
-            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-          }
+          if (phoneParam)
+            window.location.href = `https://wa.me/${phoneParam}?text=${encodeURIComponent("I am contacting by smart link visiting card")}`;
         };
-        
-        // Mini Map Button
         document.getElementById("miniMapButton").onclick = () => {
           if (addressParam) {
             const encodedAddr = encodeURIComponent(addressParam);
-            const mapsUrl = `https://www.google.com/maps?q=${encodedAddr}`;
-            window.open(mapsUrl, "_blank", 'noopener,noreferrer');
+            window.open(`https://www.google.com/maps?q=${encodedAddr}`, "_blank");
           }
         };
         
         /* -------------------- Connect (vCard) -------------------- */
         document.getElementById("connectButton").onclick = () => {
-          const name = decodeURIComponent(params.get("name") || "Contact");
+          const name = params.get("name") || "Contact";
           const vCardContent =
             "BEGIN:VCARD\r\nVERSION:3.0\r\n" +
             `N:;${name};;;\r\nFN:${name}\r\n` +
@@ -749,10 +766,8 @@
           const url = URL.createObjectURL(blob);
           const link = document.createElement("a");
           link.href = url;
-          link.download = `${name.replace(/\s+/g, '_')}.vcf`;
-          document.body.appendChild(link);
+          link.download = `${name}.vcf`;
           link.click();
-          document.body.removeChild(link);
           URL.revokeObjectURL(url);
         };
         
@@ -760,83 +775,39 @@
         const callButton = document.getElementById("callButton");
         const whatsappButton = document.getElementById("whatsappButton");
         const emailButton = document.getElementById("emailButton");
-        
-        // Call Button
         if (phoneParam) {
-          callButton.onclick = function(e) {
-            e.preventDefault();
-            window.location.href = `tel:${phoneParam}`;
-          };
           callButton.href = `tel:${phoneParam}`;
+          whatsappButton.href = `https://wa.me/${phoneParam}?text=${encodeURIComponent("I am contacting by smart link visiting card")}`;
         } else {
-          callButton.style.opacity = "0.5";
-          callButton.style.cursor = "not-allowed";
-          callButton.onclick = function(e) {
-            e.preventDefault();
-            alert("Phone number not available");
-          };
+          callButton.removeAttribute("href");
+          whatsappButton.removeAttribute("href");
         }
-        
-        // WhatsApp Button
-        if (phoneParam) {
-          const cleanPhone = phoneParam.replace(/\D/g, '');
-          const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent("I am contacting by smart link visiting card")}`;
-          
-          whatsappButton.onclick = function(e) {
-            e.preventDefault();
-            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-          };
-          whatsappButton.href = whatsappUrl;
-        } else {
-          whatsappButton.style.opacity = "0.5";
-          whatsappButton.style.cursor = "not-allowed";
-          whatsappButton.onclick = function(e) {
-            e.preventDefault();
-            alert("Phone number not available for WhatsApp");
-          };
-        }
-        
-        // Email Button
         if (emailParam) {
-          emailButton.onclick = function(e) {
-            e.preventDefault();
-            window.location.href = `mailto:${emailParam}`;
-          };
           emailButton.href = `mailto:${emailParam}`;
         } else {
-          emailButton.style.opacity = "0.5";
-          emailButton.style.cursor = "not-allowed";
-          emailButton.onclick = function(e) {
-            e.preventDefault();
-            alert("Email address not available");
-          };
+          emailButton.removeAttribute("href");
         }
+        callButton.addEventListener("click", function (e) {
+          e.preventDefault();
+          setTimeout(() => {
+            window.location.href = callButton.href;
+          }, 100);
+        });
         
         /* -------------------- Share Icon -------------------- */
         document.getElementById("topShareIcon").onclick = async () => {
           try {
-            const shareData = {
-              title: decodeURIComponent(params.get("name") || "My Business Card"),
-              text: "Check out this business card",
-              url: window.location.href,
-            };
-            
-            if (navigator.share && navigator.canShare(shareData)) {
-              await navigator.share(shareData);
+            if (navigator.share) {
+              await navigator.share({
+                title: params.get("name") || "My Business Card",
+                text: "Check out this business card",
+                url: window.location.href,
+              });
             } else {
-              // Fallback: Copy to clipboard
-              await navigator.clipboard.writeText(window.location.href);
-              alert("Link copied to clipboard!");
+              alert("Sharing is not supported on this browser.");
             }
           } catch (err) {
             console.error("Error sharing:", err);
-            // Try copy as fallback
-            try {
-              await navigator.clipboard.writeText(window.location.href);
-              alert("Link copied to clipboard!");
-            } catch (copyErr) {
-              alert("Sharing failed. Please copy the URL manually.");
-            }
           }
         };
         
@@ -853,7 +824,7 @@
             styleDropdown.style.display = "none";
           }
         });
-        // Toggle each group's content on header click
+        // Toggle each group’s content on header click
         document.querySelectorAll(".setting-header").forEach((header) => {
           header.addEventListener("click", () => {
             const content = header.nextElementSibling;
@@ -960,7 +931,7 @@
               el.style.backgroundColor = "rgba(233,30,99,0.2)";
             });
           } else {
-            // "none" - revert to CSS defaults
+            // "none" – revert to CSS defaults
             document.querySelectorAll(".icon").forEach((el) => {
               el.style.borderRadius = "";
               el.style.backgroundColor = "";
@@ -1040,52 +1011,7 @@
             chatModal.style.display = "none";
           }
         });
-        
-      }); // End of DOMContentLoaded
-      
-      // ========== SERVICE WORKER REGISTRATION ==========
-      // Register service worker for PWA (outside DOMContentLoaded to ensure it runs)
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          // Try different paths for service worker
-          const swPaths = [
-            './sw.js',
-            'sw.js',
-            '/Library-/sw.js'
-          ];
-          
-          let registrationAttempts = 0;
-          
-          function tryRegister(pathIndex) {
-            if (pathIndex >= swPaths.length) {
-              console.log('All service worker registration attempts failed');
-              return;
-            }
-            
-            navigator.serviceWorker.register(swPaths[pathIndex])
-              .then(function(registration) {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                
-                // Check if we're in PWA mode
-                if (window.matchMedia('(display-mode: standalone)').matches) {
-                  console.log('Running in standalone PWA mode');
-                }
-              })
-              .catch(function(error) {
-                console.log('ServiceWorker registration failed for path ' + swPaths[pathIndex] + ': ', error);
-                // Try next path
-                tryRegister(pathIndex + 1);
-              });
-          }
-          
-          // Start with first path
-          tryRegister(0);
-        });
-      } else {
-        console.log('Service workers are not supported in this browser.');
-      }
-      // ========== END SERVICE WORKER ==========
-      
+      });
     </script>
   </body>
 </html>
