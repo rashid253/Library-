@@ -203,7 +203,49 @@ function shareCard(){
 if("serviceWorker" in navigator){
   navigator.serviceWorker.register("service-worker.js");
 }
-</script>
 
+/* ===== LOCK CARD VIEW FOR CUSTOMER (PWA SAFE) ===== */
+
+// Prevent going back to generator
+history.pushState(null, "", location.href);
+
+window.addEventListener("popstate", function () {
+  history.pushState(null, "", location.href);
+});
+
+/* ===== DATA FROM INDEX.HTML ===== */
+const q = new URLSearchParams(location.search);
+const val = k => q.get(k) || "";
+
+name.textContent         = val("name");
+businessName.textContent = val("businessName");
+businessInfo.textContent = val("businessInfo");
+address.textContent      = val("address");
+phone.textContent        = val("phone");
+email.textContent        = val("email");
+
+if(val("profileImage")){
+  profileImg.src = val("profileImage");
+  profileImg.style.display = "block";
+}
+
+callBtn.href     = "tel:" + val("phone");
+whatsappBtn.href = "https://wa.me/" + val("phone").replace("+","");
+
+val("facebook")  ? fbBtn.href = val("facebook")  : fbBtn.style.display="none";
+val("instagram") ? igBtn.href = val("instagram") : igBtn.style.display="none";
+val("youtube")   ? ytBtn.href = val("youtube")   : ytBtn.style.display="none";
+
+/* ===== SHARE ===== */
+function shareCard(){
+  if(navigator.share){
+    navigator.share({
+      title: document.title,
+      text: name.textContent + " – Digital Visiting Card",
+      url: location.href
+    });
+  }
+}
+</script>
 </body>
 </html>
