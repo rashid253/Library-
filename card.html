@@ -1,523 +1,1091 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Business Card Generator</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#ff6b6b">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <style>
-    :root {
-      --primary-color: #2C3E50;    /* Professional Navy */
-      --secondary-color: #3498DB;  /* Trust Blue */
-      --accent-color: #E74C3E;     /* Alert Red */
-      --neutral-light: rgba(236, 240, 241, 0.9); /* Light Gray with transparency */
-      --neutral-dark: #34495E;     /* Dark Gray */
-    }
-
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      margin: 0;
-      padding: 1rem;
-      background: linear-gradient(135deg, #e9ecef, #f0f4f8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    .form-container {
-      width: 100%;
-      max-width: 450px;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-      padding: 1.5rem;
-      margin: 1rem;
-    }
-
-    .form-header {
-      color: var(--primary-color);
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-    }
-
-    .input-group label {
-      font-weight: 600;
-      color: var(--neutral-dark);
-    }
-
-    .input-group .required {
-      color: var(--accent-color);
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 0.7rem;
-      border: 1px solid var(--neutral-light);
-      border-radius: 6px;
-      font-size: 0.9rem;
-      transition: border-color 0.2s ease;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--secondary-color);
-      outline: none;
-    }
-
-    textarea {
-      resize: vertical;
-    }
-
-    .error {
-      border: 2px solid var(--accent-color);
-    }
-
-    /* Phone group styling with country code on LHS */
-    .phone-group {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .phone-group .country-code {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      flex: 0 0 90px; /* Fixed width for country code */
-    }
-    .phone-group .country-code select {
-      width: 100%;
-      padding: 0.5rem;
-    }
-    .phone-group input {
-      flex: 1;
-    }
-    .country-code img {
-      width: 20px;
-      height: 15px;
-    }
-
-    .image-upload-group {
-      grid-column: 1 / -1;
-      text-align: center;
-      border: 2px dashed var(--neutral-light);
-      padding: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      position: relative;
-    }
-
-    #profileImage {
-      display: none;
-    }
-
-    #imagePreview {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin: 0.5rem auto;
-      display: none;
-    }
-
-    #generateCard {
-      background: var(--secondary-color);
-      color: white;
-      width: 100%;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background-color 0.3s ease;
-    }
-
-    #generateCard:hover {
-      background: #2980b9;
-    }
-
-    @media (max-width: 480px) {
-      .form-container {
-        max-width: 90%;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Business Card</title>
+    <!-- Font Awesome for icons -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#ff6b6b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+      :root {
+        --primary-color: #1e1e1e;
+        --secondary-color: #1e90ff;
+        --accent-color: #ff5722;
+        --neutral-light: rgba(245,245,245,0.9);
+        --neutral-dark: #333333;
+        --card-background: #ffffff;
+        --body-bg: linear-gradient(135deg, #cfd8dc, #eceff1);
+        --business-info-bg: #e0f7fa;
+        /* For dropdown header text, use dark color */
+        --dropdown-header-color: #333;
+        --dropdown-btn-bg: #00796b;
+        --dropdown-btn-hover: #00695c;
+      }
+      body {
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;
+        padding: 1rem;
+        background: var(--body-bg);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        position: relative;
+      }
+      /* Card Container with rounded corners */
+      .card-container {
+        position: relative;
+        width: 400px;
+        max-width: 400px;
+        background: var(--card-background);
+        border-radius: 20px;
+        border: 2px solid transparent;
+        border-image: linear-gradient(45deg, var(--secondary-color), var(--accent-color), #3f51b5) 1;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        padding: 1.5rem;
+        margin: 1rem;
+        transition: background-color 0.5s ease, box-shadow 0.5s ease;
+      }
+      /* Top Left Settings Icon (remains in place) */
+      #styleControlsContainer {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 10;
+      }
+      #styleButton {
+        padding: 0.5rem;
+        font-size: 1.2rem;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: blue;
+      }
+      #styleButton:hover {
+        color: var(--secondary-color);
+      }
+      /* Top Right Share Icon */
+      .top-icons {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 10;
+      }
+      .top-share-icon {
+        padding: 0.5rem;
+        font-size: 1.2rem;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: blue;
+      }
+      .top-share-icon:hover {
+        color: var(--secondary-color);
+      }
+      /* Settings Dropdown Panel (narrow and partly outside the card) */
+      #styleDropdown {
+        display: none;
+        position: absolute;
+        top: 110%;
+        left: -20px; /* About half inside, half outside */
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        z-index: 10;
+        font-size: 0.75rem;
+        width: 100px; /* Reduced width */
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      }
+      /* Each Settings Group */
+      .setting-group {
+        border-bottom: 1px solid #ddd;
+      }
+      .setting-group:last-child {
+        border-bottom: none;
+      }
+      /* 3D Effect for Group Headers ("Theme", "Mood", "Style") */
+      .setting-header {
+        background: linear-gradient(to bottom, #f8f8f8, #dcdcdc);
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        color: var(--dropdown-header-color);
+        padding: 5px 8px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        margin: 3px 0;
+      }
+      .setting-header:hover {
+        box-shadow: 3px 3px 7px rgba(0,0,0,0.4);
+        transform: translateY(-1px);
+      }
+      /* Content inside each group */
+      .setting-content {
+        display: none;
+        padding: 5px;
+      }
+      .setting-options {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .setting-options li {
+        padding: 0.3rem 0.5rem;
+        cursor: pointer;
+        transition: background 0.3s;
+        color: #333;
+      }
+      .setting-options li:hover {
+        background: var(--secondary-color);
+        color: #fff;
+      }
+      /* Buttons inside each group (stacked vertically) */
+      .dropdown-btns {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-top: 5px;
+      }
+      .dropdown-btns button {
+        padding: 0.3rem;
+        border: none;
+        background: var(--dropdown-btn-bg);
+        color: #fff;
+        cursor: pointer;
+        font-size: 0.75rem;
+        transition: box-shadow 0.3s ease;
+      }
+      .dropdown-btns button:hover {
+        background: var(--dropdown-btn-hover);
+        box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+      }
+      /* Mini Icons (Call, Email, WhatsApp, Map) */
+      .mini-icons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-bottom: 2px solid var(--secondary-color);
+      }
+      .mini-icons .icon {
+        font-size: 1.5rem;
+        color: var(--neutral-dark);
+        cursor: pointer;
+        border-radius: 50%;
+        padding: 0.5rem;
+        background: rgba(255,255,255,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      .mini-icons .icon:hover {
+        color: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      }
+      /* Profile Section */
+      .profile-section {
+        display: flex;
+        padding: 1rem;
+        margin: 0.5rem;
+        border-bottom: 2px solid var(--secondary-color);
+      }
+      .profile-image-container {
+        width: 40%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-right: 1rem;
+      }
+      .profile-image {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        border: 2px solid var(--neutral-light);
+        object-fit: cover;
+        transition: box-shadow 0.3s ease;
+      }
+      .profile-image:hover {
+        box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+      }
+      .profile-name {
+        color: var(--primary-color);
+        margin: 0.5rem 0 0;
+        font-size: 1.1rem;
+        text-align: center;
+      }
+      .profile-info {
+        width: 60%;
+        padding-left: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .contact-info {
+        color: var(--neutral-dark);
+        margin: 0.3rem 0;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        white-space: nowrap;
+      }
+      .connect-btn {
+        align-self: flex-end;
+        font-size: 1.2rem;
+        color: var(--secondary-color);
+        cursor: pointer;
+        transition: transform 0.3s;
+      }
+      .connect-btn:hover {
+        transform: scale(1.1);
+        color: var(--accent-color);
+      }
+      /* Business Info Section */
+      .business-info-section {
+        padding: 1rem;
+        margin: 0.5rem;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        height: 150px;
+        overflow: hidden;
+        background: var(--business-info-bg);
+        border-bottom: 2px solid var(--secondary-color);
+        font-family: "Georgia", serif;
+        border-radius: 20px;
+        position: relative;
+      }
+      .business-info-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: none;
+        text-align: center;
+        font-weight: bold;
+        color: var(--neutral-dark);
+        padding: 0.5rem;
+        overflow-y: auto;
+      }
+      /* Action Buttons Section */
+      .action-buttons {
+        display: grid;
+        gap: 0.5rem;
+        padding: 0.8rem;
+      }
+      .action-btn {
+        text-align: center;
+        text-decoration: none;
+        padding: 0.6rem;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        color: #fff;
+        box-shadow: 4px 4px 6px rgba(0,0,0,0.3), inset -2px -2px 4px rgba(255,255,255,0.2);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      }
+      .action-btn:active {
+        filter: brightness(90%);
+      }
+      /* Remove transition for contact buttons */
+      .contact-btn {
+        transition: none !important;
+      }
+      /* Social Links Section */
+      .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
         padding: 1rem;
       }
-    }
-  </style>
-</head>
-<body>
-  <!-- Form Section -->
-  <div class="form-container">
-    <div class="form-header">
-      <h2>Create Business Card</h2>
-      <p>Fill in all required information</p>
-    </div>
-
-    <div class="form-grid">
-      <div class="image-upload-group">
-        <label for="profileImage">
-          <i class="fas fa-camera fa-2x"></i>
-          <p>Upload Profile Photo</p>
-        </label>
-        <input type="file" id="profileImage" accept="image/*" onchange="previewImage(event)" />
-        <img id="imagePreview" alt="Profile Preview" />
-      </div>
-
-      <div class="input-group">
-        <label for="name">Full Name <span class="required">*</span></label>
-        <input type="text" id="name" placeholder="Full Name" required />
-      </div>
-
-      <div class="input-group">
-        <label for="businessName">Business Name <span class="required">*</span></label>
-        <input type="text" id="businessName" placeholder="Business Name" required />
-      </div>
-
-      <div class="input-group">
-        <label for="businessInfo">Business Info <span class="required">*</span></label>
-        <textarea id="businessInfo" placeholder="Enter 3 to 5 paragraphs (Max 150 words each) separated by a new line" rows="6" required></textarea>
-        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
-          <strong>Instructions:</strong> Write 3 to 5 paragraphs. Each paragraph must not exceed 150 words. Separate paragraphs with a new line.
-        </small>
-      </div>
-
-      <div class="input-group">
-        <label for="address">Business Address <span class="required">*</span></label>
-        <input type="text" id="address" placeholder="Business Address" required />
-      </div>
-
-      <div class="input-group">
-        <label for="phone">Phone Number <span class="required">*</span></label>
-        <div class="phone-group">
-          <div class="country-code">
-            <img id="countryFlag" src="" alt="Country Flag" style="display:none;" />
-            <select id="countryCode" required>
-              <option value="" disabled selected>Select Code</option>
-              <option value="+61" data-flag="https://flagcdn.com/au.svg">+61</option>
-              <option value="+86" data-flag="https://flagcdn.com/cn.svg">+86</option>
-              <option value="+33" data-flag="https://flagcdn.com/fr.svg">+33</option>
-              <option value="+49" data-flag="https://flagcdn.com/de.svg">+49</option>
-              <option value="+91" data-flag="https://flagcdn.com/in.svg">+91</option>
-              <option value="+92" data-flag="https://flagcdn.com/pk.svg">+92</option>
-              <option value="+44" data-flag="https://flagcdn.com/gb.svg">+44</option>
-              <option value="+1" data-flag="https://flagcdn.com/us.svg">+1</option>
-            </select>
+      .social-icon {
+        font-size: 1.5rem;
+        color: var(--neutral-dark);
+        visibility: hidden;
+        border-radius: 50%;
+        text-decoration: none;
+        padding: 0.5rem;
+        background: rgba(255,255,255,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      .social-icon:hover {
+        color: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      }
+      /* Floating Feedback Button (fixed) */
+      .floating-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--secondary-color);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        margin-bottom: 10px;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      .floating-btn:hover {
+        background: var(--accent-color);
+        transform: scale(1.1);
+      }
+      /* Floating Live Chat Icon (outside card on right) */
+      #floatingChatBtn {
+        position: absolute;
+        top: 40px; /* Moved a bit lower than before */
+        right: -50px; /* Adjusted so that it overlaps the border slightly */
+        background: var(--secondary-color);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      #floatingChatBtn:hover {
+        background: var(--accent-color);
+        transform: scale(1.1);
+      }
+      /* Live Chat Modal (centered) */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 100;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.3);
+      }
+      .modal-content {
+        position: fixed;
+        width: 300px;
+        background-color: rgba(255,255,255,0.9);
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .modal-content h3 {
+        margin-top: 0;
+      }
+      /* Chat Conversation Area */
+      #chatConversation {
+        max-height: 150px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+      .chat-message {
+        padding: 5px;
+        margin: 5px 0;
+        border-radius: 5px;
+      }
+      .chat-message.customer {
+        background-color: #e0f7fa;
+      }
+      .chat-message.auto-reply {
+        background-color: #f0f0f0;
+      }
+      .modal textarea {
+        width: 100%;
+        height: 60px;
+        margin-bottom: 10px;
+        resize: none;
+        padding: 10px;
+        font-size: 1rem;
+      }
+      .modal button {
+        padding: 10px 20px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .modal .send-btn {
+        background-color: var(--secondary-color);
+        color: #fff;
+      }
+      .modal .cancel-btn {
+        background-color: #ccc;
+        color: #333;
+      }
+      /* Responsive adjustments */
+      @media (max-width: 480px) {
+        .card-container {
+          width: 100%;
+          max-width: 100%;
+          padding: 1rem;
+        }
+        .profile-section {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+        .profile-image-container,
+        .profile-info {
+          width: 100%;
+          padding: 0;
+        }
+        .profile-info {
+          margin-top: 1rem;
+        }
+        .contact-info {
+          white-space: normal;
+        }
+        #floatingChatBtn {
+          right: 10px;
+          top: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Card Container -->
+    <div class="card-container" id="cardContainer">
+      <!-- Top Left Settings Icon -->
+      <div id="styleControlsContainer">
+        <button id="styleButton" title="Settings">
+          <i class="fas fa-cog"></i>
+        </button>
+        <!-- Settings Dropdown Panel -->
+        <div id="styleDropdown">
+          <!-- Group: Theme -->
+          <div class="setting-group" id="themeGroup">
+            <div class="setting-header">Theme</div>
+            <div class="setting-content">
+              <ul class="setting-options">
+                <li data-theme="default">Default</li>
+                <li data-theme="blue">Blue</li>
+                <li data-theme="red">Red</li>
+                <li data-theme="green">Green</li>
+              </ul>
+              <div class="dropdown-btns">
+                <!-- Preview button is disabled so it does nothing -->
+                <button class="preview-btn" data-group="theme">Preview</button>
+                <button class="apply-btn" data-group="theme">Apply</button>
+              </div>
+            </div>
           </div>
-          <input type="tel" id="phone" placeholder="Phone Number" required pattern="^\d{9,15}$" title="Phone number must be 9 to 15 digits without country code." />
+          <!-- Group: Mood -->
+          <div class="setting-group" id="moodGroup">
+            <div class="setting-header">Mood</div>
+            <div class="setting-content">
+              <ul class="setting-options">
+                <li data-mood="day">Day</li>
+                <li data-mood="night">Night</li>
+              </ul>
+              <div class="dropdown-btns">
+                <button class="preview-btn" data-group="mood">Preview</button>
+                <button class="apply-btn" data-group="mood">Apply</button>
+              </div>
+            </div>
+          </div>
+          <!-- Group: Style -->
+          <div class="setting-group" id="iconStyleGroup">
+            <div class="setting-header">Style</div>
+            <div class="setting-content">
+              <ul class="setting-options">
+                <li data-iconstyle="none">None</li>
+                <li data-iconstyle="styleA">Style A</li>
+                <li data-iconstyle="styleB">Style B</li>
+              </ul>
+              <div class="dropdown-btns">
+                <button class="preview-btn" data-group="style">Preview</button>
+                <button class="apply-btn" data-group="style">Apply</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      <div class="input-group">
-        <label for="email">Email Address <span class="required">*</span></label>
-        <input type="email" id="email" placeholder="Email Address" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address." />
+      <!-- Top Right Share Icon -->
+      <div class="top-icons">
+        <button class="top-share-icon" id="topShareIcon" title="Share">
+          <i class="fas fa-share-alt"></i>
+        </button>
       </div>
-
-      <div class="input-group">
-        <label for="facebook">Facebook URL</label>
-        <input type="url" id="facebook" placeholder="Facebook URL" pattern="https?://(www\.)?facebook\.com/.*" title="Please enter a valid Facebook URL." />
+      <!-- Mini Icons -->
+      <div class="mini-icons">
+        <a id="miniCallButton" class="icon" title="Call">
+          <i class="fas fa-phone"></i>
+        </a>
+        <a id="miniEmailButton" class="icon" title="Email">
+          <i class="fas fa-envelope"></i>
+        </a>
+        <a id="miniWhatsappButton" class="icon" title="WhatsApp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+        <a id="miniMapButton" class="icon" title="Open in Google Maps">
+          <i class="fas fa-map-marker-alt"></i>
+        </a>
       </div>
-
-      <div class="input-group">
-        <label for="instagram">Instagram URL</label>
-        <input type="url" id="instagram" placeholder="Instagram URL" pattern="https?://(www\.)?instagram\.com/.*" title="Please enter a valid Instagram URL." />
+      <!-- Profile Section -->
+      <div class="profile-section">
+        <div class="profile-image-container">
+          <img id="cardProfileImage" class="profile-image" alt="Profile" />
+          <h3 class="profile-name" id="cardName"></h3>
+        </div>
+        <div class="profile-info">
+          <p class="contact-info" id="cardBusinessName"></p>
+          <p class="contact-info" id="cardAddress"></p>
+          <p class="contact-info" id="cardPhone"></p>
+          <p class="contact-info" id="cardEmail"></p>
+        </div>
+        <!-- Connect (vCard) Button -->
+        <div class="connect-btn" id="connectButton" title="Save Contact">
+          <i class="fas fa-save"></i>
+        </div>
       </div>
-
-      <div class="input-group">
-        <label for="youtube">YouTube URL</label>
-        <input type="url" id="youtube" placeholder="YouTube URL" pattern="https?://(www\.)?youtube\.com/.*" title="Please enter a valid YouTube URL." />
+      <!-- Business Info Section -->
+      <div class="business-info-section">
+        <div id="businessInfoContent"></div>
+      </div>
+      <!-- Action Buttons Section -->
+      <div class="action-buttons">
+        <a id="callButton" class="action-btn contact-btn" style="background: var(--secondary-color);">
+          Call
+        </a>
+        <a id="whatsappButton" class="action-btn contact-btn" style="background: #25d366;">
+          WhatsApp
+        </a>
+        <a id="emailButton" class="action-btn contact-btn" style="background: var(--accent-color);">
+          Email
+        </a>
+      </div>
+      <!-- Social Links Section -->
+      <div class="social-links">
+        <a id="facebookButton" class="social-icon">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+        <a id="instagramButton" class="social-icon">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a id="youtubeButton" class="social-icon">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+      <!-- Floating Live Chat Icon (outside card on right) -->
+      <button id="floatingChatBtn" title="Chat with us">
+        <i class="fas fa-comments"></i>
+      </button>
+    </div>
+    <!-- Floating Feedback Button (fixed) -->
+    <button class="floating-btn feedback" title="Feedback" onclick="window.location.href='mailto:rashidncit@gmail.com?subject=Feedback on Business Card'">
+      <i class="fas fa-comment-dots"></i>
+    </button>
+    <!-- Live Chat Modal (centered) -->
+    <div id="chatModal" class="modal">
+      <div class="modal-content">
+        <h3>Live Chat</h3>
+        <div id="chatConversation"></div>
+        <textarea id="chatQuery" placeholder="Type your message here..."></textarea>
+        <div>
+          <button class="send-btn" id="sendChat">Send</button>
+          <button class="cancel-btn" id="cancelChat">Close</button>
+        </div>
       </div>
     </div>
-
-    <button id="generateCard">Generate Card</button>
-  </div>
-
-  <script>
-    // Image Preview Function
-    function previewImage(event) {
-      const reader = new FileReader();
-      const preview = document.getElementById('imagePreview');
-      reader.onload = (e) => {
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-      };
-      reader.readAsDataURL(event.target.files[0]);
-    }
-
-    // Update country flag based on selected country code
-    document.getElementById('countryCode').addEventListener('change', function() {
-      const selectedOption = this.options[this.selectedIndex];
-      const flagUrl = selectedOption.getAttribute('data-flag');
-      const countryFlag = document.getElementById('countryFlag');
-      if (flagUrl) {
-        countryFlag.src = flagUrl;
-        countryFlag.style.display = 'inline';
-      }
-    });
-
-    // Resize and compress image for upload (lower resolution & quality)
-    function resizeImage(file, callback) {
-      const img = new Image();
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        img.src = e.target.result;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 150;  // Reduced maximum width
-          const MAX_HEIGHT = 150; // Reduced maximum height
-          let width = img.width;
-          let height = img.height;
-
-          // Calculate new dimensions while preserving aspect ratio
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height = height * (MAX_WIDTH / width);
-              width = MAX_WIDTH;
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Variables for settings
+        let selectedTheme = "default";
+        let selectedMood = "day";
+        let selectedIconStyle = "none";
+        const params = new URLSearchParams(window.location.search);
+        console.log("Current URL:", window.location.href);
+        
+        /* -------------------- Populate Card Info -------------------- */
+        const profileImage = params.get("profileImage") || "";
+        
+        // Fix image URL for PWA - decode and ensure it's valid
+        let imageUrl = "";
+        if (profileImage) {
+          try {
+            // Decode the URL
+            const decodedUrl = decodeURIComponent(profileImage);
+            imageUrl = decodedUrl;
+            
+            // Check if it's a valid URL
+            if (!decodedUrl.startsWith('http') && !decodedUrl.startsWith('data:')) {
+              // If it's a relative path, make it absolute
+              imageUrl = new URL(decodedUrl, window.location.origin).href;
+            }
+          } catch (e) {
+            console.error("Error processing image URL:", e);
+            imageUrl = profileImage; // Fallback to original
+          }
+        }
+        
+        document.getElementById("cardProfileImage").src = imageUrl;
+        document.getElementById("cardProfileImage").onerror = function() {
+          // If image fails to load, show a placeholder
+          this.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23e0e0e0'/%3E%3Ctext x='50' y='55' text-anchor='middle' font-family='Arial' font-size='30' fill='%23777'%3E👤%3C/text%3E%3C/svg%3E";
+        };
+        
+        // Decode other parameters
+        document.getElementById("cardName").textContent = decodeURIComponent(params.get("name") || "");
+        document.getElementById("cardBusinessName").textContent = decodeURIComponent(params.get("businessName") || "");
+        document.getElementById("cardAddress").textContent = decodeURIComponent(params.get("address") || "");
+        document.getElementById("cardPhone").textContent = decodeURIComponent(params.get("phone") || "");
+        document.getElementById("cardEmail").textContent = decodeURIComponent(params.get("email") || "");
+        
+        const businessInfo = decodeURIComponent(params.get("businessInfo") || "");
+        const paragraphs = businessInfo.split("\n").filter((p) => p.trim() !== "");
+        const businessInfoContainer = document.getElementById("businessInfoContent");
+        businessInfoContainer.innerHTML = paragraphs
+          .map((p) => `<div class="business-info-content"><p>${p}</p></div>`)
+          .join("");
+        const paragraphDivs = businessInfoContainer.querySelectorAll(".business-info-content");
+        let currentIndex = 0;
+        paragraphDivs.forEach((div, idx) => {
+          div.style.display = idx === 0 ? "block" : "none";
+        });
+        if (paragraphDivs.length > 0) {
+          setInterval(() => {
+            paragraphDivs[currentIndex].style.display = "none";
+            currentIndex = (currentIndex + 1) % paragraphDivs.length;
+            paragraphDivs[currentIndex].style.display = "block";
+          }, 8000);
+        }
+        
+        /* -------------------- Social Links -------------------- */
+        const socialLinks = {
+          facebook: document.getElementById("facebookButton"),
+          instagram: document.getElementById("instagramButton"),
+          youtube: document.getElementById("youtubeButton"),
+        };
+        Object.entries(socialLinks).forEach(([platform, element]) => {
+          const urlParam = params.get(platform);
+          if (urlParam && urlParam.trim() !== "") {
+            try {
+              const decodedUrl = decodeURIComponent(urlParam);
+              element.href = decodedUrl;
+              element.style.visibility = "visible";
+              element.target = "_blank";
+              // Add click handler for PWA compatibility
+              element.onclick = function(e) {
+                e.preventDefault();
+                window.open(decodedUrl, '_blank', 'noopener,noreferrer');
+              };
+            } catch (e) {
+              console.error("Error processing", platform, "URL:", e);
+              element.style.visibility = "hidden";
             }
           } else {
-            if (height > MAX_HEIGHT) {
-              width = width * (MAX_HEIGHT / height);
-              height = MAX_HEIGHT;
+            element.style.visibility = "hidden";
+          }
+        });
+        
+        /* -------------------- Mini Icons -------------------- */
+        const phoneParam = decodeURIComponent(params.get("phone") || "");
+        const emailParam = decodeURIComponent(params.get("email") || "");
+        const addressParam = decodeURIComponent(params.get("address") || "");
+        
+        // Mini Call Button
+        document.getElementById("miniCallButton").onclick = () => {
+          if (phoneParam) {
+            window.location.href = `tel:${phoneParam}`;
+          }
+        };
+        
+        // Mini Email Button
+        document.getElementById("miniEmailButton").onclick = () => {
+          if (emailParam) {
+            window.location.href = `mailto:${emailParam}`;
+          }
+        };
+        
+        // Mini WhatsApp Button
+        document.getElementById("miniWhatsappButton").onclick = () => {
+          if (phoneParam) {
+            // Clean phone number (remove + and spaces)
+            const cleanPhone = phoneParam.replace(/\D/g, '');
+            const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent("I am contacting by smart link visiting card")}`;
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+          }
+        };
+        
+        // Mini Map Button
+        document.getElementById("miniMapButton").onclick = () => {
+          if (addressParam) {
+            const encodedAddr = encodeURIComponent(addressParam);
+            const mapsUrl = `https://www.google.com/maps?q=${encodedAddr}`;
+            window.open(mapsUrl, "_blank", 'noopener,noreferrer');
+          }
+        };
+        
+        /* -------------------- Connect (vCard) -------------------- */
+        document.getElementById("connectButton").onclick = () => {
+          const name = decodeURIComponent(params.get("name") || "Contact");
+          const vCardContent =
+            "BEGIN:VCARD\r\nVERSION:3.0\r\n" +
+            `N:;${name};;;\r\nFN:${name}\r\n` +
+            `TEL;TYPE=CELL:${phoneParam}\r\n` +
+            `EMAIL;TYPE=INTERNET:${emailParam}\r\n` +
+            `ADR;TYPE=WORK:;;${addressParam};;;;\r\nEND:VCARD\r\n`;
+          const blob = new Blob([vCardContent], { type: "text/vcard" });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `${name.replace(/\s+/g, '_')}.vcf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        };
+        
+        /* -------------------- Action Buttons -------------------- */
+        const callButton = document.getElementById("callButton");
+        const whatsappButton = document.getElementById("whatsappButton");
+        const emailButton = document.getElementById("emailButton");
+        
+        // Call Button
+        if (phoneParam) {
+          callButton.onclick = function(e) {
+            e.preventDefault();
+            window.location.href = `tel:${phoneParam}`;
+          };
+          callButton.href = `tel:${phoneParam}`;
+        } else {
+          callButton.style.opacity = "0.5";
+          callButton.style.cursor = "not-allowed";
+          callButton.onclick = function(e) {
+            e.preventDefault();
+            alert("Phone number not available");
+          };
+        }
+        
+        // WhatsApp Button
+        if (phoneParam) {
+          const cleanPhone = phoneParam.replace(/\D/g, '');
+          const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent("I am contacting by smart link visiting card")}`;
+          
+          whatsappButton.onclick = function(e) {
+            e.preventDefault();
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+          };
+          whatsappButton.href = whatsappUrl;
+        } else {
+          whatsappButton.style.opacity = "0.5";
+          whatsappButton.style.cursor = "not-allowed";
+          whatsappButton.onclick = function(e) {
+            e.preventDefault();
+            alert("Phone number not available for WhatsApp");
+          };
+        }
+        
+        // Email Button
+        if (emailParam) {
+          emailButton.onclick = function(e) {
+            e.preventDefault();
+            window.location.href = `mailto:${emailParam}`;
+          };
+          emailButton.href = `mailto:${emailParam}`;
+        } else {
+          emailButton.style.opacity = "0.5";
+          emailButton.style.cursor = "not-allowed";
+          emailButton.onclick = function(e) {
+            e.preventDefault();
+            alert("Email address not available");
+          };
+        }
+        
+        /* -------------------- Share Icon -------------------- */
+        document.getElementById("topShareIcon").onclick = async () => {
+          try {
+            const shareData = {
+              title: decodeURIComponent(params.get("name") || "My Business Card"),
+              text: "Check out this business card",
+              url: window.location.href,
+            };
+            
+            if (navigator.share && navigator.canShare(shareData)) {
+              await navigator.share(shareData);
+            } else {
+              // Fallback: Copy to clipboard
+              await navigator.clipboard.writeText(window.location.href);
+              alert("Link copied to clipboard!");
+            }
+          } catch (err) {
+            console.error("Error sharing:", err);
+            // Try copy as fallback
+            try {
+              await navigator.clipboard.writeText(window.location.href);
+              alert("Link copied to clipboard!");
+            } catch (copyErr) {
+              alert("Sharing failed. Please copy the URL manually.");
             }
           }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          // Compress to JPEG at 40% quality
-          canvas.toBlob((blob) => {
-            callback(blob);
-          }, 'image/jpeg', 0.4);
         };
-      };
-      reader.readAsDataURL(file);
-    }
-
-    // Validate mandatory and optional fields
-    function validateForm() {
-      let valid = true;
-      // Clear any previous error highlighting
-      const fields = ['name', 'businessName', 'businessInfo', 'address', 'phone', 'email', 'countryCode'];
-      fields.forEach(id => {
-        const elem = document.getElementById(id);
-        if (elem) elem.classList.remove('error');
-      });
-      
-      // Check mandatory fields are not empty
-      for (let id of fields) {
-        const elem = document.getElementById(id);
-        if (elem && !elem.value.trim()) {
-          valid = false;
-          elem.classList.add('error');
-        }
-      }
-      
-      if (!valid) {
-        alert("Please fill all required fields.");
-        return false;
-      }
-      
-      // Validate phone number (digits only, 9 to 15 characters)
-      const phoneValue = document.getElementById('phone').value.trim();
-      if (!/^\d{9,15}$/.test(phoneValue)) {
-        document.getElementById('phone').classList.add('error');
-        alert("Phone number must be 9 to 15 digits.");
-        return false;
-      }
-      
-      // Validate email
-      const emailValue = document.getElementById('email').value.trim();
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailRegex.test(emailValue)) {
-        document.getElementById('email').classList.add('error');
-        alert("Please enter a valid email address.");
-        return false;
-      }
-      
-      // Validate optional social media URLs if provided
-      const facebookValue = document.getElementById('facebook').value.trim();
-      if (facebookValue && !/^https?:\/\/(www\.)?facebook\.com\/.+$/i.test(facebookValue)) {
-        document.getElementById('facebook').classList.add('error');
-        alert("Please enter a valid Facebook URL (should start with http:// or https://).");
-        return false;
-      }
-      
-      const instagramValue = document.getElementById('instagram').value.trim();
-      if (instagramValue && !/^https?:\/\/(www\.)?instagram\.com\/.+$/i.test(instagramValue)) {
-        document.getElementById('instagram').classList.add('error');
-        alert("Please enter a valid Instagram URL (should start with http:// or https://).");
-        return false;
-      }
-      
-      const youtubeValue = document.getElementById('youtube').value.trim();
-      if (youtubeValue && !/^https?:\/\/(www\.)?youtube\.com\/.+$/i.test(youtubeValue)) {
-        document.getElementById('youtube').classList.add('error');
-        alert("Please enter a valid YouTube URL (should start with http:// or https://).");
-        return false;
-      }
-      
-      // Validate business info: 3 to 5 paragraphs, each up to 150 words
-      const businessInfo = document.getElementById('businessInfo').value.trim();
-      const paragraphs = businessInfo.split('\n').filter(p => p.trim() !== '');
-      if (paragraphs.length < 3 || paragraphs.length > 5) {
-        document.getElementById('businessInfo').classList.add('error');
-        alert("Please enter 3 to 5 paragraphs for the business info.");
-        return false;
-      }
-      for (const paragraph of paragraphs) {
-        const words = paragraph.split(/\s+/).filter(word => word.length > 0);
-        if (words.length > 150) {
-          document.getElementById('businessInfo').classList.add('error');
-          alert("Each paragraph must not exceed 150 words. Please review your business info.");
-          return false;
-        }
-      }
-      
-      return true;
-    }
-
-    // Generate Card Function
-    document.getElementById('generateCard').onclick = function () {
-      if (!validateForm()) {
-        return;
-      }
-
-      // Get form values
-      const formData = {
-        name: document.getElementById('name').value.trim(),
-        businessName: document.getElementById('businessName').value.trim(),
-        businessInfo: document.getElementById('businessInfo').value.trim(),
-        address: document.getElementById('address').value.trim(),
-        // Concatenate the selected country code and the phone number
-        phone: document.getElementById('countryCode').value + document.getElementById('phone').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        facebook: document.getElementById('facebook').value.trim(),
-        instagram: document.getElementById('instagram').value.trim(),
-        youtube: document.getElementById('youtube').value.trim(),
-        profileImage: document.getElementById('profileImage').files[0]
-      };
-
-      // If an image was selected, resize and upload it first
-      if (formData.profileImage) {
-        resizeImage(formData.profileImage, (resizedImage) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const base64Image = e.target.result.split(',')[1]; // Get base64 string
-            uploadImageToImgBB(base64Image, formData);
-          };
-          reader.readAsDataURL(resizedImage);
+        
+        /* -------------------- Settings Dropdown Behavior -------------------- */
+        const styleButton = document.getElementById("styleButton");
+        const styleDropdown = document.getElementById("styleDropdown");
+        styleButton.addEventListener("click", (e) => {
+          e.stopPropagation();
+          styleDropdown.style.display =
+            styleDropdown.style.display === "block" ? "none" : "block";
         });
-      } else {
-        redirectToCard(formData);
-      }
-    };
-
-    function uploadImageToImgBB(base64Image, formData) {
-      const apiKey = '0e27b30b17540e8703573c566f278f26'; // ImgBB API Key
-      const formDataImgBB = new FormData();
-      formDataImgBB.append('key', apiKey);
-      formDataImgBB.append('image', base64Image);
-      
-      fetch('https://api.imgbb.com/1/upload', {
-        method: 'POST',
-        body: formDataImgBB
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          formData.profileImage = data.data.url; // Get the ImgBB link
-          redirectToCard(formData);
-        } else {
-          alert('Image upload failed. Please try again.');
+        document.addEventListener("click", (e) => {
+          if (!document.getElementById("styleControlsContainer").contains(e.target)) {
+            styleDropdown.style.display = "none";
+          }
+        });
+        // Toggle each group's content on header click
+        document.querySelectorAll(".setting-header").forEach((header) => {
+          header.addEventListener("click", () => {
+            const content = header.nextElementSibling;
+            content.style.display = content.style.display === "block" ? "none" : "block";
+          });
+        });
+        
+        /* -------------------- Settings Option Selection -------------------- */
+        // For Theme
+        document.querySelectorAll("#themeGroup .setting-options li").forEach((li) => {
+          li.addEventListener("click", () => {
+            selectedTheme = li.getAttribute("data-theme");
+            document.querySelectorAll("#themeGroup .setting-options li").forEach(
+              (el) => (el.style.background = "")
+            );
+            li.style.background = "#ddd";
+          });
+        });
+        // For Mood
+        document.querySelectorAll("#moodGroup .setting-options li").forEach((li) => {
+          li.addEventListener("click", () => {
+            selectedMood = li.getAttribute("data-mood");
+            document.querySelectorAll("#moodGroup .setting-options li").forEach(
+              (el) => (el.style.background = "")
+            );
+            li.style.background = "#ddd";
+          });
+        });
+        // For Icon Style (Style)
+        document.querySelectorAll("#iconStyleGroup .setting-options li").forEach((li) => {
+          li.addEventListener("click", () => {
+            selectedIconStyle = li.getAttribute("data-iconstyle");
+            document.querySelectorAll("#iconStyleGroup .setting-options li").forEach(
+              (el) => (el.style.background = "")
+            );
+            li.style.background = "#ddd";
+          });
+        });
+        
+        /* -------------------- Update Card Appearance -------------------- */
+        function updateCardAppearance() {
+          const card = document.querySelector(".card-container");
+          // Apply Theme Colors
+          if (selectedTheme === "default") {
+            document.documentElement.style.setProperty("--secondary-color", "#009688");
+            document.documentElement.style.setProperty("--accent-color", "#FF5722");
+            document.documentElement.style.setProperty("--card-background", "#FFFFFF");
+            document.documentElement.style.setProperty("--body-bg", "linear-gradient(135deg, #CFD8DC, #ECEFF1)");
+            card.style.borderImage = `linear-gradient(45deg, #009688, #FF5722, #3F51B5) 1`;
+            card.style.boxShadow = "0 8px 30px rgba(0,0,0,0.2)";
+          } else if (selectedTheme === "blue") {
+            document.documentElement.style.setProperty("--secondary-color", "#2196F3");
+            document.documentElement.style.setProperty("--accent-color", "#E91E63");
+            document.documentElement.style.setProperty("--card-background", "#F0F8FF");
+            document.documentElement.style.setProperty("--body-bg", "linear-gradient(135deg, #BBDEFB, #E3F2FD)");
+            card.style.borderImage = `linear-gradient(45deg, #2196F3, #E91E63, #3F51B5) 1`;
+            card.style.boxShadow = "0 8px 30px rgba(33,150,243,0.4)";
+          } else if (selectedTheme === "red") {
+            document.documentElement.style.setProperty("--secondary-color", "#F44336");
+            document.documentElement.style.setProperty("--accent-color", "#9C27B0");
+            document.documentElement.style.setProperty("--card-background", "#FFF0F0");
+            document.documentElement.style.setProperty("--body-bg", "linear-gradient(135deg, #FFCDD2, #FFEBEE)");
+            card.style.borderImage = `linear-gradient(45deg, #F44336, #9C27B0, #FF9800) 1`;
+            card.style.boxShadow = "0 8px 30px rgba(244,67,54,0.4)";
+          } else if (selectedTheme === "green") {
+            document.documentElement.style.setProperty("--secondary-color", "#4CAF50");
+            document.documentElement.style.setProperty("--accent-color", "#8BC34A");
+            document.documentElement.style.setProperty("--card-background", "#E8F5E9");
+            document.documentElement.style.setProperty("--body-bg", "linear-gradient(135deg, #C8E6C9, #E8F5E9)");
+            card.style.borderImage = `linear-gradient(45deg, #4CAF50, #8BC34A, #388E3C) 1`;
+            card.style.boxShadow = "0 8px 30px rgba(76,175,80,0.4)";
+          }
+          // Apply Mood
+          if (selectedMood === "night") {
+            document.documentElement.style.setProperty("--card-background", "#2b2b2b");
+            document.documentElement.style.setProperty("--body-bg", "linear-gradient(135deg, #1a1a1a, #333333)");
+            document.documentElement.style.setProperty("--primary-color", "#f0f0f0");
+            document.documentElement.style.setProperty("--neutral-dark", "#f0f0f0");
+            document.documentElement.style.setProperty("--business-info-bg", "#444");
+          } else {
+            document.documentElement.style.setProperty("--card-background", "#FFFFFF");
+            document.documentElement.style.setProperty("--body-bg", "linear-gradient(135deg, #cfd8dc, #eceff1)");
+            document.documentElement.style.setProperty("--primary-color", "#1e1e1e");
+            document.documentElement.style.setProperty("--neutral-dark", "#333333");
+            document.documentElement.style.setProperty("--business-info-bg", "#e0f7fa");
+          }
+          // Apply Icon Style Changes
+          if (selectedIconStyle === "styleA") {
+            document.querySelectorAll(".icon").forEach((el) => {
+              el.style.borderRadius = "10px";
+              el.style.backgroundColor = "rgba(0,150,136,0.2)";
+            });
+            document.querySelectorAll(".social-icon").forEach((el) => {
+              el.style.borderRadius = "10px";
+              el.style.backgroundColor = "rgba(0,150,136,0.2)";
+            });
+          } else if (selectedIconStyle === "styleB") {
+            document.querySelectorAll(".icon").forEach((el) => {
+              el.style.borderRadius = "0px";
+              el.style.backgroundColor = "rgba(233,30,99,0.2)";
+            });
+            document.querySelectorAll(".social-icon").forEach((el) => {
+              el.style.borderRadius = "0px";
+              el.style.backgroundColor = "rgba(233,30,99,0.2)";
+            });
+          } else {
+            // "none" - revert to CSS defaults
+            document.querySelectorAll(".icon").forEach((el) => {
+              el.style.borderRadius = "";
+              el.style.backgroundColor = "";
+            });
+            document.querySelectorAll(".social-icon").forEach((el) => {
+              el.style.borderRadius = "";
+              el.style.backgroundColor = "";
+            });
+          }
         }
-      })
-      .catch(error => {
-        console.error('Error uploading image:', error);
-        alert('Image upload failed. Please try again.');
-      });
-    }
-
-    function redirectToCard(formData) {
-      const params = new URLSearchParams();
-      params.set('name', encodeURIComponent(formData.name));
-      params.set('businessName', encodeURIComponent(formData.businessName));
-      params.set('businessInfo', encodeURIComponent(formData.businessInfo));
-      params.set('address', encodeURIComponent(formData.address));
-      params.set('phone', encodeURIComponent(formData.phone));
-      params.set('email', encodeURIComponent(formData.email));
-      params.set('facebook', encodeURIComponent(formData.facebook));
-      params.set('instagram', encodeURIComponent(formData.instagram));
-      params.set('youtube', encodeURIComponent(formData.youtube));
-      if (formData.profileImage) {
-        params.set('profileImage', encodeURIComponent(formData.profileImage));
-      }
-      
-      // Use absolute URL for PWA compatibility
-      const cardUrl = new URL('card.html', window.location.href);
-      cardUrl.search = params.toString();
-      window.location.href = cardUrl.toString();
-    }
-
-    // ========== SERVICE WORKER REGISTRATION ==========
-    // Register service worker for PWA
-    if ('serviceWorker' in navigator) {
-      // Wait for page to load
-      window.addEventListener('load', function() {
-        // Try different paths for service worker
-        const swPaths = [
-          './sw.js',
-          'sw.js',
-          '/Library-/sw.js'
-        ];
+        function updateCardAppearanceAndSave() {
+          updateCardAppearance();
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.set("theme", selectedTheme);
+          newUrl.searchParams.set("mood", selectedMood);
+          newUrl.searchParams.set("iconstyle", selectedIconStyle);
+          history.replaceState(null, "", newUrl.toString());
+        }
         
-        let registrationAttempts = 0;
+        /* -------------------- Group Apply Handlers -------------------- */
+        // Disable Preview buttons so they do not update automatically.
+        document.querySelectorAll(".preview-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            // Do nothing on preview
+            alert("This is only a preview. Click Apply to update the card.");
+          });
+        });
+        document.querySelectorAll(".apply-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            updateCardAppearanceAndSave();
+            btn.closest(".setting-content").style.display = "none";
+          });
+        });
         
-        function tryRegister(pathIndex) {
-          if (pathIndex >= swPaths.length) {
-            console.log('All service worker registration attempts failed');
+        /* -------------------- Live Chat Modal -------------------- */
+        const chatModal = document.getElementById("chatModal");
+        const floatingChatBtn = document.getElementById("floatingChatBtn");
+        const sendChat = document.getElementById("sendChat");
+        const cancelChat = document.getElementById("cancelChat");
+        const chatQuery = document.getElementById("chatQuery");
+        const chatConversation = document.getElementById("chatConversation");
+        
+        floatingChatBtn.addEventListener("click", () => {
+          chatModal.style.display = "block";
+          chatConversation.innerHTML = "";
+          chatQuery.value = "";
+          chatQuery.focus();
+        });
+        
+        cancelChat.addEventListener("click", () => {
+          chatModal.style.display = "none";
+        });
+        
+        sendChat.addEventListener("click", () => {
+          const queryText = chatQuery.value.trim();
+          if (!queryText) {
+            alert("Please enter your message.");
             return;
           }
-          
-          navigator.serviceWorker.register(swPaths[pathIndex])
-            .then(function(registration) {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
-              
-              // Check if we're in PWA mode
-              if (window.matchMedia('(display-mode: standalone)').matches) {
-                console.log('Running in standalone PWA mode');
-              }
-            })
-            .catch(function(error) {
-              console.log('ServiceWorker registration failed for path ' + swPaths[pathIndex] + ': ', error);
-              // Try next path
-              tryRegister(pathIndex + 1);
-            });
-        }
+          console.log("Customer Query:", queryText);
+          const customerMsg = document.createElement("div");
+          customerMsg.className = "chat-message customer";
+          customerMsg.textContent = queryText;
+          chatConversation.appendChild(customerMsg);
+          const autoReply = document.createElement("div");
+          autoReply.className = "chat-message auto-reply";
+          autoReply.textContent = "Thank you for contacting us via Smart Link Visiting Card.";
+          setTimeout(() => {
+            chatConversation.appendChild(autoReply);
+            chatConversation.scrollTop = chatConversation.scrollHeight;
+          }, 1000);
+          chatQuery.value = "";
+        });
         
-        // Start with first path
-        tryRegister(0);
-      });
-    } else {
-      console.log('Service workers are not supported in this browser.');
-    }
-    // ========== END SERVICE WORKER ==========
-    
-  </script>
-</body>
+        window.addEventListener("click", (e) => {
+          if (e.target === chatModal) {
+            chatModal.style.display = "none";
+          }
+        });
+        
+      }); // End of DOMContentLoaded
+      
+      // ========== SERVICE WORKER REGISTRATION ==========
+      // Register service worker for PWA (outside DOMContentLoaded to ensure it runs)
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          // Try different paths for service worker
+          const swPaths = [
+            './sw.js',
+            'sw.js',
+            '/Library-/sw.js'
+          ];
+          
+          let registrationAttempts = 0;
+          
+          function tryRegister(pathIndex) {
+            if (pathIndex >= swPaths.length) {
+              console.log('All service worker registration attempts failed');
+              return;
+            }
+            
+            navigator.serviceWorker.register(swPaths[pathIndex])
+              .then(function(registration) {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                
+                // Check if we're in PWA mode
+                if (window.matchMedia('(display-mode: standalone)').matches) {
+                  console.log('Running in standalone PWA mode');
+                }
+              })
+              .catch(function(error) {
+                console.log('ServiceWorker registration failed for path ' + swPaths[pathIndex] + ': ', error);
+                // Try next path
+                tryRegister(pathIndex + 1);
+              });
+          }
+          
+          // Start with first path
+          tryRegister(0);
+        });
+      } else {
+        console.log('Service workers are not supported in this browser.');
+      }
+      // ========== END SERVICE WORKER ==========
+      
+    </script>
+  </body>
 </html>
