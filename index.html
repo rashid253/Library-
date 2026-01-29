@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Business Card Generator</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-  <!-- Add PWA manifest -->
-  <link rel="manifest" href="manifest.json">
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#ff6b6b">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
     :root {
       --primary-color: #2C3E50;    /* Professional Navy */
@@ -145,6 +146,11 @@
       border-radius: 6px;
       cursor: pointer;
       font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    #generateCard:hover {
+      background: #2980b9;
     }
 
     @media (max-width: 480px) {
@@ -203,7 +209,6 @@
             <img id="countryFlag" src="" alt="Country Flag" style="display:none;" />
             <select id="countryCode" required>
               <option value="" disabled selected>Select Code</option>
-              <!-- Options now display only the code (without brackets) -->
               <option value="+61" data-flag="https://flagcdn.com/au.svg">+61</option>
               <option value="+86" data-flag="https://flagcdn.com/cn.svg">+86</option>
               <option value="+33" data-flag="https://flagcdn.com/fr.svg">+33</option>
@@ -259,8 +264,10 @@
       const selectedOption = this.options[this.selectedIndex];
       const flagUrl = selectedOption.getAttribute('data-flag');
       const countryFlag = document.getElementById('countryFlag');
-      countryFlag.src = flagUrl;
-      countryFlag.style.display = 'inline';
+      if (flagUrl) {
+        countryFlag.src = flagUrl;
+        countryFlag.style.display = 'inline';
+      }
     });
 
     // Resize and compress image for upload (lower resolution & quality)
@@ -313,13 +320,14 @@
       });
       
       // Check mandatory fields are not empty
-      fields.forEach(id => {
+      for (let id of fields) {
         const elem = document.getElementById(id);
-        if (!elem.value.trim()) {
+        if (elem && !elem.value.trim()) {
           valid = false;
           elem.classList.add('error');
         }
-      });
+      }
+      
       if (!valid) {
         alert("Please fill all required fields.");
         return false;
@@ -335,7 +343,8 @@
       
       // Validate email
       const emailValue = document.getElementById('email').value.trim();
-      if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(emailValue)) {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(emailValue)) {
         document.getElementById('email').classList.add('error');
         alert("Please enter a valid email address.");
         return false;
@@ -345,21 +354,21 @@
       const facebookValue = document.getElementById('facebook').value.trim();
       if (facebookValue && !/^https?:\/\/(www\.)?facebook\.com\/.+$/i.test(facebookValue)) {
         document.getElementById('facebook').classList.add('error');
-        alert("Please enter a valid Facebook URL.");
+        alert("Please enter a valid Facebook URL (should start with http:// or https://).");
         return false;
       }
       
       const instagramValue = document.getElementById('instagram').value.trim();
       if (instagramValue && !/^https?:\/\/(www\.)?instagram\.com\/.+$/i.test(instagramValue)) {
         document.getElementById('instagram').classList.add('error');
-        alert("Please enter a valid Instagram URL.");
+        alert("Please enter a valid Instagram URL (should start with http:// or https://).");
         return false;
       }
       
       const youtubeValue = document.getElementById('youtube').value.trim();
       if (youtubeValue && !/^https?:\/\/(www\.)?youtube\.com\/.+$/i.test(youtubeValue)) {
         document.getElementById('youtube').classList.add('error');
-        alert("Please enter a valid YouTube URL.");
+        alert("Please enter a valid YouTube URL (should start with http:// or https://).");
         return false;
       }
       
@@ -446,31 +455,66 @@
 
     function redirectToCard(formData) {
       const params = new URLSearchParams();
-      params.set('name', formData.name);
-      params.set('businessName', formData.businessName);
-      params.set('businessInfo', formData.businessInfo);
-      params.set('address', formData.address);
-      params.set('phone', formData.phone);
-      params.set('email', formData.email);
-      params.set('facebook', formData.facebook);
-      params.set('instagram', formData.instagram);
-      params.set('youtube', formData.youtube);
-      params.set('profileImage', formData.profileImage);
-      window.location.href = `card.html?${params.toString()}`;
+      params.set('name', encodeURIComponent(formData.name));
+      params.set('businessName', encodeURIComponent(formData.businessName));
+      params.set('businessInfo', encodeURIComponent(formData.businessInfo));
+      params.set('address', encodeURIComponent(formData.address));
+      params.set('phone', encodeURIComponent(formData.phone));
+      params.set('email', encodeURIComponent(formData.email));
+      params.set('facebook', encodeURIComponent(formData.facebook));
+      params.set('instagram', encodeURIComponent(formData.instagram));
+      params.set('youtube', encodeURIComponent(formData.youtube));
+      if (formData.profileImage) {
+        params.set('profileImage', encodeURIComponent(formData.profileImage));
+      }
+      
+      // Use absolute URL for PWA compatibility
+      const cardUrl = new URL('card.html', window.location.href);
+      cardUrl.search = params.toString();
+      window.location.href = cardUrl.toString();
     }
 
     // ========== SERVICE WORKER REGISTRATION ==========
     // Register service worker for PWA
     if ('serviceWorker' in navigator) {
+      // Wait for page to load
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./sw.js')
-          .then(function(registration) {
-            console.log('ServiceWorker registration successful with scope: ', registration.scope);
-          })
-          .catch(function(error) {
-            console.log('ServiceWorker registration failed: ', error);
-          });
+        // Try different paths for service worker
+        const swPaths = [
+          './sw.js',
+          'sw.js',
+          '/Library-/sw.js'
+        ];
+        
+        let registrationAttempts = 0;
+        
+        function tryRegister(pathIndex) {
+          if (pathIndex >= swPaths.length) {
+            console.log('All service worker registration attempts failed');
+            return;
+          }
+          
+          navigator.serviceWorker.register(swPaths[pathIndex])
+            .then(function(registration) {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+              
+              // Check if we're in PWA mode
+              if (window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('Running in standalone PWA mode');
+              }
+            })
+            .catch(function(error) {
+              console.log('ServiceWorker registration failed for path ' + swPaths[pathIndex] + ': ', error);
+              // Try next path
+              tryRegister(pathIndex + 1);
+            });
+        }
+        
+        // Start with first path
+        tryRegister(0);
       });
+    } else {
+      console.log('Service workers are not supported in this browser.');
     }
     // ========== END SERVICE WORKER ==========
     
