@@ -1,0 +1,22 @@
+{
+  "name": "Shopping Card",
+  "short_name": "ShopCard",
+  "description": "Shopping Business Card",
+  "start_url": "./card.html",
+  "display": "standalone",
+  "background_color": "#ff6b6b",
+  "theme_color": "#ff6b6b",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
