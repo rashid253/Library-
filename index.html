@@ -1,523 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Business Card Generator</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#ff6b6b">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <style>
-    :root {
-      --primary-color: #2C3E50;    /* Professional Navy */
-      --secondary-color: #3498DB;  /* Trust Blue */
-      --accent-color: #E74C3E;     /* Alert Red */
-      --neutral-light: rgba(236, 240, 241, 0.9); /* Light Gray with transparency */
-      --neutral-dark: #34495E;     /* Dark Gray */
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Card Generator</title>
 
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      margin: 0;
-      padding: 1rem;
-      background: linear-gradient(135deg, #e9ecef, #f0f4f8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
-    .form-container {
-      width: 100%;
-      max-width: 450px;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-      padding: 1.5rem;
-      margin: 1rem;
-    }
+<style>
+:root{
+  --primary:#2C3E50;
+  --secondary:#3498DB;
+  --light:#ecf0f1;
+  --danger:#e74c3c;
+}
 
-    .form-header {
-      color: var(--primary-color);
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
+body{
+  margin:0;
+  padding:15px;
+  font-family:Segoe UI, system-ui, sans-serif;
+  background:linear-gradient(135deg,#e9ecef,#f4f6f8);
+  display:flex;
+  justify-content:center;
+}
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
+.form-box{
+  width:100%;
+  max-width:450px;
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
+}
 
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-    }
+h2{
+  margin:0;
+  color:var(--primary);
+  text-align:center;
+}
 
-    .input-group label {
-      font-weight: 600;
-      color: var(--neutral-dark);
-    }
+p.subtitle{
+  text-align:center;
+  color:#666;
+  margin-bottom:20px;
+}
 
-    .input-group .required {
-      color: var(--accent-color);
-    }
+.group{
+  margin-bottom:14px;
+}
 
-    input, textarea, select {
-      width: 100%;
-      padding: 0.7rem;
-      border: 1px solid var(--neutral-light);
-      border-radius: 6px;
-      font-size: 0.9rem;
-      transition: border-color 0.2s ease;
-    }
+label{
+  font-weight:600;
+  color:#333;
+  display:block;
+  margin-bottom:4px;
+}
 
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--secondary-color);
-      outline: none;
-    }
+input, textarea, select{
+  width:100%;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  font-size:14px;
+}
 
-    textarea {
-      resize: vertical;
-    }
+textarea{resize:vertical;}
 
-    .error {
-      border: 2px solid var(--accent-color);
-    }
+.error{border:2px solid var(--danger);}
 
-    /* Phone group styling with country code on LHS */
-    .phone-group {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .phone-group .country-code {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      flex: 0 0 90px; /* Fixed width for country code */
-    }
-    .phone-group .country-code select {
-      width: 100%;
-      padding: 0.5rem;
-    }
-    .phone-group input {
-      flex: 1;
-    }
-    .country-code img {
-      width: 20px;
-      height: 15px;
-    }
+.image-box{
+  border:2px dashed #ccc;
+  text-align:center;
+  padding:16px;
+  border-radius:10px;
+  cursor:pointer;
+}
 
-    .image-upload-group {
-      grid-column: 1 / -1;
-      text-align: center;
-      border: 2px dashed var(--neutral-light);
-      padding: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      position: relative;
-    }
+.image-box i{color:#777;}
 
-    #profileImage {
-      display: none;
-    }
+#profileImage{display:none;}
 
-    #imagePreview {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin: 0.5rem auto;
-      display: none;
-    }
+#preview{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  object-fit:cover;
+  display:none;
+  margin:10px auto 0;
+}
 
-    #generateCard {
-      background: var(--secondary-color);
-      color: white;
-      width: 100%;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background-color 0.3s ease;
-    }
+.phone-wrap{
+  display:flex;
+  gap:6px;
+}
 
-    #generateCard:hover {
-      background: #2980b9;
-    }
+.phone-wrap select{width:35%;}
 
-    @media (max-width: 480px) {
-      .form-container {
-        max-width: 90%;
-        padding: 1rem;
-      }
-    }
-  </style>
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:var(--secondary);
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+</style>
 </head>
+
 <body>
-  <!-- Form Section -->
-  <div class="form-container">
-    <div class="form-header">
-      <h2>Create Business Card</h2>
-      <p>Fill in all required information</p>
-    </div>
 
-    <div class="form-grid">
-      <div class="image-upload-group">
-        <label for="profileImage">
-          <i class="fas fa-camera fa-2x"></i>
-          <p>Upload Profile Photo</p>
-        </label>
-        <input type="file" id="profileImage" accept="image/*" onchange="previewImage(event)" />
-        <img id="imagePreview" alt="Profile Preview" />
-      </div>
+<div class="form-box">
+  <h2>Create Business Card</h2>
+  <p class="subtitle">Fill all required information</p>
 
-      <div class="input-group">
-        <label for="name">Full Name <span class="required">*</span></label>
-        <input type="text" id="name" placeholder="Full Name" required />
-      </div>
-
-      <div class="input-group">
-        <label for="businessName">Business Name <span class="required">*</span></label>
-        <input type="text" id="businessName" placeholder="Business Name" required />
-      </div>
-
-      <div class="input-group">
-        <label for="businessInfo">Business Info <span class="required">*</span></label>
-        <textarea id="businessInfo" placeholder="Enter 3 to 5 paragraphs (Max 150 words each) separated by a new line" rows="6" required></textarea>
-        <small style="color: var(--neutral-dark); font-size: 0.8rem;">
-          <strong>Instructions:</strong> Write 3 to 5 paragraphs. Each paragraph must not exceed 150 words. Separate paragraphs with a new line.
-        </small>
-      </div>
-
-      <div class="input-group">
-        <label for="address">Business Address <span class="required">*</span></label>
-        <input type="text" id="address" placeholder="Business Address" required />
-      </div>
-
-      <div class="input-group">
-        <label for="phone">Phone Number <span class="required">*</span></label>
-        <div class="phone-group">
-          <div class="country-code">
-            <img id="countryFlag" src="" alt="Country Flag" style="display:none;" />
-            <select id="countryCode" required>
-              <option value="" disabled selected>Select Code</option>
-              <option value="+61" data-flag="https://flagcdn.com/au.svg">+61</option>
-              <option value="+86" data-flag="https://flagcdn.com/cn.svg">+86</option>
-              <option value="+33" data-flag="https://flagcdn.com/fr.svg">+33</option>
-              <option value="+49" data-flag="https://flagcdn.com/de.svg">+49</option>
-              <option value="+91" data-flag="https://flagcdn.com/in.svg">+91</option>
-              <option value="+92" data-flag="https://flagcdn.com/pk.svg">+92</option>
-              <option value="+44" data-flag="https://flagcdn.com/gb.svg">+44</option>
-              <option value="+1" data-flag="https://flagcdn.com/us.svg">+1</option>
-            </select>
-          </div>
-          <input type="tel" id="phone" placeholder="Phone Number" required pattern="^\d{9,15}$" title="Phone number must be 9 to 15 digits without country code." />
-        </div>
-      </div>
-
-      <div class="input-group">
-        <label for="email">Email Address <span class="required">*</span></label>
-        <input type="email" id="email" placeholder="Email Address" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address." />
-      </div>
-
-      <div class="input-group">
-        <label for="facebook">Facebook URL</label>
-        <input type="url" id="facebook" placeholder="Facebook URL" pattern="https?://(www\.)?facebook\.com/.*" title="Please enter a valid Facebook URL." />
-      </div>
-
-      <div class="input-group">
-        <label for="instagram">Instagram URL</label>
-        <input type="url" id="instagram" placeholder="Instagram URL" pattern="https?://(www\.)?instagram\.com/.*" title="Please enter a valid Instagram URL." />
-      </div>
-
-      <div class="input-group">
-        <label for="youtube">YouTube URL</label>
-        <input type="url" id="youtube" placeholder="YouTube URL" pattern="https?://(www\.)?youtube\.com/.*" title="Please enter a valid YouTube URL." />
-      </div>
-    </div>
-
-    <button id="generateCard">Generate Card</button>
+  <div class="group image-box">
+    <label for="profileImage">
+      <i class="fa fa-camera fa-2x"></i>
+      <p>Upload Profile Photo</p>
+    </label>
+    <input type="file" id="profileImage" accept="image/*">
+    <img id="preview">
   </div>
 
-  <script>
-    // Image Preview Function
-    function previewImage(event) {
-      const reader = new FileReader();
-      const preview = document.getElementById('imagePreview');
-      reader.onload = (e) => {
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-      };
-      reader.readAsDataURL(event.target.files[0]);
-    }
+  <div class="group">
+    <label>Full Name *</label>
+    <input id="name" required>
+  </div>
 
-    // Update country flag based on selected country code
-    document.getElementById('countryCode').addEventListener('change', function() {
-      const selectedOption = this.options[this.selectedIndex];
-      const flagUrl = selectedOption.getAttribute('data-flag');
-      const countryFlag = document.getElementById('countryFlag');
-      if (flagUrl) {
-        countryFlag.src = flagUrl;
-        countryFlag.style.display = 'inline';
-      }
+  <div class="group">
+    <label>Business Name *</label>
+    <input id="businessName" required>
+  </div>
+
+  <div class="group">
+    <label>Business Info *</label>
+    <textarea id="businessInfo" rows="5" required></textarea>
+  </div>
+
+  <div class="group">
+    <label>Address *</label>
+    <input id="address" required>
+  </div>
+
+  <div class="group">
+    <label>Phone *</label>
+    <div class="phone-wrap">
+      <select id="code">
+        <option value="+92">+92</option>
+        <option value="+91">+91</option>
+        <option value="+1">+1</option>
+        <option value="+44">+44</option>
+      </select>
+      <input id="phone" placeholder="Number">
+    </div>
+  </div>
+
+  <div class="group">
+    <label>Email *</label>
+    <input id="email" type="email">
+  </div>
+
+  <div class="group">
+    <label>Facebook</label>
+    <input id="facebook">
+  </div>
+
+  <div class="group">
+    <label>Instagram</label>
+    <input id="instagram">
+  </div>
+
+  <div class="group">
+    <label>YouTube</label>
+    <input id="youtube">
+  </div>
+
+  <button id="generate">Generate Card</button>
+</div>
+
+<script>
+const imgInput=document.getElementById("profileImage");
+const preview=document.getElementById("preview");
+
+imgInput.onchange=e=>{
+  const r=new FileReader();
+  r.onload=()=>{preview.src=r.result;preview.style.display="block";}
+  r.readAsDataURL(e.target.files[0]);
+};
+
+function resizeImage(file,cb){
+  const img=new Image();
+  const r=new FileReader();
+  r.onload=e=>{
+    img.src=e.target.result;
+    img.onload=()=>{
+      const c=document.createElement("canvas");
+      const max=160;
+      let w=img.width,h=img.height;
+      if(w>h && w>max){h*=max/w;w=max;}
+      else if(h>max){w*=max/h;h=max;}
+      c.width=w;c.height=h;
+      c.getContext("2d").drawImage(img,0,0,w,h);
+      cb(c.toDataURL("image/jpeg",0.45));
+    }
+  };
+  r.readAsDataURL(file);
+}
+
+document.getElementById("generate").onclick=()=>{
+  const data={
+    name:name.value,
+    businessName:businessName.value,
+    businessInfo:businessInfo.value,
+    address:address.value,
+    phone:code.value+phone.value,
+    email:email.value,
+    facebook:facebook.value,
+    instagram:instagram.value,
+    youtube:youtube.value,
+    profileImage:""
+  };
+
+  const f=imgInput.files[0];
+  if(f){
+    resizeImage(f,b64=>{
+      data.profileImage=b64;
+      location.href="card.html?"+new URLSearchParams(data);
     });
+  }else{
+    location.href="card.html?"+new URLSearchParams(data);
+  }
+};
+</script>
 
-    // Resize and compress image for upload (lower resolution & quality)
-    function resizeImage(file, callback) {
-      const img = new Image();
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        img.src = e.target.result;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 150;  // Reduced maximum width
-          const MAX_HEIGHT = 150; // Reduced maximum height
-          let width = img.width;
-          let height = img.height;
-
-          // Calculate new dimensions while preserving aspect ratio
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height = height * (MAX_WIDTH / width);
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width = width * (MAX_HEIGHT / height);
-              height = MAX_HEIGHT;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          // Compress to JPEG at 40% quality
-          canvas.toBlob((blob) => {
-            callback(blob);
-          }, 'image/jpeg', 0.4);
-        };
-      };
-      reader.readAsDataURL(file);
-    }
-
-    // Validate mandatory and optional fields
-    function validateForm() {
-      let valid = true;
-      // Clear any previous error highlighting
-      const fields = ['name', 'businessName', 'businessInfo', 'address', 'phone', 'email', 'countryCode'];
-      fields.forEach(id => {
-        const elem = document.getElementById(id);
-        if (elem) elem.classList.remove('error');
-      });
-      
-      // Check mandatory fields are not empty
-      for (let id of fields) {
-        const elem = document.getElementById(id);
-        if (elem && !elem.value.trim()) {
-          valid = false;
-          elem.classList.add('error');
-        }
-      }
-      
-      if (!valid) {
-        alert("Please fill all required fields.");
-        return false;
-      }
-      
-      // Validate phone number (digits only, 9 to 15 characters)
-      const phoneValue = document.getElementById('phone').value.trim();
-      if (!/^\d{9,15}$/.test(phoneValue)) {
-        document.getElementById('phone').classList.add('error');
-        alert("Phone number must be 9 to 15 digits.");
-        return false;
-      }
-      
-      // Validate email
-      const emailValue = document.getElementById('email').value.trim();
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailRegex.test(emailValue)) {
-        document.getElementById('email').classList.add('error');
-        alert("Please enter a valid email address.");
-        return false;
-      }
-      
-      // Validate optional social media URLs if provided
-      const facebookValue = document.getElementById('facebook').value.trim();
-      if (facebookValue && !/^https?:\/\/(www\.)?facebook\.com\/.+$/i.test(facebookValue)) {
-        document.getElementById('facebook').classList.add('error');
-        alert("Please enter a valid Facebook URL (should start with http:// or https://).");
-        return false;
-      }
-      
-      const instagramValue = document.getElementById('instagram').value.trim();
-      if (instagramValue && !/^https?:\/\/(www\.)?instagram\.com\/.+$/i.test(instagramValue)) {
-        document.getElementById('instagram').classList.add('error');
-        alert("Please enter a valid Instagram URL (should start with http:// or https://).");
-        return false;
-      }
-      
-      const youtubeValue = document.getElementById('youtube').value.trim();
-      if (youtubeValue && !/^https?:\/\/(www\.)?youtube\.com\/.+$/i.test(youtubeValue)) {
-        document.getElementById('youtube').classList.add('error');
-        alert("Please enter a valid YouTube URL (should start with http:// or https://).");
-        return false;
-      }
-      
-      // Validate business info: 3 to 5 paragraphs, each up to 150 words
-      const businessInfo = document.getElementById('businessInfo').value.trim();
-      const paragraphs = businessInfo.split('\n').filter(p => p.trim() !== '');
-      if (paragraphs.length < 3 || paragraphs.length > 5) {
-        document.getElementById('businessInfo').classList.add('error');
-        alert("Please enter 3 to 5 paragraphs for the business info.");
-        return false;
-      }
-      for (const paragraph of paragraphs) {
-        const words = paragraph.split(/\s+/).filter(word => word.length > 0);
-        if (words.length > 150) {
-          document.getElementById('businessInfo').classList.add('error');
-          alert("Each paragraph must not exceed 150 words. Please review your business info.");
-          return false;
-        }
-      }
-      
-      return true;
-    }
-
-    // Generate Card Function
-    document.getElementById('generateCard').onclick = function () {
-      if (!validateForm()) {
-        return;
-      }
-
-      // Get form values
-      const formData = {
-        name: document.getElementById('name').value.trim(),
-        businessName: document.getElementById('businessName').value.trim(),
-        businessInfo: document.getElementById('businessInfo').value.trim(),
-        address: document.getElementById('address').value.trim(),
-        // Concatenate the selected country code and the phone number
-        phone: document.getElementById('countryCode').value + document.getElementById('phone').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        facebook: document.getElementById('facebook').value.trim(),
-        instagram: document.getElementById('instagram').value.trim(),
-        youtube: document.getElementById('youtube').value.trim(),
-        profileImage: document.getElementById('profileImage').files[0]
-      };
-
-      // If an image was selected, resize and upload it first
-      if (formData.profileImage) {
-        resizeImage(formData.profileImage, (resizedImage) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const base64Image = e.target.result.split(',')[1]; // Get base64 string
-            uploadImageToImgBB(base64Image, formData);
-          };
-          reader.readAsDataURL(resizedImage);
-        });
-      } else {
-        redirectToCard(formData);
-      }
-    };
-
-    function uploadImageToImgBB(base64Image, formData) {
-      const apiKey = '0e27b30b17540e8703573c566f278f26'; // ImgBB API Key
-      const formDataImgBB = new FormData();
-      formDataImgBB.append('key', apiKey);
-      formDataImgBB.append('image', base64Image);
-      
-      fetch('https://api.imgbb.com/1/upload', {
-        method: 'POST',
-        body: formDataImgBB
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          formData.profileImage = data.data.url; // Get the ImgBB link
-          redirectToCard(formData);
-        } else {
-          alert('Image upload failed. Please try again.');
-        }
-      })
-      .catch(error => {
-        console.error('Error uploading image:', error);
-        alert('Image upload failed. Please try again.');
-      });
-    }
-
-    function redirectToCard(formData) {
-      const params = new URLSearchParams();
-      params.set('name', encodeURIComponent(formData.name));
-      params.set('businessName', encodeURIComponent(formData.businessName));
-      params.set('businessInfo', encodeURIComponent(formData.businessInfo));
-      params.set('address', encodeURIComponent(formData.address));
-      params.set('phone', encodeURIComponent(formData.phone));
-      params.set('email', encodeURIComponent(formData.email));
-      params.set('facebook', encodeURIComponent(formData.facebook));
-      params.set('instagram', encodeURIComponent(formData.instagram));
-      params.set('youtube', encodeURIComponent(formData.youtube));
-      if (formData.profileImage) {
-        params.set('profileImage', encodeURIComponent(formData.profileImage));
-      }
-      
-      // Use absolute URL for PWA compatibility
-      const cardUrl = new URL('card.html', window.location.href);
-      cardUrl.search = params.toString();
-      window.location.href = cardUrl.toString();
-    }
-
-    // ========== SERVICE WORKER REGISTRATION ==========
-    // Register service worker for PWA
-    if ('serviceWorker' in navigator) {
-      // Wait for page to load
-      window.addEventListener('load', function() {
-        // Try different paths for service worker
-        const swPaths = [
-          './sw.js',
-          'sw.js',
-          '/Library-/sw.js'
-        ];
-        
-        let registrationAttempts = 0;
-        
-        function tryRegister(pathIndex) {
-          if (pathIndex >= swPaths.length) {
-            console.log('All service worker registration attempts failed');
-            return;
-          }
-          
-          navigator.serviceWorker.register(swPaths[pathIndex])
-            .then(function(registration) {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
-              
-              // Check if we're in PWA mode
-              if (window.matchMedia('(display-mode: standalone)').matches) {
-                console.log('Running in standalone PWA mode');
-              }
-            })
-            .catch(function(error) {
-              console.log('ServiceWorker registration failed for path ' + swPaths[pathIndex] + ': ', error);
-              // Try next path
-              tryRegister(pathIndex + 1);
-            });
-        }
-        
-        // Start with first path
-        tryRegister(0);
-      });
-    } else {
-      console.log('Service workers are not supported in this browser.');
-    }
-    // ========== END SERVICE WORKER ==========
-    
-  </script>
 </body>
 </html>
