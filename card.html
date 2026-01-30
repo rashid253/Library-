@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Smart Digital Card</title>
+<title>My Smart Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="manifest" href="manifest.json">
@@ -10,7 +10,7 @@
 
 <script>
 if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
+navigator.serviceWorker.register("sw.js");
 }
 </script>
 
@@ -18,166 +18,121 @@ if("serviceWorker" in navigator){
 
 <style>
 body{
-  margin:0;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-family:system-ui;
-  background:linear-gradient(135deg,#e0f2fe,#f8fafc);
+margin:0;
+background:linear-gradient(135deg,#e0f2fe,#f8fafc);
+display:flex;justify-content:center;align-items:center;
+min-height:100vh;font-family:system-ui;
 }
 .card{
-  width:100%;
-  max-width:400px;
-  background:white;
-  border-radius:20px;
-  overflow:hidden;
-  box-shadow:0 20px 50px rgba(0,0,0,.25);
+width:100%;max-width:400px;
+background:white;border-radius:20px;
+box-shadow:0 20px 40px rgba(0,0,0,.25);
+overflow:hidden;
 }
 .status{
-  display:flex;
-  justify-content:space-between;
-  padding:6px 12px;
-  font-size:12px;
-  background:#0f172a;
-  color:white;
+display:flex;justify-content:space-between;
+padding:6px 10px;
+font-size:12px;background:#0f172a;color:white;
 }
-.status i{margin-right:6px;}
 .top{
-  background:linear-gradient(135deg,#2563eb,#38bdf8);
-  padding:14px;
-  color:white;
+background:linear-gradient(135deg,#2563eb,#38bdf8);
+padding:14px;color:white;
 }
-.header{
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
+.header{display:flex;gap:12px;align-items:center;}
 .header img{
-  width:90px;height:90px;
-  border-radius:50%;
-  object-fit:cover;
-  border:3px solid white;
+width:70px;height:70px;border-radius:50%;
+border:3px solid white;object-fit:cover;
 }
-.name{font-size:20px;font-weight:700;}
-.role{font-size:13px;opacity:.9;}
-.quick{font-size:12px;margin-top:4px;}
+.name{font-size:18px;font-weight:700;}
+.role{font-size:13px;}
 
 .ticker{
-  background:#020617;
-  color:#38bdf8;
-  padding:6px 0;
-  overflow:hidden;
-  white-space:nowrap;
+background:black;color:#38bdf8;
+overflow:hidden;white-space:nowrap;
 }
 .ticker span{
-  display:inline-block;
-  padding-left:100%;
-  animation:ticker 15s linear infinite;
+display:inline-block;
+padding-left:100%;
+animation:ticker 12s linear infinite;
 }
 @keyframes ticker{
-  0%{transform:translateX(0);}
-  100%{transform:translateX(-100%);}
+0%{transform:translateX(0);}
+100%{transform:translateX(-100%);}
 }
 
 .actions{
-  display:flex;
-  justify-content:space-around;
-  padding:14px;
+display:flex;justify-content:space-around;
+padding:14px;
 }
 .actions a{
-  width:46px;height:46px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:50%;
-  background:#2563eb;
-  color:white;
-  font-size:18px;
+width:46px;height:46px;
+border-radius:50%;background:#2563eb;
+display:flex;align-items:center;justify-content:center;
+color:white;font-size:18px;
 }
 
-.buttons{
-  display:grid;
-  gap:10px;
-  padding:0 14px 14px;
-}
+.buttons{display:grid;gap:10px;padding:0 14px 14px;}
 .buttons a{
-  text-decoration:none;
-  padding:12px;
-  border-radius:12px;
-  background:#2563eb;
-  color:white;
-  text-align:center;
-  font-weight:700;
+text-decoration:none;
+padding:12px;border-radius:12px;
+background:#2563eb;color:white;
+text-align:center;font-weight:700;
 }
 
-.social{
-  display:flex;
-  justify-content:center;
-  gap:18px;
-  padding-bottom:14px;
-}
+.social{display:flex;justify-content:center;gap:18px;padding-bottom:14px;}
 .social a{color:#2563eb;font-size:20px;}
 </style>
 </head>
 
 <body>
-
 <div class="card">
 
-  <!-- Mobile Status Bar -->
-  <div class="status">
-    <div><i class="fa fa-map-marker-alt"></i> GPS ON</div>
-    <div>
-      <i class="fa fa-signal"></i>
-      <i class="fa fa-wifi"></i>
-      <i class="fa fa-battery-full"></i>
-    </div>
-  </div>
+<div class="status">
+<div><i class="fa fa-map-marker-alt"></i> GPS</div>
+<div>
+<i class="fa fa-signal"></i>
+<i class="fa fa-wifi"></i>
+</div>
+</div>
 
-  <!-- Header -->
-  <div class="top">
-    <div class="header">
-      <img id="photo">
-      <div>
-        <div class="name" id="name"></div>
-        <div class="role" id="business"></div>
-        <div class="quick" id="phone"></div>
-        <div class="quick" id="email"></div>
-      </div>
-    </div>
-  </div>
+<div class="top">
+<div class="header">
+<img id="photo">
+<div>
+<div class="name" id="name"></div>
+<div class="role" id="business"></div>
+<div id="phone"></div>
+<div id="email"></div>
+</div>
+</div>
+</div>
 
-  <!-- Ticker -->
-  <div class="ticker">
-    <span id="tickerText"></span>
-  </div>
+<div class="ticker">
+<span id="tickerText"></span>
+</div>
 
-  <!-- Quick Actions -->
-  <div class="actions">
-    <a id="miniCall"><i class="fa fa-phone"></i></a>
-    <a id="miniWa"><i class="fab fa-whatsapp"></i></a>
-    <a id="miniMail"><i class="fa fa-envelope"></i></a>
-  </div>
+<div class="actions">
+<a id="miniCall"><i class="fa fa-phone"></i></a>
+<a id="miniWa"><i class="fab fa-whatsapp"></i></a>
+<a id="map"><i class="fa fa-map"></i></a>
+</div>
 
-  <!-- Buttons -->
-  <div class="buttons">
-    <a id="callBtn">Call Now</a>
-    <a id="waBtn">WhatsApp Chat</a>
-    <a id="mailBtn">Send Email</a>
-  </div>
+<div class="buttons">
+<a id="callBtn">Call</a>
+<a id="waBtn">WhatsApp</a>
+<a id="mapBtn">Open Map</a>
+</div>
 
-  <!-- Social -->
-  <div class="social">
-    <a id="fb"><i class="fab fa-facebook"></i></a>
-    <a id="ig"><i class="fab fa-instagram"></i></a>
-    <a id="yt"><i class="fab fa-youtube"></i></a>
-  </div>
+<div class="social">
+<a id="fb"><i class="fab fa-facebook"></i></a>
+<a id="ig"><i class="fab fa-instagram"></i></a>
+<a id="yt"><i class="fab fa-youtube"></i></a>
+</div>
 </div>
 
 <script>
-let data = JSON.parse(localStorage.getItem("cardData")||"{}");
-if(!data.name){ location.href="index.html"; }
+const p=new URLSearchParams(location.search);
+const data=JSON.parse(atob(p.get("data")));
 
 photo.src=data.profileImage;
 name.textContent=data.name;
@@ -186,19 +141,19 @@ phone.textContent="📞 "+data.phone;
 email.textContent="✉️ "+data.email;
 
 tickerText.textContent =
-  data.businessInfo+"   |   📍 "+data.address+
-  "   |   Contact: "+data.phone+"   |   "+data.email;
+data.businessInfo+" | "+data.address+" | "+data.phone+" | "+data.email;
 
 miniCall.href="tel:"+data.phone;
 miniWa.href="https://wa.me/"+data.phone;
-miniMail.href="mailto:"+data.email;
+map.href="https://maps.google.com/?q="+encodeURIComponent(data.address);
+
 callBtn.href=miniCall.href;
 waBtn.href=miniWa.href;
-mailBtn.href=miniMail.href;
+mapBtn.href=map.href;
 
-if(data.facebook){fb.href=data.facebook;fb.target="_blank";}
-if(data.instagram){ig.href=data.instagram;ig.target="_blank";}
-if(data.youtube){yt.href=data.youtube;yt.target="_blank";}
+if(data.facebook)fb.href=data.facebook;
+if(data.instagram)ig.href=data.instagram;
+if(data.youtube)yt.href=data.youtube;
 </script>
 </body>
 </html>
