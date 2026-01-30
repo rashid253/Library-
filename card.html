@@ -2,48 +2,72 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Shop Card</title>
+<title>Bazaar</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{margin:0;background:#f1f5f9;display:flex;justify-content:center;align-items:center;height:100vh;font-family:system-ui;}
-.card{
- background:white;
- padding:20px;
- border-radius:18px;
- width:90%;
- max-width:360px;
- text-align:center;
-}
-.card img{width:90px;height:90px;border-radius:50%;}
-.btn{display:block;margin-top:10px;padding:10px;border-radius:10px;color:white;text-decoration:none;}
+body{margin:0;background:#f1f5f9;font-family:system-ui;}
+.box{background:white;margin:20px;padding:20px;border-radius:18px;text-align:center;}
+.btn{display:block;margin:8px 0;padding:12px;border-radius:12px;color:white;text-decoration:none;}
 .call{background:#2563eb;}
-.mail{background:#f97316;}
+.wa{background:#16a34a;}
+.map{background:#f97316;}
+.opt{background:#64748b;}
 </style>
 </head>
 <body>
 
-<div class="card">
-<img id="photo">
+<div class="box">
 <h2 id="name"></h2>
-<div id="about"></div>
-<div id="address"></div>
-<div id="phone"></div>
-<div id="email"></div>
+<div id="addr"></div>
 
-<a id="callBtn" class="btn call">Call</a>
-<a id="mailBtn" class="btn mail">Email</a>
+<a id="call" class="btn call">Call</a>
+<a id="wa" class="btn wa">WhatsApp</a>
+<a id="map" class="btn map">Open Map</a>
+
+<a id="fb" class="btn opt">Facebook</a>
+<a id="ig" class="btn opt">Instagram</a>
+<a id="yt" class="btn opt">YouTube</a>
+<a id="dukan" class="btn opt">Dukan Store</a>
+<a id="mail" class="btn opt">Email</a>
+
+<img id="qr" style="width:200px;margin-top:10px;">
+<button onclick="shareShop()">Share</button>
 </div>
 
 <script>
-let s=JSON.parse(localStorage.getItem("currentShop"));
-photo.src=s.profileImage;
-name.textContent=s.businessName;
-about.textContent=s.businessInfo;
-address.textContent=s.address;
-phone.textContent=s.phone;
-email.textContent=s.email;
-callBtn.href="tel:"+s.phone;
-mailBtn.href="mailto:"+s.email;
+const s=JSON.parse(localStorage.getItem("currentShop"));
+
+name.textContent=s.name;
+addr.textContent=s.address;
+
+call.href="tel:"+s.phone;
+wa.href="https://wa.me/"+s.whatsapp;
+map.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(s.address);
+
+function opt(btn,link){
+ if(link) btn.href=link;
+ else btn.style.display="none";
+}
+
+opt(fb,s.facebook);
+opt(ig,s.instagram);
+opt(yt,s.youtube);
+opt(dukan,s.dukan);
+opt(mail,"mailto:"+s.email);
+
+if(s.jazzcashQR) qr.src=s.jazzcashQR;
+else qr.style.display="none";
+
+function shareShop(){
+ navigator.share({
+  title:s.name,
+  text:"Check this shop on Bazaar",
+  url:location.href
+ });
+}
+
+history.pushState(null,null,location.href);
+window.onpopstate=()=>{history.go(1);}
 </script>
 </body>
 </html>
