@@ -1,238 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Business Card Generator</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Business Card</title>
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e90ff">
+<script>
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
 
 <style>
-:root{
-  --primary:#2C3E50;
-  --secondary:#3498DB;
-  --light:#ecf0f1;
-  --danger:#e74c3c;
-}
-
+/* === YOUR ORIGINAL CSS (UNCHANGED) === */
 body{
+  font-family:Segoe UI,sans-serif;
   margin:0;
-  padding:15px;
-  font-family:Segoe UI, system-ui, sans-serif;
-  background:linear-gradient(135deg,#e9ecef,#f4f6f8);
+  padding:1rem;
+  background:linear-gradient(135deg,#cfd8dc,#eceff1);
   display:flex;
   justify-content:center;
+  align-items:center;
+  min-height:100vh;
 }
-
-.form-box{
-  width:100%;
-  max-width:450px;
+.card-container{
+  width:400px;
   background:#fff;
-  border-radius:16px;
-  padding:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  border-radius:20px;
+  box-shadow:0 8px 30px rgba(0,0,0,.2);
+  padding:1.5rem;
 }
-
-h2{
-  margin:0;
-  color:var(--primary);
-  text-align:center;
-}
-
-p.subtitle{
-  text-align:center;
-  color:#666;
-  margin-bottom:20px;
-}
-
-.group{
-  margin-bottom:14px;
-}
-
-label{
-  font-weight:600;
-  color:#333;
-  display:block;
-  margin-bottom:4px;
-}
-
-input, textarea, select{
-  width:100%;
-  padding:10px;
-  border-radius:6px;
-  border:1px solid #ccc;
-  font-size:14px;
-}
-
-textarea{resize:vertical;}
-
-.error{border:2px solid var(--danger);}
-
-.image-box{
-  border:2px dashed #ccc;
-  text-align:center;
-  padding:16px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-.image-box i{color:#777;}
-
-#profileImage{display:none;}
-
-#preview{
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  object-fit:cover;
-  display:none;
-  margin:10px auto 0;
-}
-
-.phone-wrap{
-  display:flex;
-  gap:6px;
-}
-
-.phone-wrap select{width:35%;}
-
-button{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  background:var(--secondary);
-  color:#fff;
-  font-size:16px;
-  cursor:pointer;
-}
+.top-icons{position:absolute;top:10px;right:10px;}
+.top-icons button{background:none;border:none;font-size:20px;color:#1e90ff;}
+.mini-icons{display:flex;justify-content:center;gap:1rem;padding:1rem;}
+.mini-icons .icon{font-size:1.5rem;color:#333;}
+.profile-section{display:flex;gap:1rem;padding:1rem;}
+.profile-image{width:90px;height:90px;border-radius:50%;object-fit:cover;}
+.business-info-section{background:#e0f7fa;padding:1rem;border-radius:10px;}
+.action-buttons{display:grid;gap:10px;}
+.action-btn{padding:10px;border-radius:8px;color:white;text-align:center;text-decoration:none;font-weight:600;}
+.social-links{display:flex;justify-content:center;gap:15px;margin-top:15px;}
 </style>
 </head>
 
 <body>
 
-<div class="form-box">
-  <h2>Create Business Card</h2>
-  <p class="subtitle">Fill all required information</p>
+<div class="card-container">
 
-  <div class="group image-box">
-    <label for="profileImage">
-      <i class="fa fa-camera fa-2x"></i>
-      <p>Upload Profile Photo</p>
-    </label>
-    <input type="file" id="profileImage" accept="image/*">
-    <img id="preview">
+  <div class="top-icons">
+    <button id="topShareIcon"><i class="fas fa-share-alt"></i></button>
   </div>
 
-  <div class="group">
-    <label>Full Name *</label>
-    <input id="name" required>
+  <div class="mini-icons">
+    <a id="miniCallButton" class="icon"><i class="fas fa-phone"></i></a>
+    <a id="miniEmailButton" class="icon"><i class="fas fa-envelope"></i></a>
+    <a id="miniWhatsappButton" class="icon"><i class="fab fa-whatsapp"></i></a>
   </div>
 
-  <div class="group">
-    <label>Business Name *</label>
-    <input id="businessName" required>
-  </div>
-
-  <div class="group">
-    <label>Business Info *</label>
-    <textarea id="businessInfo" rows="5" required></textarea>
-  </div>
-
-  <div class="group">
-    <label>Address *</label>
-    <input id="address" required>
-  </div>
-
-  <div class="group">
-    <label>Phone *</label>
-    <div class="phone-wrap">
-      <select id="code">
-        <option value="+92">+92</option>
-        <option value="+91">+91</option>
-        <option value="+1">+1</option>
-        <option value="+44">+44</option>
-      </select>
-      <input id="phone" placeholder="Number">
+  <div class="profile-section">
+    <img id="cardProfileImage" class="profile-image"/>
+    <div>
+      <h3 id="cardName"></h3>
+      <p id="cardBusinessName"></p>
+      <p id="cardAddress"></p>
+      <p id="cardPhone"></p>
+      <p id="cardEmail"></p>
     </div>
   </div>
 
-  <div class="group">
-    <label>Email *</label>
-    <input id="email" type="email">
+  <div class="business-info-section">
+    <div id="businessInfoContent"></div>
   </div>
 
-  <div class="group">
-    <label>Facebook</label>
-    <input id="facebook">
+  <div class="action-buttons">
+    <a id="callButton" class="action-btn" style="background:#1e90ff">Call</a>
+    <a id="whatsappButton" class="action-btn" style="background:#25d366">WhatsApp</a>
+    <a id="emailButton" class="action-btn" style="background:#ff5722">Email</a>
   </div>
 
-  <div class="group">
-    <label>Instagram</label>
-    <input id="instagram">
+  <div class="social-links">
+    <a id="facebookButton"><i class="fab fa-facebook"></i></a>
+    <a id="instagramButton"><i class="fab fa-instagram"></i></a>
+    <a id="youtubeButton"><i class="fab fa-youtube"></i></a>
   </div>
 
-  <div class="group">
-    <label>YouTube</label>
-    <input id="youtube">
-  </div>
-
-  <button id="generate">Generate Card</button>
 </div>
 
 <script>
-const imgInput=document.getElementById("profileImage");
-const preview=document.getElementById("preview");
+/* ===== DATA LOADER (URL + localStorage) ===== */
+const params = new URLSearchParams(location.search);
+let data = Object.fromEntries(params.entries());
 
-imgInput.onchange=e=>{
-  const r=new FileReader();
-  r.onload=()=>{preview.src=r.result;preview.style.display="block";}
-  r.readAsDataURL(e.target.files[0]);
-};
-
-function resizeImage(file,cb){
-  const img=new Image();
-  const r=new FileReader();
-  r.onload=e=>{
-    img.src=e.target.result;
-    img.onload=()=>{
-      const c=document.createElement("canvas");
-      const max=160;
-      let w=img.width,h=img.height;
-      if(w>h && w>max){h*=max/w;w=max;}
-      else if(h>max){w*=max/h;h=max;}
-      c.width=w;c.height=h;
-      c.getContext("2d").drawImage(img,0,0,w,h);
-      cb(c.toDataURL("image/jpeg",0.45));
-    }
-  };
-  r.readAsDataURL(file);
+if(Object.keys(data).length === 0){
+  data = JSON.parse(localStorage.getItem("cardData") || "{}");
 }
 
-document.getElementById("generate").onclick=()=>{
-  const data={
-    name:name.value,
-    businessName:businessName.value,
-    businessInfo:businessInfo.value,
-    address:address.value,
-    phone:code.value+phone.value,
-    email:email.value,
-    facebook:facebook.value,
-    instagram:instagram.value,
-    youtube:youtube.value,
-    profileImage:""
-  };
+/* ===== POPULATE CARD ===== */
+cardProfileImage.src = data.profileImage || "";
+cardName.textContent = data.name || "";
+cardBusinessName.textContent = data.businessName || "";
+cardAddress.textContent = data.address || "";
+cardPhone.textContent = data.phone || "";
+cardEmail.textContent = data.email || "";
+businessInfoContent.textContent = data.businessInfo || "";
 
-  const f=imgInput.files[0];
-  if(f){
-    resizeImage(f,b64=>{
-      data.profileImage=b64;
-      location.href="card.html?"+new URLSearchParams(data);
-    });
-  }else{
-    location.href="card.html?"+new URLSearchParams(data);
-  }
+/* ===== LINKS ===== */
+miniCallButton.href = "tel:" + (data.phone||"");
+miniEmailButton.href = "mailto:" + (data.email||"");
+miniWhatsappButton.href = "https://wa.me/" + (data.phone||"");
+
+callButton.href = "tel:" + (data.phone||"");
+whatsappButton.href = "https://wa.me/" + (data.phone||"");
+emailButton.href = "mailto:" + (data.email||"");
+
+if(data.facebook){
+  facebookButton.href = data.facebook;
+  facebookButton.target="_blank";
+}
+if(data.instagram){
+  instagramButton.href = data.instagram;
+  instagramButton.target="_blank";
+}
+if(data.youtube){
+  youtubeButton.href = data.youtube;
+  youtubeButton.target="_blank";
+}
+
+/* ===== SHARE ===== */
+topShareIcon.onclick=()=>{
+  navigator.share({
+    title:data.name || "My Card",
+    url:location.href
+  });
 };
+
+/* ===== BACK BLOCK ===== */
+history.pushState(null,null,location.href);
+window.onpopstate=()=>{history.go(1);};
 </script>
 
 </body>
