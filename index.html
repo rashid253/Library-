@@ -44,6 +44,7 @@ button{
   background:#2563eb;
   color:white;
   font-size:16px;
+  cursor:pointer;
 }
 .image-box{
   border:2px dashed #ccc;
@@ -112,17 +113,17 @@ button{
 </div>
 
 <div class="group">
-  <label>Website / Portfolio (optional)</label>
+  <label>Website / Portfolio</label>
   <input id="facebook" placeholder="https://">
 </div>
 
 <div class="group">
-  <label>Instagram (optional)</label>
+  <label>Instagram</label>
   <input id="instagram" placeholder="https://">
 </div>
 
 <div class="group">
-  <label>YouTube / LinkedIn (optional)</label>
+  <label>YouTube / LinkedIn</label>
   <input id="youtube" placeholder="https://">
 </div>
 
@@ -133,6 +134,17 @@ button{
 const generate = document.getElementById("generate");
 const imgInput = document.getElementById("profileImage");
 const preview = document.getElementById("preview");
+
+const nameInput = document.getElementById("name");
+const businessNameInput = document.getElementById("businessName");
+const businessInfoInput = document.getElementById("businessInfo");
+const addressInput = document.getElementById("address");
+const phoneInput = document.getElementById("phone");
+const codeInput = document.getElementById("code");
+const emailInput = document.getElementById("email");
+const facebookInput = document.getElementById("facebook");
+const instagramInput = document.getElementById("instagram");
+const youtubeInput = document.getElementById("youtube");
 
 imgInput.onchange = e=>{
   const r = new FileReader();
@@ -152,29 +164,29 @@ generate.onclick = ()=>{
     }
   });
 
-  if(!profileImage.files[0]){
+  if(!imgInput.files[0]){
     alert("Profile photo is required");
     return;
   }
-  if(phone.value.length < 7){
+  if(phoneInput.value.length < 7){
     alert("Invalid phone number");
     return;
   }
 
   const data={
-    name:name.value.trim(),
-    businessName:businessName.value.trim(),
-    businessInfo:businessInfo.value.trim(),
-    address:address.value.trim(),
-    phone:code.value+phone.value.trim(),
-    email:email.value.trim(),
-    facebook:facebook.value.trim(),
-    instagram:instagram.value.trim(),
-    youtube:youtube.value.trim(),
+    name:nameInput.value.trim(),
+    businessName:businessNameInput.value.trim(),
+    businessInfo:businessInfoInput.value.trim(),
+    address:addressInput.value.trim(),
+    phone:codeInput.value+phoneInput.value.trim(),
+    email:emailInput.value.trim(),
+    facebook:facebookInput.value.trim(),
+    instagram:instagramInput.value.trim(),
+    youtube:youtubeInput.value.trim(),
     profileImage:""
   };
 
-  const f = profileImage.files[0];
+  const f = imgInput.files[0];
   const r = new FileReader();
   r.onload = ()=>{
     data.profileImage = r.result;
