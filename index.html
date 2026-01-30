@@ -11,15 +11,12 @@ h2{margin-top:20px}
 input,textarea{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #ccc}
 button{width:100%;padding:14px;border:none;border-radius:10px;background:#2563eb;color:white;font-size:16px;margin-top:12px}
 .offerBox{background:white;padding:10px;border-radius:10px;margin-top:10px}
-label{font-weight:600;font-size:13px}
 </style>
 </head>
-
 <body>
 <div class="wrap">
 
 <h2>Profile</h2>
-<label>Profile Image</label>
 <input type="file" id="profileImage" accept="image/*">
 <input id="name" placeholder="Full Name">
 <input id="phone" placeholder="Phone e.g 923001234567">
@@ -31,59 +28,35 @@ label{font-weight:600;font-size:13px}
 <textarea id="businessInfo" placeholder="About your business"></textarea>
 
 <h2>Offers (max 5)</h2>
-
-<div class="offerBox">
-<label>Offer 1</label>
-<input type="file" id="offerImg1" accept="image/*">
-<input id="offerTitle1" placeholder="Title">
-<textarea id="offerDesc1" placeholder="Description"></textarea>
-</div>
-
-<div class="offerBox">
-<label>Offer 2</label>
-<input type="file" id="offerImg2" accept="image/*">
-<input id="offerTitle2" placeholder="Title">
-<textarea id="offerDesc2" placeholder="Description"></textarea>
-</div>
-
-<div class="offerBox">
-<label>Offer 3</label>
-<input type="file" id="offerImg3" accept="image/*">
-<input id="offerTitle3" placeholder="Title">
-<textarea id="offerDesc3" placeholder="Description"></textarea>
-</div>
-
-<div class="offerBox">
-<label>Offer 4</label>
-<input type="file" id="offerImg4" accept="image/*">
-<input id="offerTitle4" placeholder="Title">
-<textarea id="offerDesc4" placeholder="Description"></textarea>
-</div>
-
-<div class="offerBox">
-<label>Offer 5</label>
-<input type="file" id="offerImg5" accept="image/*">
-<input id="offerTitle5" placeholder="Title">
-<textarea id="offerDesc5" placeholder="Description"></textarea>
-</div>
+<div id="offersForm"></div>
 
 <button onclick="generate()">Generate Card</button>
 </div>
 
 <script>
-// resize to ~100kb
+for(let i=1;i<=5;i++){
+ offersForm.innerHTML+=`
+ <div class="offerBox">
+  <b>Offer ${i}</b>
+  <input type="file" id="offerImg${i}" accept="image/*">
+  <input id="offerTitle${i}" placeholder="Title">
+  <textarea id="offerDesc${i}" placeholder="Description"></textarea>
+ </div>`;
+}
+
+// resize image
 function resizeImage(file){
  return new Promise(res=>{
   const img=new Image();
   img.onload=()=>{
-   const canvas=document.createElement("canvas");
+   const c=document.createElement("canvas");
    const max=600;
    let w=img.width,h=img.height;
    if(w>h && w>max){h*=max/w;w=max}
    if(h>w && h>max){w*=max/h;h=max}
-   canvas.width=w;canvas.height=h;
-   canvas.getContext("2d").drawImage(img,0,0,w,h);
-   canvas.toBlob(b=>res(b),"image/jpeg",0.7);
+   c.width=w;c.height=h;
+   c.getContext("2d").drawImage(img,0,0,w,h);
+   c.toBlob(b=>res(b),"image/jpeg",0.7);
   }
   img.src=URL.createObjectURL(file);
  });
