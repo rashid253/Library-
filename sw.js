@@ -1,9 +1,10 @@
 self.addEventListener("install",e=>{
  e.waitUntil(
-  caches.open("mycards").then(c=>{
+  caches.open("bazaar").then(c=>{
    return c.addAll([
-    "cards.html",
+    "index.html",
     "card.html",
+    "shops.json",
     "manifest.json"
    ]);
   })
