@@ -1,7 +1,7 @@
 self.addEventListener("install",e=>{
   e.waitUntil(
-    caches.open("card-app").then(c=>{
-      return c.addAll(["card.html","manifest.json"]);
+    caches.open("cards-app").then(c=>{
+      return c.addAll(["cards.html","card.html","manifest.json"]);
     })
   );
 });
