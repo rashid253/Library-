@@ -2,45 +2,49 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>My Cards</title>
+<title>My Shops</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<script>
+if("serviceWorker" in navigator){
+ navigator.serviceWorker.register("sw.js");
+}
+</script>
 <style>
 body{font-family:system-ui;background:#f1f5f9;margin:0;padding:15px;}
 .card{
  background:white;
- padding:12px;
+ padding:15px;
  border-radius:14px;
  margin-bottom:10px;
  display:flex;
  gap:12px;
  align-items:center;
- box-shadow:0 5px 15px rgba(0,0,0,.1);
 }
 .card img{
- width:55px;height:55px;
- border-radius:50%;
- object-fit:cover;
+ width:55px;height:55px;border-radius:50%;
 }
 </style>
 </head>
 <body>
 
-<h2>Saved Cards</h2>
+<h2>My Saved Shops</h2>
 <div id="list"></div>
 
 <script>
-let all=JSON.parse(localStorage.getItem("allCards")||"[]");
-all.forEach(c=>{
+let all=JSON.parse(localStorage.getItem("myShops")||"[]");
+
+all.forEach(s=>{
  const d=document.createElement("div");
  d.className="card";
  d.innerHTML=`
- <img src="${c.profileImage}">
+ <img src="${s.profileImage}">
  <div>
- <b>${c.name}</b><br>
- <small>${c.businessName}</small>
+ <b>${s.businessName}</b><br>
+ <small>${s.address}</small>
  </div>`;
  d.onclick=()=>{
-  localStorage.setItem("currentCard",JSON.stringify(c));
+  localStorage.setItem("currentShop",JSON.stringify(s));
   location.href="card.html";
  };
  list.appendChild(d);
