@@ -5,25 +5,26 @@
 <title>Bazaar</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
+<meta name="theme-color" content="#0f172a">
 <script>
 if("serviceWorker" in navigator){
  navigator.serviceWorker.register("sw.js");
 }
 </script>
 <style>
-body{margin:0;font-family:system-ui;background:#f1f5f9;}
-header{background:#2563eb;color:white;padding:15px;text-align:center;}
-input{width:90%;margin:10px;padding:10px;border-radius:10px;border:1px solid #ccc;}
-.chips span{
- background:#e2e8f0;padding:6px 10px;border-radius:20px;
- margin:4px;display:inline-block;cursor:pointer;
-}
+body{margin:0;font-family:system-ui;background:#f8fafc;}
+header{background:#0f172a;color:white;padding:20px;text-align:center;}
+.search{padding:15px;}
+input{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;}
 .card{
- background:white;margin:10px;padding:12px;border-radius:14px;
+ background:white;
+ margin:12px;
+ padding:14px;
+ border-radius:16px;
+ box-shadow:0 10px 30px rgba(0,0,0,.08);
 }
-.ad{background:#ffe08a;margin:10px;padding:15px;text-align:center;border-radius:12px;}
-.featured{border:2px solid #facc15;}
+.featured{border-left:5px solid gold;}
+.ad{margin:12px;padding:20px;border-radius:16px;background:#fde047;text-align:center;}
 </style>
 </head>
 <body>
@@ -33,62 +34,39 @@ input{width:90%;margin:10px;padding:10px;border-radius:10px;border:1px solid #cc
 <div>Sab dukaanen, ek jagah</div>
 </header>
 
+<div class="search">
 <input id="search" placeholder="Search shops...">
-
-<div class="chips">
-<span onclick="filterCat('All')">All</span>
-<span onclick="filterCat('Electronics')">Electronics</span>
-<span onclick="filterCat('Tailor')">Tailor</span>
-<span onclick="filterCat('Grocery')">Grocery</span>
 </div>
 
 <div class="ad">Advertisement Space</div>
 
-<h3 style="margin-left:10px">Featured</h3>
-<div id="featured"></div>
-
-<h3 style="margin-left:10px">My Shops</h3>
-<div id="my"></div>
+<div id="list"></div>
 
 <script>
-let global=[];
-let my=JSON.parse(localStorage.getItem("myShops")||"[]");
+let shops=[];
 
 fetch("shops.json").then(r=>r.json()).then(d=>{
- global=d;
- render();
+ shops=d;
+ render(d);
 });
 
-function render(){
- featured.innerHTML="";
- global.filter(s=>s.featured).forEach(showCard);
-
- my.innerHTML="";
- my.forEach(showCard);
-}
-
-function showCard(s){
- const d=document.createElement("div");
- d.className="card"+(s.featured?" featured":"");
- d.innerHTML=`<b>${s.name}</b><br>${s.category}<br>${s.address}`;
- d.onclick=()=>{
-  localStorage.setItem("currentShop",JSON.stringify(s));
-  location.href="card.html";
- };
- if(s.featured) featured.appendChild(d);
- else my.appendChild(d);
-}
-
-function filterCat(c){
- my=document.createElement("temp")&&JSON.parse(localStorage.getItem("myShops")||"[]");
- if(c!="All") my=my.filter(s=>s.category==c);
- render();
+function render(arr){
+ list.innerHTML="";
+ arr.forEach(s=>{
+  const d=document.createElement("div");
+  d.className="card"+(s.featured?" featured":"");
+  d.innerHTML=`<b>${s.name}</b><br>${s.category}<br><small>${s.address}</small>`;
+  d.onclick=()=>{
+   localStorage.setItem("currentShop",JSON.stringify(s));
+   location.href="card.html";
+  };
+  list.appendChild(d);
+ });
 }
 
 search.oninput=()=>{
  const q=search.value.toLowerCase();
- my=JSON.parse(localStorage.getItem("myShops")||"[]").filter(s=>s.name.toLowerCase().includes(q));
- render();
+ render(shops.filter(s=>s.name.toLowerCase().includes(q)));
 };
 </script>
 </body>
