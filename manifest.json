@@ -1,7 +1,7 @@
 {
- "name":"My Service Cards",
- "short_name":"MyCards",
- "start_url":"cards.html",
+ "name":"Bazaar",
+ "short_name":"Bazaar",
+ "start_url":"index.html",
  "display":"standalone",
  "background_color":"#ffffff",
  "theme_color":"#2563eb",
