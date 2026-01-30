@@ -6,56 +6,110 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
-
-<script>
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
-}
-</script>
+<meta name="theme-color" content="#64748b">
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
 <style>
 body{
   margin:0;
-  background:linear-gradient(135deg,#f1f5f9,#e2e8f0);
-  font-family:Arial;
+  background:#e5e7eb;
+  font-family:system-ui;
   display:flex;
   justify-content:center;
   align-items:center;
   min-height:100vh;
 }
+
 .card{
   width:100%;
   max-width:380px;
   background:white;
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 20px 40px rgba(0,0,0,.2);
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 25px 50px rgba(0,0,0,.2);
 }
-.header{display:flex;justify-content:space-between;}
-.header i{color:#2563eb;font-size:18px;}
-.profile{text-align:center;margin-top:10px;}
-.profile img{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #2563eb;}
-.info{text-align:center;color:#475569;font-size:14px;}
-.actions{display:flex;justify-content:space-around;margin-top:15px;}
-.actions a{font-size:20px;color:#2563eb;}
-.buttons{display:grid;gap:10px;margin-top:15px;}
-.buttons a{text-decoration:none;padding:12px;border-radius:12px;color:white;text-align:center;font-weight:bold;}
+
+/* top grey curve */
+.top{
+  background:linear-gradient(135deg,#9ca3af,#6b7280);
+  height:140px;
+  position:relative;
+}
+
+.header{
+  display:flex;
+  justify-content:space-around;
+  padding:15px;
+  color:white;
+  font-size:20px;
+}
+
+.profile{
+  text-align:center;
+  margin-top:-50px;
+}
+
+.profile img{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  border:4px solid white;
+  object-fit:cover;
+  background:white;
+}
+
+.profile h2{margin:8px 0 2px;}
+.profile div{color:#475569;font-size:14px;}
+
+.info{
+  text-align:center;
+  padding:10px 20px;
+  color:#334155;
+  font-size:14px;
+}
+
+.buttons{
+  display:grid;
+  gap:12px;
+  padding:20px;
+}
+
+.buttons a{
+  text-decoration:none;
+  padding:14px;
+  border-radius:14px;
+  color:white;
+  text-align:center;
+  font-weight:600;
+  font-size:15px;
+}
+
 .call{background:#2563eb;}
 .wa{background:#22c55e;}
 .mail{background:#f97316;}
-.social{display:flex;justify-content:center;gap:18px;margin-top:15px;}
-.social a{color:#475569;font-size:20px;}
+
+.social{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  padding-bottom:18px;
+}
+
+.social a{color:#64748b;font-size:22px;}
 </style>
 </head>
 
 <body>
 <div class="card">
-  <div class="header">
-    <i class="fa fa-share-alt" id="share"></i>
-    <i class="fa fa-download" id="save"></i>
+
+  <div class="top">
+    <div class="header">
+      <i class="fa fa-share-alt" id="share"></i>
+      <i class="fa fa-download" id="save"></i>
+      <i class="fa fa-map-marker-alt" id="map"></i>
+      <i class="fa fa-comment-sms" id="sms"></i>
+    </div>
   </div>
 
   <div class="profile">
@@ -65,22 +119,16 @@ body{
   </div>
 
   <div class="info">
-    <div id="about"></div>
+    <div id="about"></div><br>
     <div id="address"></div>
     <div id="phone"></div>
     <div id="email"></div>
   </div>
 
-  <div class="actions">
-    <a id="miniCall"><i class="fa fa-phone"></i></a>
-    <a id="miniWa"><i class="fab fa-whatsapp"></i></a>
-    <a id="miniMail"><i class="fa fa-envelope"></i></a>
-  </div>
-
   <div class="buttons">
-    <a id="callBtn" class="call">Call</a>
-    <a id="waBtn" class="wa">WhatsApp</a>
-    <a id="mailBtn" class="mail">Email</a>
+    <a id="callBtn" class="call"><i class="fa fa-phone"></i> Call Now</a>
+    <a id="waBtn" class="wa"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+    <a id="mailBtn" class="mail"><i class="fa fa-envelope"></i> Send Email</a>
   </div>
 
   <div class="social">
@@ -88,6 +136,7 @@ body{
     <a id="ig"><i class="fab fa-instagram"></i></a>
     <a id="yt"><i class="fab fa-youtube"></i></a>
   </div>
+
 </div>
 
 <script>
@@ -101,12 +150,17 @@ address.textContent=data.address||"";
 phone.textContent=data.phone||"";
 email.textContent=data.email||"";
 
-miniCall.href="tel:"+data.phone;
-miniWa.href="https://wa.me/"+data.phone;
-miniMail.href="mailto:"+data.email;
-callBtn.href=miniCall.href;
-waBtn.href=miniWa.href;
-mailBtn.href=miniMail.href;
+callBtn.href="tel:"+data.phone;
+waBtn.href="https://wa.me/"+data.phone;
+mailBtn.href="mailto:"+data.email;
+
+map.onclick=()=>{
+  window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(data.address));
+};
+
+sms.onclick=()=>{
+  location.href="sms:"+data.phone;
+};
 
 if(data.facebook){fb.href=data.facebook;fb.target="_blank";}
 if(data.instagram){ig.href=data.instagram;ig.target="_blank";}
@@ -128,9 +182,6 @@ END:VCARD`;
   a.download="contact.vcf";
   a.click();
 };
-
-history.pushState(null,null,location.href);
-window.onpopstate=()=>{history.go(1);}
 </script>
 </body>
 </html>
