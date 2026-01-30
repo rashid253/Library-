@@ -2,198 +2,138 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>My Smart Card</title>
+<title>My Digital Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2563eb">
 
-<script>
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
-}
-</script>
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-body{
-  margin:0;
-  background:linear-gradient(135deg,#e0f2fe,#f8fafc);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  font-family:system-ui;
+body{margin:0;font-family:system-ui;background:#0f172a;color:white}
+.topbar{
+ display:flex;justify-content:space-around;
+ padding:10px;background:#020617
 }
-.card{
-  width:100%;
-  max-width:400px;
-  background:white;
-  border-radius:20px;
-  box-shadow:0 20px 40px rgba(0,0,0,.25);
-  overflow:hidden;
-}
-.status{
-  display:flex;
-  justify-content:space-between;
-  padding:6px 10px;
-  font-size:12px;
-  background:#0f172a;
-  color:white;
-}
-.top{
-  background:linear-gradient(135deg,#2563eb,#38bdf8);
-  padding:14px;
-  color:white;
-}
-.header{
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-.header img{
-  width:70px;
-  height:70px;
-  border-radius:50%;
-  border:3px solid white;
-  object-fit:cover;
-}
-.name{font-size:18px;font-weight:700;}
-.role{font-size:13px;}
+.topbar a{color:white;font-size:18px}
 
-.ticker{
-  background:black;
-  color:#38bdf8;
-  overflow:hidden;
-  white-space:nowrap;
+.profile{
+ display:flex;gap:12px;
+ padding:16px;background:#1e293b
 }
-.ticker span{
-  display:inline-block;
-  padding-left:100%;
-  animation:ticker 12s linear infinite;
+.profile img{
+ width:70px;height:70px;border-radius:50%;
+ object-fit:cover;border:2px solid white
 }
-@keyframes ticker{
-  0%{transform:translateX(0);}
-  100%{transform:translateX(-100%);}
+
+.info{font-size:13px}
+
+.slider{
+ display:flex;overflow-x:auto;
+ scroll-snap-type:x mandatory;
+}
+.slide{
+ min-width:90%;margin:10px;
+ background:#2563eb;
+ padding:16px;border-radius:16px;
+ scroll-snap-align:center
+}
+.slide img{
+ width:100%;height:120px;
+ object-fit:cover;border-radius:10px
 }
 
 .actions{
-  display:flex;
-  justify-content:space-around;
-  padding:14px;
+ display:flex;justify-content:space-around;
+ padding:16px;background:#020617
 }
 .actions a{
-  width:46px;
-  height:46px;
-  border-radius:50%;
-  background:#2563eb;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  font-size:18px;
+ color:white;font-size:22px
 }
-
-.buttons{
-  display:grid;
-  gap:10px;
-  padding:0 14px 14px;
-}
-.buttons a{
-  text-decoration:none;
-  padding:12px;
-  border-radius:12px;
-  background:#2563eb;
-  color:white;
-  text-align:center;
-  font-weight:700;
-}
-
-.social{
-  display:flex;
-  justify-content:center;
-  gap:18px;
-  padding-bottom:14px;
-}
-.social a{color:#2563eb;font-size:20px;}
 </style>
 </head>
 
 <body>
-<div class="card">
 
-<div class="status">
-  <div><i class="fa fa-map-marker-alt"></i> GPS</div>
-  <div>
-    <i class="fa fa-signal"></i>
-    <i class="fa fa-wifi"></i>
-  </div>
+<div class="topbar">
+<a id="share"><i class="fa fa-share"></i></a>
+<a id="download"><i class="fa fa-download"></i></a>
+<a id="map"><i class="fa fa-map"></i></a>
+<a id="sms"><i class="fa fa-comment"></i></a>
 </div>
 
-<div class="top">
-  <div class="header">
-    <img id="photo">
-    <div>
-      <div class="name" id="name"></div>
-      <div class="role" id="business"></div>
-      <div id="phone"></div>
-      <div id="email"></div>
-    </div>
-  </div>
+<div class="profile">
+<img id="photo">
+<div class="info">
+<div id="name"></div>
+<div id="business"></div>
+<div id="phone"></div>
+<div id="email"></div>
+<div id="address"></div>
+</div>
 </div>
 
-<div class="ticker">
-  <span id="tickerText"></span>
+<div class="slider">
+<div class="slide">
+<h3>About</h3>
+<p id="about"></p>
+</div>
+<div class="slide">
+<h3>Services</h3>
+<p>Professional business services</p>
+</div>
+<div class="slide">
+<h3>Portfolio</h3>
+<p>Swipe cards like gallery</p>
+</div>
 </div>
 
 <div class="actions">
-  <a id="miniCall"><i class="fa fa-phone"></i></a>
-  <a id="miniWa"><i class="fab fa-whatsapp"></i></a>
-  <a id="map"><i class="fa fa-map"></i></a>
-</div>
-
-<div class="buttons">
-  <a id="callBtn">Call</a>
-  <a id="waBtn">WhatsApp</a>
-  <a id="mapBtn">Open Map</a>
-</div>
-
-<div class="social">
-  <a id="fb"><i class="fab fa-facebook"></i></a>
-  <a id="ig"><i class="fab fa-instagram"></i></a>
-  <a id="yt"><i class="fab fa-youtube"></i></a>
-</div>
-
+<a id="call"><i class="fa fa-phone"></i></a>
+<a id="wa"><i class="fab fa-whatsapp"></i></a>
+<a id="mail"><i class="fa fa-envelope"></i></a>
+<a id="fb"><i class="fab fa-facebook"></i></a>
+<a id="ig"><i class="fab fa-instagram"></i></a>
+<a id="yt"><i class="fab fa-youtube"></i></a>
 </div>
 
 <script>
-const p = new URLSearchParams(location.search);
-const data = JSON.parse(atob(p.get("data")));
+const p=new URLSearchParams(location.search);
+const d=JSON.parse(atob(p.get("data")));
 
-photo.src = data.profileImage;
-name.textContent = data.name;
-business.textContent = data.businessName;
-phone.textContent = "📞 "+data.phone;
-email.textContent = "✉️ "+data.email;
+photo.src=d.profileImage;
+name.textContent=d.name;
+business.textContent=d.businessName;
+phone.textContent="📞 "+d.phone;
+email.textContent="✉️ "+d.email;
+address.textContent="📍 "+d.address;
+about.textContent=d.businessInfo;
 
-tickerText.textContent =
-  data.businessInfo+" | "+
-  data.address+" | "+
-  data.phone+" | "+
-  data.email;
+call.href="tel:"+d.phone;
+wa.href="https://wa.me/"+d.phone;
+mail.href="mailto:"+d.email;
+map.href="https://maps.google.com/?q="+encodeURIComponent(d.address);
+sms.href="sms:"+d.phone;
 
-miniCall.href = "tel:"+data.phone;
-miniWa.href = "https://wa.me/"+data.phone;
-map.href = "https://maps.google.com/?q="+encodeURIComponent(data.address);
+if(d.facebook) fb.href=d.facebook;
+if(d.instagram) ig.href=d.instagram;
+if(d.youtube) yt.href=d.youtube;
 
-callBtn.href = miniCall.href;
-waBtn.href = miniWa.href;
-mapBtn.href = map.href;
+share.onclick=()=>{
+ navigator.share({
+  title:d.name,
+  text:d.businessName,
+  url:location.href
+ });
+}
 
-if(data.facebook) fb.href = data.facebook;
-if(data.instagram) ig.href = data.instagram;
-if(data.youtube) yt.href = data.youtube;
+download.onclick=()=>{
+ const a=document.createElement("a");
+ a.href=d.profileImage;
+ a.download="profile.jpg";
+ a.click();
+}
 </script>
 </body>
 </html>
