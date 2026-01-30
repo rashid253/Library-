@@ -3,49 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Digital Card Generator</title>
+<title>Digital Card</title>
+<link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-body{font-family:Arial;margin:0;background:#f4f6fb}
-input,textarea,button{width:100%;margin:8px 0;padding:10px}
-button{background:#2563eb;color:#fff;border:0;font-size:18px}
-</style>
 </head>
 <body>
 
-<h2 style="text-align:center">Create Digital Card</h2>
+<h2>Create Your Digital Card</h2>
 
-<div style="padding:15px">
+<div class="form">
 <input id="name" placeholder="Business / Name">
 <input id="phone" placeholder="Phone">
 <input id="email" placeholder="Email">
 <input id="address" placeholder="Address">
 <input id="image" placeholder="Profile Image URL">
+
 <textarea id="offer1" placeholder="Offer 1"></textarea>
 <textarea id="offer2" placeholder="Offer 2"></textarea>
 <textarea id="offer3" placeholder="Offer 3"></textarea>
+
 <button onclick="generate()">Generate Card</button>
 </div>
 
-<script>
-const supabase = supabase.createClient(
-  "https://dfvnefbxgayxqgjjgtrr.supabase.co",
-  "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
-);
-
-async function generate(){
- const data={
-  name:name.value,
-  phone:phone.value,
-  email:email.value,
-  address:address.value,
-  image:image.value,
-  offers:[offer1.value,offer2.value,offer3.value]
- };
- const id=Math.random().toString(36).slice(2,8);
- await supabase.from("cards").insert({id,data:JSON.stringify(data)});
- location.href="card.html?id="+id;
-}
-</script>
+<script src="app.js"></script>
 </body>
 </html>
