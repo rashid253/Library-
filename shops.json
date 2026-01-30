@@ -1,0 +1,19 @@
+[
+  {
+    "id": 1,
+    "name": "Ali Electronics",
+    "category": "Electronics",
+    "phone": "+923001234567",
+    "whatsapp": "923001234567",
+    "address": "Main Market, Lahore",
+    "featured": true,
+
+    "facebook": "https://facebook.com",
+    "instagram": "",
+    "youtube": "",
+
+    "dukan": "",
+    "email": "",
+    "jazzcashQR": ""
+  }
+]
