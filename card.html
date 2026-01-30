@@ -2,80 +2,132 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Bazaar</title>
+<title>My Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+
+<script>
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
 <style>
-body{margin:0;background:#f8fafc;font-family:system-ui;}
-.box{
- background:white;
- margin:20px;
- padding:20px;
- border-radius:20px;
- text-align:center;
- box-shadow:0 10px 40px rgba(0,0,0,.1);
+body{
+  margin:0;
+  background:linear-gradient(135deg,#f1f5f9,#e2e8f0);
+  font-family:Arial;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
 }
-.btn{
- display:block;
- margin:10px 0;
- padding:14px;
- border-radius:14px;
- color:white;
- text-decoration:none;
- font-weight:600;
+.card{
+  width:100%;
+  max-width:380px;
+  background:white;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 20px 40px rgba(0,0,0,.2);
 }
+.header{display:flex;justify-content:space-between;}
+.header i{color:#2563eb;font-size:18px;}
+.profile{text-align:center;margin-top:10px;}
+.profile img{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #2563eb;}
+.info{text-align:center;color:#475569;font-size:14px;}
+.actions{display:flex;justify-content:space-around;margin-top:15px;}
+.actions a{font-size:20px;color:#2563eb;}
+.buttons{display:grid;gap:10px;margin-top:15px;}
+.buttons a{text-decoration:none;padding:12px;border-radius:12px;color:white;text-align:center;font-weight:bold;}
 .call{background:#2563eb;}
-.wa{background:#16a34a;}
-.map{background:#f97316;}
-.opt{background:#64748b;}
+.wa{background:#22c55e;}
+.mail{background:#f97316;}
+.social{display:flex;justify-content:center;gap:18px;margin-top:15px;}
+.social a{color:#475569;font-size:20px;}
 </style>
 </head>
+
 <body>
+<div class="card">
+  <div class="header">
+    <i class="fa fa-share-alt" id="share"></i>
+    <i class="fa fa-download" id="save"></i>
+  </div>
 
-<div class="box">
-<h2 id="name"></h2>
-<div id="addr"></div>
+  <div class="profile">
+    <img id="photo">
+    <h2 id="name"></h2>
+    <div id="business"></div>
+  </div>
 
-<a id="call" class="btn call">Call</a>
-<a id="wa" class="btn wa">WhatsApp</a>
-<a id="map" class="btn map">Open Map</a>
+  <div class="info">
+    <div id="about"></div>
+    <div id="address"></div>
+    <div id="phone"></div>
+    <div id="email"></div>
+  </div>
 
-<a id="dukan" class="btn opt">Dukan Store</a>
-<a id="mail" class="btn opt">Email</a>
-<a id="fb" class="btn opt">Facebook</a>
-<a id="ig" class="btn opt">Instagram</a>
-<a id="yt" class="btn opt">YouTube</a>
+  <div class="actions">
+    <a id="miniCall"><i class="fa fa-phone"></i></a>
+    <a id="miniWa"><i class="fab fa-whatsapp"></i></a>
+    <a id="miniMail"><i class="fa fa-envelope"></i></a>
+  </div>
 
-<button onclick="shareShop()">Share</button>
+  <div class="buttons">
+    <a id="callBtn" class="call">Call</a>
+    <a id="waBtn" class="wa">WhatsApp</a>
+    <a id="mailBtn" class="mail">Email</a>
+  </div>
+
+  <div class="social">
+    <a id="fb"><i class="fab fa-facebook"></i></a>
+    <a id="ig"><i class="fab fa-instagram"></i></a>
+    <a id="yt"><i class="fab fa-youtube"></i></a>
+  </div>
 </div>
 
 <script>
-const s=JSON.parse(localStorage.getItem("currentShop"));
+let data = JSON.parse(localStorage.getItem("cardData")||"{}");
 
-name.textContent=s.name;
-addr.textContent=s.address;
+photo.src=data.profileImage||"";
+name.textContent=data.name||"";
+business.textContent=data.businessName||"";
+about.textContent=data.businessInfo||"";
+address.textContent=data.address||"";
+phone.textContent=data.phone||"";
+email.textContent=data.email||"";
 
-call.href="tel:"+s.phone;
-wa.href="https://wa.me/"+s.whatsapp;
-map.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(s.address);
+miniCall.href="tel:"+data.phone;
+miniWa.href="https://wa.me/"+data.phone;
+miniMail.href="mailto:"+data.email;
+callBtn.href=miniCall.href;
+waBtn.href=miniWa.href;
+mailBtn.href=miniMail.href;
 
-function opt(btn,link){
- if(link) btn.href=link;
- else btn.style.display="none";
-}
+if(data.facebook){fb.href=data.facebook;fb.target="_blank";}
+if(data.instagram){ig.href=data.instagram;ig.target="_blank";}
+if(data.youtube){yt.href=data.youtube;yt.target="_blank";}
 
-opt(dukan,s.dukan);
-opt(mail,"mailto:"+s.email);
-opt(fb,s.facebook);
-opt(ig,s.instagram);
-opt(yt,s.youtube);
+share.onclick=()=>{
+  navigator.share({title:data.name,url:location.href});
+};
 
-function shareShop(){
- navigator.share({
-  title:s.name,
-  text:"Check this shop on Bazaar",
-  url:location.href
- });
-}
+save.onclick=()=>{
+  const v=`BEGIN:VCARD
+FN:${data.name}
+TEL:${data.phone}
+EMAIL:${data.email}
+ADR:${data.address}
+END:VCARD`;
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([v],{type:"text/vcard"}));
+  a.download="contact.vcf";
+  a.click();
+};
 
 history.pushState(null,null,location.href);
 window.onpopstate=()=>{history.go(1);}
