@@ -2,48 +2,93 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Create Shop Card</title>
+<title>Bazaar</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+<script>
+if("serviceWorker" in navigator){
+ navigator.serviceWorker.register("sw.js");
+}
+</script>
 <style>
-body{font-family:system-ui;background:#f1f5f9;padding:20px;}
-input,textarea{width:100%;padding:10px;margin:6px 0;}
-button{padding:12px;width:100%;background:#2563eb;color:white;border:none;}
+body{margin:0;font-family:system-ui;background:#f1f5f9;}
+header{background:#2563eb;color:white;padding:15px;text-align:center;}
+input{width:90%;margin:10px;padding:10px;border-radius:10px;border:1px solid #ccc;}
+.chips span{
+ background:#e2e8f0;padding:6px 10px;border-radius:20px;
+ margin:4px;display:inline-block;cursor:pointer;
+}
+.card{
+ background:white;margin:10px;padding:12px;border-radius:14px;
+}
+.ad{background:#ffe08a;margin:10px;padding:15px;text-align:center;border-radius:12px;}
+.featured{border:2px solid #facc15;}
 </style>
 </head>
 <body>
 
-<h2>Create Your Card</h2>
+<header>
+<h2>Bazaar</h2>
+<div>Sab dukaanen, ek jagah</div>
+</header>
 
-<input id="name" placeholder="Shop Owner Name">
-<input id="businessName" placeholder="Shop Name">
-<textarea id="businessInfo" placeholder="Services"></textarea>
-<input id="address" placeholder="City, Country">
-<input id="phone" placeholder="Phone">
-<input id="email" placeholder="Email">
-<input type="file" id="profileImage">
+<input id="search" placeholder="Search shops...">
 
-<button id="generate">Generate Card</button>
+<div class="chips">
+<span onclick="filterCat('All')">All</span>
+<span onclick="filterCat('Electronics')">Electronics</span>
+<span onclick="filterCat('Tailor')">Tailor</span>
+<span onclick="filterCat('Grocery')">Grocery</span>
+</div>
+
+<div class="ad">Advertisement Space</div>
+
+<h3 style="margin-left:10px">Featured</h3>
+<div id="featured"></div>
+
+<h3 style="margin-left:10px">My Shops</h3>
+<div id="my"></div>
 
 <script>
-generate.onclick=()=>{
- const data={
-  id:Date.now(),
-  name:name.value,
-  businessName:businessName.value,
-  businessInfo:businessInfo.value,
-  address:address.value,
-  phone:phone.value,
-  email:email.value,
-  profileImage:""
- };
+let global=[];
+let my=JSON.parse(localStorage.getItem("myShops")||"[]");
 
- const r=new FileReader();
- r.onload=()=>{
-  data.profileImage=r.result;
-  localStorage.setItem("shop_"+data.id,JSON.stringify(data));
-  alert("Share this link:\nadd.html?shop="+data.id);
+fetch("shops.json").then(r=>r.json()).then(d=>{
+ global=d;
+ render();
+});
+
+function render(){
+ featured.innerHTML="";
+ global.filter(s=>s.featured).forEach(showCard);
+
+ my.innerHTML="";
+ my.forEach(showCard);
+}
+
+function showCard(s){
+ const d=document.createElement("div");
+ d.className="card"+(s.featured?" featured":"");
+ d.innerHTML=`<b>${s.name}</b><br>${s.category}<br>${s.address}`;
+ d.onclick=()=>{
+  localStorage.setItem("currentShop",JSON.stringify(s));
+  location.href="card.html";
  };
- r.readAsDataURL(profileImage.files[0]);
+ if(s.featured) featured.appendChild(d);
+ else my.appendChild(d);
+}
+
+function filterCat(c){
+ my=document.createElement("temp")&&JSON.parse(localStorage.getItem("myShops")||"[]");
+ if(c!="All") my=my.filter(s=>s.category==c);
+ render();
+}
+
+search.oninput=()=>{
+ const q=search.value.toLowerCase();
+ my=JSON.parse(localStorage.getItem("myShops")||"[]").filter(s=>s.name.toLowerCase().includes(q));
+ render();
 };
 </script>
 </body>
