@@ -3,71 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>My Digital Card</title>
+<title>My Card</title>
+<link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-body{margin:0;font-family:Arial;background:#fff}
-.top{background:#111;color:#fff;padding:10px;text-align:center}
-.profile{display:flex;align-items:center;padding:15px;background:#eaf1ff}
-.profile img{width:70px;height:70px;border-radius:50%;object-fit:cover}
-.info{margin-left:15px}
-.card{padding:15px}
-.offer{background:#f4f6fb;margin:10px;padding:10px;border-radius:10px}
-button{background:#25D366;color:white;border:0;padding:10px;width:100%}
-</style>
 </head>
 <body>
 
-<div class="top">
+<div class="topbar">
 <button onclick="share()">Share</button>
 </div>
 
 <div class="profile">
 <img id="pimg">
 <div class="info">
-<b id="pname"></b><br>
-<span id="pphone"></span><br>
-<span id="pemail"></span>
+<h3 id="pname"></h3>
+<p id="pphone"></p>
+<p id="pemail"></p>
+<p id="paddress"></p>
 </div>
 </div>
 
-<div class="card">
-<h3>Offers</h3>
-<div id="offers"></div>
-</div>
+<h3 style="text-align:center">Offers</h3>
+<div class="slider" id="offers"></div>
 
-<script>
-const supabase = supabase.createClient(
-  "https://dfvnefbxgayxqgjjgtrr.supabase.co",
-  "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
-);
-
-const id=new URLSearchParams(location.search).get("id");
-
-supabase.from("cards").select().eq("id",id).then(r=>{
- const d=JSON.parse(r.data[0].data);
- pimg.src=d.image;
- pname.innerText=d.name;
- pphone.innerText=d.phone;
- pemail.innerText=d.email;
- d.offers.forEach(o=>{
-  if(o.trim()){
-   offers.innerHTML+=`
-   <div class="offer">
-   ${o}
-   <button onclick="wa('${o}')">Get on WhatsApp</button>
-   </div>`;
-  }
- });
-});
-
-function wa(text){
- location.href="https://wa.me/?text="+encodeURIComponent(text);
-}
-
-function share(){
- navigator.share({url:location.href});
-}
-</script>
+<script src="card.js"></script>
 </body>
 </html>
