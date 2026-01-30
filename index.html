@@ -2,129 +2,48 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Create Card</title>
+<title>Create Shop Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
-body{
-  margin:0;
-  padding:15px;
-  font-family:system-ui;
-  background:linear-gradient(135deg,#e9ecef,#f4f6f8);
-  display:flex;
-  justify-content:center;
-}
-.form-box{
-  width:100%;
-  max-width:420px;
-  background:white;
-  border-radius:18px;
-  padding:20px;
-  box-shadow:0 15px 35px rgba(0,0,0,.15);
-}
-h2{text-align:center;color:#0f172a;}
-.group{margin-bottom:12px;}
-label{font-weight:600;font-size:14px;}
-input,textarea,select{
-  width:100%;
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  margin-top:4px;
-}
-button{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  background:#2563eb;
-  color:white;
-  font-size:16px;
-}
-.image-box{
-  text-align:center;
-  border:2px dashed #ccc;
-  padding:14px;
-  border-radius:12px;
-}
-#profileImage{display:none;}
-#preview{
-  width:80px;height:80px;
-  border-radius:50%;
-  object-fit:cover;
-  margin-top:8px;
-  display:none;
-}
+body{font-family:system-ui;background:#f1f5f9;padding:20px;}
+input,textarea{width:100%;padding:10px;margin:6px 0;}
+button{padding:12px;width:100%;background:#2563eb;color:white;border:none;}
 </style>
 </head>
 <body>
 
-<div class="form-box">
-<h2>Create Business Card</h2>
+<h2>Create Your Card</h2>
 
-<div class="group image-box">
-<label for="profileImage">Upload Photo *</label>
+<input id="name" placeholder="Shop Owner Name">
+<input id="businessName" placeholder="Shop Name">
+<textarea id="businessInfo" placeholder="Services"></textarea>
+<input id="address" placeholder="City, Country">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
 <input type="file" id="profileImage">
-<img id="preview">
-</div>
-
-<div class="group"><label>Name *</label><input id="name" required></div>
-<div class="group"><label>Business *</label><input id="businessName" required></div>
-<div class="group"><label>About *</label><textarea id="businessInfo" required></textarea></div>
-<div class="group"><label>Address *</label><input id="address" required></div>
-
-<div class="group">
-<label>Phone *</label>
-<select id="code">
-<option value="+92">+92</option>
-<option value="+1">+1</option>
-<option value="+44">+44</option>
-</select>
-<input id="phone" required>
-</div>
-
-<div class="group"><label>Email *</label><input id="email" type="email" required></div>
-<div class="group"><label>Website</label><input id="facebook"></div>
-<div class="group"><label>Instagram</label><input id="instagram"></div>
-<div class="group"><label>YouTube</label><input id="youtube"></div>
 
 <button id="generate">Generate Card</button>
-</div>
 
 <script>
-const generate=document.getElementById("generate");
-const imgInput=document.getElementById("profileImage");
-const preview=document.getElementById("preview");
-
-imgInput.onchange=e=>{
- const r=new FileReader();
- r.onload=()=>{preview.src=r.result;preview.style.display="block";}
- r.readAsDataURL(e.target.files[0]);
-};
-
 generate.onclick=()=>{
  const data={
+  id:Date.now(),
   name:name.value,
   businessName:businessName.value,
   businessInfo:businessInfo.value,
   address:address.value,
-  phone:code.value+phone.value,
+  phone:phone.value,
   email:email.value,
-  facebook:facebook.value,
-  instagram:instagram.value,
-  youtube:youtube.value,
   profileImage:""
  };
 
  const r=new FileReader();
  r.onload=()=>{
   data.profileImage=r.result;
-  let all=JSON.parse(localStorage.getItem("allCards")||"[]");
-  all.push(data);
-  localStorage.setItem("allCards",JSON.stringify(all));
-  location.href="cards.html";
+  localStorage.setItem("shop_"+data.id,JSON.stringify(data));
+  alert("Share this link:\nadd.html?shop="+data.id);
  };
- r.readAsDataURL(imgInput.files[0]);
+ r.readAsDataURL(profileImage.files[0]);
 };
 </script>
 </body>
