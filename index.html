@@ -67,9 +67,7 @@ button{
 <h2>Create Business Card</h2>
 
 <div class="group image-box">
-  <label for="profileImage">
-    Upload Profile Photo *
-  </label>
+  <label for="profileImage">Upload Profile Photo *</label>
   <input type="file" id="profileImage" accept="image/*">
   <img id="preview">
 </div>
@@ -132,16 +130,20 @@ button{
 </div>
 
 <script>
-const imgInput=profileImage;
-const preview=document.getElementById("preview");
+const generate = document.getElementById("generate");
+const imgInput = document.getElementById("profileImage");
+const preview = document.getElementById("preview");
 
-imgInput.onchange=e=>{
-  const r=new FileReader();
-  r.onload=()=>{preview.src=r.result;preview.style.display="block";}
+imgInput.onchange = e=>{
+  const r = new FileReader();
+  r.onload = ()=>{
+    preview.src = r.result;
+    preview.style.display = "block";
+  };
   r.readAsDataURL(e.target.files[0]);
 };
 
-generate.onclick=()=>{
+generate.onclick = ()=>{
   document.querySelectorAll("input,textarea").forEach(el=>{
     if(el.hasAttribute("required") && !el.value){
       el.classList.add("error");
@@ -172,12 +174,12 @@ generate.onclick=()=>{
     profileImage:""
   };
 
-  const f=profileImage.files[0];
-  const r=new FileReader();
-  r.onload=()=>{
-    data.profileImage=r.result;
-    localStorage.setItem("cardData",JSON.stringify(data));
-    location.href="card.html";
+  const f = profileImage.files[0];
+  const r = new FileReader();
+  r.onload = ()=>{
+    data.profileImage = r.result;
+    localStorage.setItem("cardData", JSON.stringify(data));
+    location.href = "card.html";
   };
   r.readAsDataURL(f);
 };
