@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Digital Card Generator</title>
+<title>Business Card Generator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2563eb">
 
@@ -20,17 +21,17 @@ body{
   width:100%;
   max-width:420px;
   background:#fff;
-  border-radius:18px;
+  border-radius:16px;
   padding:20px;
   box-shadow:0 10px 30px rgba(0,0,0,.12);
 }
 h2{text-align:center;color:#0f172a;}
 .group{margin-bottom:14px;}
 label{font-weight:600;display:block;margin-bottom:4px;}
-input,textarea,select{
+input,textarea{
   width:100%;
   padding:10px;
-  border-radius:8px;
+  border-radius:6px;
   border:1px solid #ccc;
   font-size:14px;
 }
@@ -39,10 +40,11 @@ button{
   width:100%;
   padding:12px;
   border:none;
-  border-radius:10px;
+  border-radius:8px;
   background:#2563eb;
   color:white;
   font-size:16px;
+  cursor:pointer;
 }
 .image-box{
   border:2px dashed #ccc;
@@ -62,10 +64,10 @@ button{
 
 <body>
 <div class="form-box">
-<h2>Create Digital Card</h2>
+<h2>Create Business Card</h2>
 
 <div class="group image-box">
-  <label>Profile Photo *</label>
+  <label for="profileImage">Upload Profile Photo *</label>
   <input type="file" id="profileImage" accept="image/*">
   <img id="preview">
 </div>
@@ -76,18 +78,18 @@ button{
 </div>
 
 <div class="group">
-  <label>Business / Job *</label>
+  <label>Business / Job Title *</label>
   <input id="businessName" required>
 </div>
 
 <div class="group">
-  <label>About *</label>
-  <textarea id="businessInfo" rows="3" required></textarea>
+  <label>About You / Company *</label>
+  <textarea id="businessInfo" rows="4" required></textarea>
 </div>
 
 <div class="group">
-  <label>Address *</label>
-  <input id="address" required>
+  <label>Address (City, Country) *</label>
+  <input id="address" required placeholder="Lahore, Pakistan">
 </div>
 
 <div class="group">
@@ -123,8 +125,7 @@ if("serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js");
 }
 
-const imgInput = profileImage;
-imgInput.onchange = e=>{
+profileImage.onchange = e=>{
   const r = new FileReader();
   r.onload = ()=>{
     preview.src = r.result;
@@ -134,18 +135,21 @@ imgInput.onchange = e=>{
 };
 
 generate.onclick = ()=>{
-  if(!imgInput.files[0]) return alert("Upload photo");
+  if(!profileImage.files[0]){
+    alert("Profile photo is required");
+    return;
+  }
 
   const data={
-    name:name.value,
-    businessName:businessName.value,
-    businessInfo:businessInfo.value,
-    address:address.value,
-    phone:phone.value,
-    email:email.value,
-    website:website.value,
-    instagram:instagram.value,
-    youtube:youtube.value,
+    name:name.value.trim(),
+    businessName:businessName.value.trim(),
+    businessInfo:businessInfo.value.trim(),
+    address:address.value.trim(),
+    phone:phone.value.trim(),
+    email:email.value.trim(),
+    website:website.value.trim(),
+    instagram:instagram.value.trim(),
+    youtube:youtube.value.trim(),
     profileImage:""
   };
 
@@ -153,9 +157,9 @@ generate.onclick = ()=>{
   r.onload = ()=>{
     data.profileImage = r.result;
     localStorage.setItem("cardData", JSON.stringify(data));
-    location.href="card.html";
+    location.href = "card.html";
   };
-  r.readAsDataURL(imgInput.files[0]);
+  r.readAsDataURL(profileImage.files[0]);
 };
 </script>
 </body>
