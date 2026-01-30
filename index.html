@@ -1,197 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Business Card Generator</title>
+<title>Create Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
-body{
-  margin:0;
-  padding:20px;
-  font-family:system-ui;
-  background:linear-gradient(135deg,#e9ecef,#f4f6f8);
-  display:flex;
-  justify-content:center;
-}
-.form-box{
-  width:100%;
-  max-width:420px;
-  background:#fff;
-  border-radius:16px;
-  padding:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.12);
-}
-h2{text-align:center;color:#0f172a;}
-.group{margin-bottom:14px;}
-label{font-weight:600;display:block;margin-bottom:4px;}
-input,textarea,select{
-  width:100%;
-  padding:10px;
-  border-radius:6px;
-  border:1px solid #ccc;
-  font-size:14px;
-}
-textarea{resize:vertical;}
-.error{border:2px solid #e11d48;}
-.phone-wrap{display:flex;gap:6px;}
-.phone-wrap select{width:35%;}
-button{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  background:#2563eb;
-  color:white;
-  font-size:16px;
-  cursor:pointer;
-}
-.image-box{
-  border:2px dashed #ccc;
-  text-align:center;
-  padding:16px;
-  border-radius:10px;
-  cursor:pointer;
-}
-#profileImage{display:none;}
-#preview{
-  width:90px;height:90px;
-  border-radius:50%;
-  object-fit:cover;
-  display:none;margin:10px auto 0;
-}
+body{font-family:system-ui;background:#f1f5f9;padding:20px;}
+input,textarea,select{width:100%;padding:10px;margin:6px 0;}
+button{padding:12px;width:100%;background:#2563eb;color:white;border:none;}
 </style>
 </head>
-
 <body>
-<div class="form-box">
+
 <h2>Create Business Card</h2>
 
-<div class="group image-box">
-  <label for="profileImage">Upload Profile Photo *</label>
-  <input type="file" id="profileImage" accept="image/*">
-  <img id="preview">
-</div>
+<input id="name" placeholder="Full Name" required>
+<input id="businessName" placeholder="Business Name" required>
+<textarea id="businessInfo" placeholder="About Business" required></textarea>
+<input id="address" placeholder="City, Country" required>
 
-<div class="group">
-  <label>Full Name *</label>
-  <input id="name" required>
-</div>
+<select id="code">
+<option value="+92">+92</option>
+<option value="+91">+91</option>
+<option value="+1">+1</option>
+</select>
+<input id="phone" placeholder="Phone" required>
 
-<div class="group">
-  <label>Business / Job Title *</label>
-  <input id="businessName" required>
-</div>
+<input id="email" type="email" placeholder="Email" required>
+<input id="facebook" placeholder="Website">
+<input id="instagram" placeholder="Instagram">
+<input id="youtube" placeholder="YouTube">
 
-<div class="group">
-  <label>About You / Company *</label>
-  <textarea id="businessInfo" rows="4" required></textarea>
-</div>
-
-<div class="group">
-  <label>Address (City, Country) *</label>
-  <input id="address" required placeholder="Lahore, Pakistan">
-</div>
-
-<div class="group">
-  <label>Phone *</label>
-  <div class="phone-wrap">
-    <select id="code">
-      <option value="+92">+92</option>
-      <option value="+91">+91</option>
-      <option value="+1">+1</option>
-      <option value="+44">+44</option>
-      <option value="+61">+61</option>
-    </select>
-    <input id="phone" placeholder="3001234567" required>
-  </div>
-</div>
-
-<div class="group">
-  <label>Email *</label>
-  <input id="email" type="email" required>
-</div>
-
-<div class="group">
-  <label>Website / Portfolio</label>
-  <input id="facebook" placeholder="https://">
-</div>
-
-<div class="group">
-  <label>Instagram</label>
-  <input id="instagram" placeholder="https://">
-</div>
-
-<div class="group">
-  <label>YouTube / LinkedIn</label>
-  <input id="youtube" placeholder="https://">
-</div>
-
-<button id="generate">Generate Card</button>
-</div>
+<input type="file" id="profileImage" required>
+<button id="generate">Generate</button>
 
 <script>
-const generate = document.getElementById("generate");
-const imgInput = document.getElementById("profileImage");
-const preview = document.getElementById("preview");
+const generate=document.getElementById("generate");
+const imgInput=document.getElementById("profileImage");
 
-const nameInput = document.getElementById("name");
-const businessNameInput = document.getElementById("businessName");
-const businessInfoInput = document.getElementById("businessInfo");
-const addressInput = document.getElementById("address");
-const phoneInput = document.getElementById("phone");
-const codeInput = document.getElementById("code");
-const emailInput = document.getElementById("email");
-const facebookInput = document.getElementById("facebook");
-const instagramInput = document.getElementById("instagram");
-const youtubeInput = document.getElementById("youtube");
-
-imgInput.onchange = e=>{
-  const r = new FileReader();
-  r.onload = ()=>{
-    preview.src = r.result;
-    preview.style.display = "block";
-  };
-  r.readAsDataURL(e.target.files[0]);
-};
-
-generate.onclick = ()=>{
-  document.querySelectorAll("input,textarea").forEach(el=>{
-    if(el.hasAttribute("required") && !el.value){
-      el.classList.add("error");
-    }else{
-      el.classList.remove("error");
-    }
-  });
-
-  if(!imgInput.files[0]){
-    alert("Profile photo is required");
-    return;
-  }
-  if(phoneInput.value.length < 7){
-    alert("Invalid phone number");
-    return;
-  }
-
+generate.onclick=()=>{
   const data={
-    name:nameInput.value.trim(),
-    businessName:businessNameInput.value.trim(),
-    businessInfo:businessInfoInput.value.trim(),
-    address:addressInput.value.trim(),
-    phone:codeInput.value+phoneInput.value.trim(),
-    email:emailInput.value.trim(),
-    facebook:facebookInput.value.trim(),
-    instagram:instagramInput.value.trim(),
-    youtube:youtubeInput.value.trim(),
+    name:name.value,
+    businessName:businessName.value,
+    businessInfo:businessInfo.value,
+    address:address.value,
+    phone:code.value+phone.value,
+    email:email.value,
+    facebook:facebook.value,
+    instagram:instagram.value,
+    youtube:youtube.value,
     profileImage:""
   };
 
-  const f = imgInput.files[0];
-  const r = new FileReader();
-  r.onload = ()=>{
-    data.profileImage = r.result;
-    localStorage.setItem("cardData", JSON.stringify(data));
-    location.href = "card.html";
+  const f=imgInput.files[0];
+  const r=new FileReader();
+  r.onload=()=>{
+    data.profileImage=r.result;
+
+    let all=JSON.parse(localStorage.getItem("allCards")||"[]");
+    all.push(data);
+    localStorage.setItem("allCards",JSON.stringify(all));
+
+    location.href="cards.html";
   };
   r.readAsDataURL(f);
 };
