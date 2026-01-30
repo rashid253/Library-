@@ -5,9 +5,24 @@
 <title>Bazaar</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{margin:0;background:#f1f5f9;font-family:system-ui;}
-.box{background:white;margin:20px;padding:20px;border-radius:18px;text-align:center;}
-.btn{display:block;margin:8px 0;padding:12px;border-radius:12px;color:white;text-decoration:none;}
+body{margin:0;background:#f8fafc;font-family:system-ui;}
+.box{
+ background:white;
+ margin:20px;
+ padding:20px;
+ border-radius:20px;
+ text-align:center;
+ box-shadow:0 10px 40px rgba(0,0,0,.1);
+}
+.btn{
+ display:block;
+ margin:10px 0;
+ padding:14px;
+ border-radius:14px;
+ color:white;
+ text-decoration:none;
+ font-weight:600;
+}
 .call{background:#2563eb;}
 .wa{background:#16a34a;}
 .map{background:#f97316;}
@@ -24,13 +39,12 @@ body{margin:0;background:#f1f5f9;font-family:system-ui;}
 <a id="wa" class="btn wa">WhatsApp</a>
 <a id="map" class="btn map">Open Map</a>
 
+<a id="dukan" class="btn opt">Dukan Store</a>
+<a id="mail" class="btn opt">Email</a>
 <a id="fb" class="btn opt">Facebook</a>
 <a id="ig" class="btn opt">Instagram</a>
 <a id="yt" class="btn opt">YouTube</a>
-<a id="dukan" class="btn opt">Dukan Store</a>
-<a id="mail" class="btn opt">Email</a>
 
-<img id="qr" style="width:200px;margin-top:10px;">
 <button onclick="shareShop()">Share</button>
 </div>
 
@@ -49,14 +63,11 @@ function opt(btn,link){
  else btn.style.display="none";
 }
 
+opt(dukan,s.dukan);
+opt(mail,"mailto:"+s.email);
 opt(fb,s.facebook);
 opt(ig,s.instagram);
 opt(yt,s.youtube);
-opt(dukan,s.dukan);
-opt(mail,"mailto:"+s.email);
-
-if(s.jazzcashQR) qr.src=s.jazzcashQR;
-else qr.style.display="none";
 
 function shareShop(){
  navigator.share({
