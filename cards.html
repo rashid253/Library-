@@ -7,17 +7,19 @@
 <style>
 body{font-family:system-ui;background:#f1f5f9;margin:0;padding:15px;}
 .card{
-  background:white;
-  padding:15px;
-  border-radius:12px;
-  margin-bottom:10px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  cursor:pointer;
+ background:white;
+ padding:12px;
+ border-radius:14px;
+ margin-bottom:10px;
+ display:flex;
+ gap:12px;
+ align-items:center;
+ box-shadow:0 5px 15px rgba(0,0,0,.1);
 }
 .card img{
-  width:50px;height:50px;border-radius:50%;object-fit:cover;
+ width:55px;height:55px;
+ border-radius:50%;
+ object-fit:cover;
 }
 </style>
 </head>
@@ -28,22 +30,20 @@ body{font-family:system-ui;background:#f1f5f9;margin:0;padding:15px;}
 
 <script>
 let all=JSON.parse(localStorage.getItem("allCards")||"[]");
-
-all.forEach((c,i)=>{
-  const div=document.createElement("div");
-  div.className="card";
-  div.innerHTML=`
-    <img src="${c.profileImage}">
-    <div>
-      <b>${c.name}</b><br>
-      <small>${c.businessName}</small>
-    </div>
-  `;
-  div.onclick=()=>{
-    localStorage.setItem("currentCard",JSON.stringify(c));
-    location.href="card.html";
-  };
-  list.appendChild(div);
+all.forEach(c=>{
+ const d=document.createElement("div");
+ d.className="card";
+ d.innerHTML=`
+ <img src="${c.profileImage}">
+ <div>
+ <b>${c.name}</b><br>
+ <small>${c.businessName}</small>
+ </div>`;
+ d.onclick=()=>{
+  localStorage.setItem("currentCard",JSON.stringify(c));
+  location.href="card.html";
+ };
+ list.appendChild(d);
 });
 </script>
 </body>
