@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>My Cards</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:system-ui;background:#f1f5f9;margin:0;padding:15px;}
+.card{
+  background:white;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+}
+.card img{
+  width:50px;height:50px;border-radius:50%;object-fit:cover;
+}
+</style>
+</head>
+<body>
+
+<h2>Saved Cards</h2>
+<div id="list"></div>
+
+<script>
+let all=JSON.parse(localStorage.getItem("allCards")||"[]");
+
+all.forEach((c,i)=>{
+  const div=document.createElement("div");
+  div.className="card";
+  div.innerHTML=`
+    <img src="${c.profileImage}">
+    <div>
+      <b>${c.name}</b><br>
+      <small>${c.businessName}</small>
+    </div>
+  `;
+  div.onclick=()=>{
+    localStorage.setItem("currentCard",JSON.stringify(c));
+    location.href="card.html";
+  };
+  list.appendChild(div);
+});
+</script>
+</body>
+</html>
