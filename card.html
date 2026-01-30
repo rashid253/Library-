@@ -20,37 +20,49 @@ body{margin:0;font-family:system-ui;background:#0f172a;color:white}
 
 .profile{
  display:flex;gap:12px;
- padding:16px;background:#1e293b
+ padding:16px;background:#1e293b;align-items:center
 }
 .profile img{
  width:70px;height:70px;border-radius:50%;
  object-fit:cover;border:2px solid white
 }
-
 .info{font-size:13px}
-
-.slider{
- display:flex;overflow-x:auto;
- scroll-snap-type:x mandatory;
+.downloadBtn{
+ background:#2563eb;color:white;
+ padding:6px 10px;border-radius:6px;
+ font-size:12px;display:inline-block;margin-top:6px
 }
-.slide{
- min-width:90%;margin:10px;
- background:#2563eb;
- padding:16px;border-radius:16px;
+
+.offers{
+ display:flex;overflow-x:auto;
+ scroll-snap-type:x mandatory
+}
+.offer{
+ min-width:90%;
+ margin:12px;
+ background:#16a34a;
+ border-radius:20px;
+ padding:14px;
  scroll-snap-align:center
 }
-.slide img{
- width:100%;height:120px;
- object-fit:cover;border-radius:10px
+.offer img{
+ width:100%;height:160px;
+ object-fit:cover;border-radius:12px
+}
+.offer h3{margin:6px 0}
+.offer p{font-size:14px}
+.offer button{
+ width:100%;padding:10px;
+ border:none;border-radius:10px;
+ background:#020617;color:white;
+ font-size:16px;margin-top:8px
 }
 
 .actions{
  display:flex;justify-content:space-around;
  padding:16px;background:#020617
 }
-.actions a{
- color:white;font-size:22px
-}
+.actions a{color:white;font-size:22px}
 </style>
 </head>
 
@@ -58,7 +70,6 @@ body{margin:0;font-family:system-ui;background:#0f172a;color:white}
 
 <div class="topbar">
 <a id="share"><i class="fa fa-share"></i></a>
-<a id="download"><i class="fa fa-download"></i></a>
 <a id="map"><i class="fa fa-map"></i></a>
 <a id="sms"><i class="fa fa-comment"></i></a>
 </div>
@@ -71,69 +82,69 @@ body{margin:0;font-family:system-ui;background:#0f172a;color:white}
 <div id="phone"></div>
 <div id="email"></div>
 <div id="address"></div>
+<div class="downloadBtn" onclick="saveCard()">Download Card</div>
 </div>
 </div>
 
-<div class="slider">
-<div class="slide">
-<h3>About</h3>
-<p id="about"></p>
-</div>
-<div class="slide">
-<h3>Services</h3>
-<p>Professional business services</p>
-</div>
-<div class="slide">
-<h3>Portfolio</h3>
-<p>Swipe cards like gallery</p>
-</div>
-</div>
+<div class="offers" id="offers"></div>
 
 <div class="actions">
 <a id="call"><i class="fa fa-phone"></i></a>
 <a id="wa"><i class="fab fa-whatsapp"></i></a>
 <a id="mail"><i class="fa fa-envelope"></i></a>
-<a id="fb"><i class="fab fa-facebook"></i></a>
-<a id="ig"><i class="fab fa-instagram"></i></a>
-<a id="yt"><i class="fab fa-youtube"></i></a>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
 const p=new URLSearchParams(location.search);
-const d=JSON.parse(atob(p.get("data")));
+const data=JSON.parse(atob(p.get("data")));
 
-photo.src=d.profileImage;
-name.textContent=d.name;
-business.textContent=d.businessName;
-phone.textContent="📞 "+d.phone;
-email.textContent="✉️ "+d.email;
-address.textContent="📍 "+d.address;
-about.textContent=d.businessInfo;
+photo.src=data.profileImage;
+name.textContent=data.name;
+business.textContent=data.businessName;
+phone.textContent="📞 "+data.phone;
+email.textContent="✉️ "+data.email;
+address.textContent="📍 "+data.address;
 
-call.href="tel:"+d.phone;
-wa.href="https://wa.me/"+d.phone;
-mail.href="mailto:"+d.email;
-map.href="https://maps.google.com/?q="+encodeURIComponent(d.address);
-sms.href="sms:"+d.phone;
-
-if(d.facebook) fb.href=d.facebook;
-if(d.instagram) ig.href=d.instagram;
-if(d.youtube) yt.href=d.youtube;
+call.href="tel:"+data.phone;
+wa.href="https://wa.me/"+data.phone;
+mail.href="mailto:"+data.email;
+map.href="https://maps.google.com/?q="+encodeURIComponent(data.address);
+sms.href="sms:"+data.phone;
 
 share.onclick=()=>{
  navigator.share({
-  title:d.name,
-  text:d.businessName,
+  title:data.name,
+  text:data.businessName,
   url:location.href
  });
 }
 
-download.onclick=()=>{
- const a=document.createElement("a");
- a.href=d.profileImage;
- a.download="profile.jpg";
- a.click();
+function saveCard(){
+ html2canvas(document.body).then(c=>{
+  const a=document.createElement("a");
+  a.href=c.toDataURL();
+  a.download="my-digital-card.png";
+  a.click();
+ });
 }
+
+data.offers.forEach((o,i)=>{
+ const d=document.createElement("div");
+ d.className="offer";
+ d.innerHTML=`
+  ${o.image?`<img src="${o.image}">`:""}
+  <h3>🔥 ${o.title}</h3>
+  <p>${o.desc}</p>
+  <button>Grab Offer</button>
+ `;
+ d.onclick=()=>{
+  const msg=`Hi, I'm interested in your offer: ${o.title} - ${o.desc}`;
+  location.href="https://wa.me/"+data.phone+"?text="+encodeURIComponent(msg);
+ }
+ offers.appendChild(d);
+});
 </script>
 </body>
 </html>
