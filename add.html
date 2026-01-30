@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Add Shop</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<h2>Adding shop...</h2>
+
+<script>
+const id=new URLSearchParams(location.search).get("shop");
+const data=JSON.parse(localStorage.getItem("shop_"+id));
+
+let all=JSON.parse(localStorage.getItem("myShops")||"[]");
+all.push(data);
+localStorage.setItem("myShops",JSON.stringify(all));
+
+location.href="cards.html";
+</script>
+</body>
+</html>
