@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Smart Digital Card</title>
+<title>My Digital Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
@@ -18,17 +21,15 @@ body{
   background:
     radial-gradient(circle at top left,#60a5fa,#0f172a 60%),
     radial-gradient(circle at bottom right,#22c55e,#020617 60%);
-  font-family: "Inter", system-ui, sans-serif;
-  color:#0f172a;
+  font-family:system-ui, -apple-system, BlinkMacSystemFont;
 }
 
 .card{
   width:100%;
   max-width:400px;
-  backdrop-filter: blur(20px);
-  background:rgba(255,255,255,.9);
+  background:rgba(255,255,255,.95);
   border-radius:28px;
-  box-shadow:0 40px 100px rgba(0,0,0,.45);
+  box-shadow:0 40px 100px rgba(0,0,0,.4);
   overflow:hidden;
 }
 
@@ -37,11 +38,10 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:18px 22px;
+  padding:16px 20px;
   font-size:20px;
   color:#0f172a;
 }
-
 .header i{
   cursor:pointer;
   padding:10px;
@@ -54,7 +54,6 @@ body{
   text-align:center;
   padding:10px 24px 0;
 }
-
 .profile img{
   width:120px;
   height:120px;
@@ -63,12 +62,11 @@ body{
   border:6px solid white;
   box-shadow:0 10px 30px rgba(0,0,0,.25);
 }
-
 .profile h2{
   margin:12px 0 4px;
   font-size:24px;
+  color:#0f172a;
 }
-
 .profile .role{
   color:#64748b;
   font-size:14px;
@@ -89,7 +87,6 @@ body{
   gap:10px;
   padding:0 24px;
 }
-
 .block{
   display:flex;
   align-items:center;
@@ -107,7 +104,6 @@ body{
   gap:12px;
   padding:20px 24px;
 }
-
 .actions a{
   text-decoration:none;
   padding:15px;
@@ -118,9 +114,7 @@ body{
   font-size:15px;
   transition:.25s;
 }
-
 .actions a:hover{transform:translateY(-2px)}
-
 .call{background:linear-gradient(135deg,#3b82f6,#2563eb)}
 .wa{background:linear-gradient(135deg,#22c55e,#16a34a)}
 .mail{background:linear-gradient(135deg,#f97316,#ea580c)}
@@ -133,7 +127,6 @@ body{
   font-size:22px;
   color:#475569;
 }
-
 .quick i{cursor:pointer}
 .quick i:hover{color:#2563eb}
 
@@ -144,7 +137,6 @@ body{
   gap:24px;
   padding:14px 0 24px;
 }
-
 .social a{
   color:#64748b;
   font-size:22px;
@@ -192,7 +184,7 @@ body{
   </div>
 
   <div class="social">
-    <a id="fb"><i class="fab fa-facebook"></i></a>
+    <a id="web"><i class="fa fa-globe"></i></a>
     <a id="ig"><i class="fab fa-instagram"></i></a>
     <a id="yt"><i class="fab fa-youtube"></i></a>
   </div>
@@ -200,50 +192,63 @@ body{
 </div>
 
 <script>
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js");
+}
+
 let data = JSON.parse(localStorage.getItem("cardData")||"{}");
 
-photo.src=data.profileImage||"";
-name.textContent=data.name||"";
-business.textContent=data.businessName||"";
-about.textContent=data.businessInfo||"";
-address.textContent=data.address||"";
-phone.textContent=data.phone||"";
-email.textContent=data.email||"";
+photo.src = data.profileImage || "";
+name.textContent = data.name || "";
+business.textContent = data.businessName || "";
+about.textContent = data.businessInfo || "";
+address.textContent = data.address || "";
+phone.textContent = data.phone || "";
+email.textContent = data.email || "";
 
-callBtn.href="tel:"+data.phone;
-waBtn.href="https://wa.me/"+data.phone;
-mailBtn.href="mailto:"+data.email;
+callBtn.href = "tel:" + data.phone;
+waBtn.href = "https://wa.me/" + data.phone;
+mailBtn.href = "mailto:" + data.email;
 
-qcall.onclick=()=>location.href=callBtn.href;
-qwa.onclick=()=>location.href=waBtn.href;
-qmail.onclick=()=>location.href=mailBtn.href;
+qcall.onclick = ()=> location.href = callBtn.href;
+qwa.onclick = ()=> location.href = waBtn.href;
+qmail.onclick = ()=> location.href = mailBtn.href;
 
-map.onclick=()=>{
-  window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(data.address));
+map.onclick = ()=>{
+  window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(data.address));
 };
 
-sms.onclick=()=>{
-  location.href="sms:"+data.phone;
+sms.onclick = ()=>{
+  location.href = "sms:" + data.phone;
 };
 
-if(data.facebook){fb.href=data.facebook;fb.target="_blank";}
-if(data.instagram){ig.href=data.instagram;ig.target="_blank";}
-if(data.youtube){yt.href=data.youtube;yt.target="_blank";}
+if(data.website){
+  web.href = data.website;
+  web.target = "_blank";
+}
+if(data.instagram){
+  ig.href = data.instagram;
+  ig.target = "_blank";
+}
+if(data.youtube){
+  yt.href = data.youtube;
+  yt.target = "_blank";
+}
 
-share.onclick=()=>{
-  navigator.share({title:data.name,url:location.href});
+share.onclick = ()=>{
+  navigator.share({ title:data.name, url:location.href });
 };
 
-save.onclick=()=>{
-  const v=`BEGIN:VCARD
+save.onclick = ()=>{
+  const v = `BEGIN:VCARD
 FN:${data.name}
 TEL:${data.phone}
 EMAIL:${data.email}
 ADR:${data.address}
 END:VCARD`;
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([v],{type:"text/vcard"}));
-  a.download="contact.vcf";
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([v],{type:"text/vcard"}));
+  a.download = "contact.vcf";
   a.click();
 };
 </script>
