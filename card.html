@@ -2,55 +2,49 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Card</title>
+<title>My Cards</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
-<script>
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
-}
-</script>
 <style>
-body{font-family:system-ui;background:#f1f5f9;margin:0;display:flex;justify-content:center;align-items:center;height:100vh;}
+body{font-family:system-ui;background:#f1f5f9;margin:0;padding:15px;}
 .card{
-  background:white;
-  padding:20px;
-  border-radius:16px;
-  width:90%;
-  max-width:350px;
-  text-align:center;
+ background:white;
+ padding:12px;
+ border-radius:14px;
+ margin-bottom:10px;
+ display:flex;
+ gap:12px;
+ align-items:center;
+ box-shadow:0 5px 15px rgba(0,0,0,.1);
 }
 .card img{
-  width:90px;height:90px;border-radius:50%;
+ width:55px;height:55px;
+ border-radius:50%;
+ object-fit:cover;
 }
 </style>
 </head>
 <body>
 
-<div class="card">
-<img id="photo">
-<h2 id="name"></h2>
-<div id="business"></div>
-<div id="about"></div>
-<div id="address"></div>
-<div id="phone"></div>
-<div id="email"></div>
-</div>
+<h2>Saved Cards</h2>
+<div id="list"></div>
 
 <script>
-let data=JSON.parse(localStorage.getItem("currentCard")||"{}");
-
-photo.src=data.profileImage;
-name.textContent=data.name;
-business.textContent=data.businessName;
-about.textContent=data.businessInfo;
-address.textContent=data.address;
-phone.textContent=data.phone;
-email.textContent=data.email;
-
-history.pushState(null,null,location.href);
-window.onpopstate=()=>{history.go(1);}
+let all=JSON.parse(localStorage.getItem("allCards")||"[]");
+all.forEach(c=>{
+ const d=document.createElement("div");
+ d.className="card";
+ d.innerHTML=`
+ <img src="${c.profileImage}">
+ <div>
+ <b>${c.name}</b><br>
+ <small>${c.businessName}</small>
+ </div>`;
+ d.onclick=()=>{
+  localStorage.setItem("currentCard",JSON.stringify(c));
+  location.href="card.html";
+ };
+ list.appendChild(d);
+});
 </script>
 </body>
 </html>
