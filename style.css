@@ -1,0 +1,35 @@
+body{margin:0;font-family:Arial;background:#f4f6fb}
+h2{text-align:center}
+.form{padding:15px}
+input,textarea,button{
+ width:100%;margin:8px 0;padding:10px;
+ border-radius:6px;border:1px solid #ccc
+}
+button{background:#2563eb;color:white;font-size:18px;border:0}
+
+.topbar{background:#111;color:white;padding:10px;text-align:center}
+
+.profile{
+ display:flex;align-items:center;
+ background:#eaf1ff;padding:15px
+}
+.profile img{
+ width:70px;height:70px;border-radius:50%;
+ object-fit:cover
+}
+.info{margin-left:15px}
+
+.slider{
+ display:flex;overflow-x:auto;
+ gap:10px;padding:10px
+}
+.offer{
+ min-width:80%;
+ background:white;
+ padding:15px;
+ border-radius:12px
+}
+.offer button{
+ background:#25D366;
+ margin-top:10px
+}
