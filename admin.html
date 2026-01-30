@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bazaar Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:system-ui;background:#0f172a;color:white;padding:20px;}
+input,select{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:none;}
+button{width:100%;padding:14px;background:#38bdf8;color:black;border:none;border-radius:12px;font-weight:600;}
+</style>
+</head>
+<body>
+
+<h2>Bazaar Admin Panel</h2>
+
+<input id="name" placeholder="Shop Name">
+<select id="category">
+<option>Electronics</option>
+<option>Tailor</option>
+<option>Grocery</option>
+<option>Mobile</option>
+<option>Other</option>
+</select>
+<input id="phone" placeholder="Phone">
+<input id="whatsapp" placeholder="WhatsApp">
+<input id="address" placeholder="Address">
+
+<input id="dukan" placeholder="Dukan link (optional)">
+<input id="email" placeholder="Email">
+<input id="facebook" placeholder="Facebook">
+<input id="instagram" placeholder="Instagram">
+<input id="youtube" placeholder="YouTube">
+
+<button onclick="gen()">Generate JSON</button>
+
+<textarea id="out" rows="10" style="width:100%;margin-top:10px;"></textarea>
+
+<script>
+function gen(){
+ const s={
+  id:Date.now(),
+  name:name.value,
+  category:category.value,
+  phone:phone.value,
+  whatsapp:whatsapp.value,
+  address:address.value,
+  featured:true,
+  dukan:dukan.value,
+  email:email.value,
+  facebook:facebook.value,
+  instagram:instagram.value,
+  youtube:youtube.value,
+  jazzcashQR:""
+ };
+ out.value = JSON.stringify(s,null,2);
+}
+</script>
+</body>
+</html>
