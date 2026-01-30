@@ -2,61 +2,130 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Create Smart Card</title>
+<title>Create Digital Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body{margin:0;font-family:system-ui;background:#f1f5f9}
 .wrap{max-width:420px;margin:auto;padding:16px}
+h2{margin-top:20px}
 input,textarea{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #ccc}
-button{width:100%;padding:14px;border:none;border-radius:10px;background:#2563eb;color:white;font-size:16px}
+button{width:100%;padding:14px;border:none;border-radius:10px;background:#2563eb;color:white;font-size:16px;margin-top:12px}
+.offerBox{background:white;padding:10px;border-radius:10px;margin-top:10px}
+label{font-weight:600;font-size:13px}
 </style>
 </head>
+
 <body>
 <div class="wrap">
-<h2>Create Digital Card</h2>
 
-<input type="file" id="profileImage">
+<h2>Profile</h2>
+<label>Profile Image</label>
+<input type="file" id="profileImage" accept="image/*">
 <input id="name" placeholder="Full Name">
-<input id="businessName" placeholder="Business / Title">
-<textarea id="businessInfo" placeholder="About business"></textarea>
-<input id="address" placeholder="Address">
-<input id="phone" placeholder="Phone (92xxxxxxxx)">
+<input id="phone" placeholder="Phone e.g 923001234567">
 <input id="email" placeholder="Email">
-<input id="facebook" placeholder="Facebook link">
-<input id="instagram" placeholder="Instagram link">
-<input id="youtube" placeholder="YouTube link">
+<input id="address" placeholder="Address">
 
-<button id="generate">Generate Card</button>
+<h2>Business</h2>
+<input id="businessName" placeholder="Business Title">
+<textarea id="businessInfo" placeholder="About your business"></textarea>
+
+<h2>Offers (max 5)</h2>
+
+<div class="offerBox">
+<label>Offer 1</label>
+<input type="file" id="offerImg1" accept="image/*">
+<input id="offerTitle1" placeholder="Title">
+<textarea id="offerDesc1" placeholder="Description"></textarea>
+</div>
+
+<div class="offerBox">
+<label>Offer 2</label>
+<input type="file" id="offerImg2" accept="image/*">
+<input id="offerTitle2" placeholder="Title">
+<textarea id="offerDesc2" placeholder="Description"></textarea>
+</div>
+
+<div class="offerBox">
+<label>Offer 3</label>
+<input type="file" id="offerImg3" accept="image/*">
+<input id="offerTitle3" placeholder="Title">
+<textarea id="offerDesc3" placeholder="Description"></textarea>
+</div>
+
+<div class="offerBox">
+<label>Offer 4</label>
+<input type="file" id="offerImg4" accept="image/*">
+<input id="offerTitle4" placeholder="Title">
+<textarea id="offerDesc4" placeholder="Description"></textarea>
+</div>
+
+<div class="offerBox">
+<label>Offer 5</label>
+<input type="file" id="offerImg5" accept="image/*">
+<input id="offerTitle5" placeholder="Title">
+<textarea id="offerDesc5" placeholder="Description"></textarea>
+</div>
+
+<button onclick="generate()">Generate Card</button>
 </div>
 
 <script>
-generate.onclick=()=>{
+// resize to ~100kb
+function resizeImage(file){
+ return new Promise(res=>{
+  const img=new Image();
+  img.onload=()=>{
+   const canvas=document.createElement("canvas");
+   const max=600;
+   let w=img.width,h=img.height;
+   if(w>h && w>max){h*=max/w;w=max}
+   if(h>w && h>max){w*=max/h;h=max}
+   canvas.width=w;canvas.height=h;
+   canvas.getContext("2d").drawImage(img,0,0,w,h);
+   canvas.toBlob(b=>res(b),"image/jpeg",0.7);
+  }
+  img.src=URL.createObjectURL(file);
+ });
+}
+
+async function upload(file){
+ const small=await resizeImage(file);
+ const fd=new FormData();
+ fd.append("file",small);
+ fd.append("upload_preset","card_images");
+ const r=await fetch("https://api.cloudinary.com/v1_1/dfbzg4xae/image/upload",{method:"POST",body:fd});
+ const j=await r.json();
+ return j.secure_url;
+}
+
+async function generate(){
+ if(!profileImage.files[0]){alert("Profile image required");return;}
+
  const data={
   name:name.value,
-  businessName:businessName.value,
-  businessInfo:businessInfo.value,
-  address:address.value,
   phone:phone.value,
   email:email.value,
-  facebook:facebook.value,
-  instagram:instagram.value,
-  youtube:youtube.value,
-  profileImage:""
+  address:address.value,
+  businessName:businessName.value,
+  businessInfo:businessInfo.value,
+  offers:[]
  };
 
- const f=profileImage.files[0];
- const fd=new FormData();
- fd.append("file",f);
- fd.append("upload_preset","card_images");
+ data.profileImage=await upload(profileImage.files[0]);
 
- fetch("https://api.cloudinary.com/v1_1/dfbzg4xae/image/upload",{
-  method:"POST",body:fd
- })
- .then(r=>r.json())
- .then(res=>{
-  data.profileImage=res.secure_url;
-  location.href="card.html?data="+btoa(JSON.stringify(data));
- });
+ for(let i=1;i<=5;i++){
+  const img=document.getElementById("offerImg"+i).files[0];
+  const title=document.getElementById("offerTitle"+i).value;
+  const desc=document.getElementById("offerDesc"+i).value;
+  if(title && desc){
+   let imgUrl="";
+   if(img) imgUrl=await upload(img);
+   data.offers.push({title,desc,image:imgUrl});
+  }
+ }
+
+ location.href="card.html?data="+btoa(JSON.stringify(data));
 }
 </script>
 </body>
