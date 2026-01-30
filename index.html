@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Business Card Generator</title>
@@ -7,91 +7,153 @@
 
 <style>
 body{
-  margin:0;padding:20px;
+  margin:0;
+  padding:20px;
   font-family:system-ui;
   background:linear-gradient(135deg,#e0f2fe,#f8fafc);
-  display:flex;justify-content:center;
+  display:flex;
+  justify-content:center;
 }
 .form-box{
-  width:100%;max-width:420px;
-  background:white;border-radius:16px;
-  padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.15);
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
 }
+h2{text-align:center;color:#0f172a;}
 .group{margin-bottom:12px;}
-label{font-weight:600;}
+label{font-weight:600;display:block;margin-bottom:4px;}
 input,textarea,select{
-  width:100%;padding:10px;
-  border-radius:6px;border:1px solid #ccc;
+  width:100%;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  font-size:14px;
 }
+textarea{resize:vertical;}
+.phone-wrap{display:flex;gap:6px;}
+.phone-wrap select{width:35%;}
 button{
-  width:100%;padding:12px;
-  border:none;border-radius:8px;
-  background:#2563eb;color:white;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#2563eb;
+  color:white;
   font-size:16px;
+  cursor:pointer;
+}
+.image-box{
+  border:2px dashed #ccc;
+  text-align:center;
+  padding:16px;
+  border-radius:10px;
 }
 </style>
 </head>
 
 <body>
 <div class="form-box">
-<h2>Create Card</h2>
+<h2>Create Business Card</h2>
 
-<div class="group">
-<label>Profile Image</label>
-<input type="file" id="profileImage" accept="image/*">
+<div class="group image-box">
+  <label>Upload Profile Photo</label>
+  <input type="file" id="profileImage" accept="image/*">
 </div>
 
-<div class="group"><label>Name</label><input id="name"></div>
-<div class="group"><label>Business</label><input id="businessName"></div>
-<div class="group"><label>About</label><textarea id="businessInfo"></textarea></div>
-<div class="group"><label>Address</label><input id="address"></div>
-
 <div class="group">
-<label>Phone</label>
-<select id="code"><option>+92</option></select>
-<input id="phone">
+  <label>Full Name</label>
+  <input id="name">
 </div>
 
-<div class="group"><label>Email</label><input id="email"></div>
-<div class="group"><label>Facebook</label><input id="facebook"></div>
-<div class="group"><label>Instagram</label><input id="instagram"></div>
-<div class="group"><label>YouTube</label><input id="youtube"></div>
+<div class="group">
+  <label>Business / Job Title</label>
+  <input id="businessName">
+</div>
 
-<button id="generate">Generate</button>
+<div class="group">
+  <label>About You / Company</label>
+  <textarea id="businessInfo" rows="3"></textarea>
+</div>
+
+<div class="group">
+  <label>Address</label>
+  <input id="address" placeholder="Lahore, Pakistan">
+</div>
+
+<div class="group">
+  <label>Phone</label>
+  <div class="phone-wrap">
+    <select id="code">
+      <option value="+92">+92</option>
+      <option value="+91">+91</option>
+      <option value="+1">+1</option>
+    </select>
+    <input id="phone" placeholder="3001234567">
+  </div>
+</div>
+
+<div class="group">
+  <label>Email</label>
+  <input id="email">
+</div>
+
+<div class="group">
+  <label>Facebook</label>
+  <input id="facebook" placeholder="https://">
+</div>
+
+<div class="group">
+  <label>Instagram</label>
+  <input id="instagram" placeholder="https://">
+</div>
+
+<div class="group">
+  <label>YouTube</label>
+  <input id="youtube" placeholder="https://">
+</div>
+
+<button id="generate">Generate Card</button>
 </div>
 
 <script>
 generate.onclick = ()=>{
-const data={
-name:name.value,
-businessName:businessName.value,
-businessInfo:businessInfo.value,
-address:address.value,
-phone:code.value+phone.value,
-email:email.value,
-facebook:facebook.value,
-instagram:instagram.value,
-youtube:youtube.value,
-profileImage:""
-};
+  const data={
+    name:name.value,
+    businessName:businessName.value,
+    businessInfo:businessInfo.value,
+    address:address.value,
+    phone:code.value+phone.value,
+    email:email.value,
+    facebook:facebook.value,
+    instagram:instagram.value,
+    youtube:youtube.value,
+    profileImage:""
+  };
 
-const f = profileImage.files[0];
-const r = new FileReader();
-r.onload = ()=>{
-  const img = new Image();
-  img.onload=()=>{
-    const c=document.createElement("canvas");
-    c.width=200; c.height=200;
-    const ctx=c.getContext("2d");
-    ctx.drawImage(img,0,0,200,200);
-    data.profileImage = c.toDataURL("image/jpeg",0.6);
+  const f = profileImage.files[0];
+  if(!f){ alert("Please select image"); return; }
+
+  const fd = new FormData();
+  fd.append("file", f);
+  fd.append("upload_preset", "card_images");
+
+  fetch("https://api.cloudinary.com/v1_1/dfbzg4xae/image/upload",{
+    method:"POST",
+    body:fd
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    data.profileImage = res.secure_url;
     const encoded = btoa(JSON.stringify(data));
     location.href="card.html?data="+encoded;
-  }
-  img.src=r.result;
-}
-r.readAsDataURL(f);
-}
+  })
+  .catch(()=>{
+    alert("Upload failed. Check internet.");
+  });
+};
 </script>
 </body>
 </html>
