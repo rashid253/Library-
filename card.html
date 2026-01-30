@@ -11,24 +11,109 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-body{margin:0;font-family:system-ui;background:#0f172a;color:white}
-.topbar{display:flex;justify-content:space-around;padding:10px;background:#020617}
-.topbar a{color:white;font-size:18px}
+body{
+ margin:0;
+ font-family:system-ui;
+ background:#f1f5f9;
+ color:#0f172a;
+ overflow-x:hidden;
+}
 
-.profile{display:flex;gap:12px;padding:16px;background:#1e293b;align-items:center}
-.profile img{width:70px;height:70px;border-radius:50%;object-fit:cover;border:2px solid white}
+.topbar{
+ display:flex;
+ justify-content:space-around;
+ padding:10px;
+ background:#e2e8f0;
+}
+
+.topbar a{color:#0f172a;font-size:18px}
+
+.profile{
+ display:flex;
+ gap:12px;
+ padding:16px;
+ background:#f8fafc;
+ align-items:center;
+}
+
+.profile img{
+ width:70px;
+ height:70px;
+ border-radius:50%;
+ object-fit:contain;
+ border:2px solid #cbd5f5;
+ background:white;
+}
+
 .info{font-size:13px}
-.downloadBtn{background:#2563eb;padding:6px 10px;border-radius:6px;font-size:12px;margin-top:6px}
 
-.about{padding:12px;background:#020617;font-size:14px}
+.downloadBtn{
+ display:inline-block;
+ font-size:12px;
+ padding:4px 8px;
+ border-radius:6px;
+ background:#2563eb;
+ color:white;
+ margin-top:6px;
+}
 
-.offers{display:flex;overflow-x:auto;scroll-snap-type:x mandatory}
-.offer{min-width:90%;margin:12px;background:#16a34a;border-radius:20px;padding:14px;scroll-snap-align:center}
-.offer img{width:100%;height:120px;object-fit:cover;border-radius:12px}
-.offer button{width:100%;padding:10px;border:none;border-radius:10px;background:#020617;color:white;font-size:16px;margin-top:8px}
+.about{
+ padding:12px;
+ background:white;
+ font-size:14px;
+}
 
-.actions{display:flex;justify-content:space-around;padding:16px;background:#020617}
-.actions a{color:white;font-size:22px}
+.offers{
+ display:flex;
+ overflow-x:auto;
+ scroll-snap-type:x mandatory;
+}
+
+.offer{
+ min-width:90%;
+ margin:12px;
+ background:#2563eb;
+ border-radius:16px;
+ padding:12px;
+ scroll-snap-align:center;
+ color:white;
+}
+
+.offer img{
+ width:100%;
+ height:140px;
+ object-fit:contain;
+ border-radius:10px;
+ background:white;
+}
+
+.offer button{
+ width:100%;
+ padding:10px;
+ border:none;
+ border-radius:10px;
+ background:#0f172a;
+ color:white;
+ font-size:15px;
+ margin-top:8px;
+}
+
+.actions{
+ display:flex;
+ justify-content:space-around;
+ padding:14px;
+ background:#e2e8f0;
+}
+
+.actions a{color:#0f172a;font-size:22px}
+
+.social{
+ display:flex;
+ justify-content:center;
+ gap:18px;
+ padding:10px;
+}
+.social a{color:#2563eb;font-size:20px}
 </style>
 </head>
 
@@ -48,7 +133,7 @@ body{margin:0;font-family:system-ui;background:#0f172a;color:white}
 <div id="phone"></div>
 <div id="email"></div>
 <div id="address"></div>
-<div class="downloadBtn" onclick="saveCard()">Download Card</div>
+<div class="downloadBtn" onclick="saveCard()">Download</div>
 </div>
 </div>
 
@@ -60,6 +145,12 @@ body{margin:0;font-family:system-ui;background:#0f172a;color:white}
 <a id="call"><i class="fa fa-phone"></i></a>
 <a id="wa"><i class="fab fa-whatsapp"></i></a>
 <a id="mail"><i class="fa fa-envelope"></i></a>
+</div>
+
+<div class="social">
+<a id="fb"><i class="fab fa-facebook"></i></a>
+<a id="ig"><i class="fab fa-instagram"></i></a>
+<a id="yt"><i class="fab fa-youtube"></i></a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -85,6 +176,10 @@ wa.href="https://wa.me/"+data.phone;
 mail.href="mailto:"+data.email;
 map.href="https://maps.google.com/?q="+encodeURIComponent(data.address);
 sms.href="sms:"+data.phone;
+
+if(data.facebook) fb.href=data.facebook;
+if(data.instagram) ig.href=data.instagram;
+if(data.youtube) yt.href=data.youtube;
 
 share.onclick=()=>{
  navigator.share({title:data.name,text:data.businessName,url:location.href});
