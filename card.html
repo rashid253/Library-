@@ -2,132 +2,52 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>My Card</title>
+<title>Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2563eb">
-
 <script>
 if("serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js");
 }
 </script>
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-
 <style>
-body{
-  margin:0;
-  background:linear-gradient(135deg,#f1f5f9,#e2e8f0);
-  font-family:Arial;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-}
+body{font-family:system-ui;background:#f1f5f9;margin:0;display:flex;justify-content:center;align-items:center;height:100vh;}
 .card{
-  width:100%;
-  max-width:380px;
   background:white;
-  border-radius:20px;
   padding:20px;
-  box-shadow:0 20px 40px rgba(0,0,0,.2);
+  border-radius:16px;
+  width:90%;
+  max-width:350px;
+  text-align:center;
 }
-.header{display:flex;justify-content:space-between;}
-.header i{color:#2563eb;font-size:18px;}
-.profile{text-align:center;margin-top:10px;}
-.profile img{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #2563eb;}
-.info{text-align:center;color:#475569;font-size:14px;}
-.actions{display:flex;justify-content:space-around;margin-top:15px;}
-.actions a{font-size:20px;color:#2563eb;}
-.buttons{display:grid;gap:10px;margin-top:15px;}
-.buttons a{text-decoration:none;padding:12px;border-radius:12px;color:white;text-align:center;font-weight:bold;}
-.call{background:#2563eb;}
-.wa{background:#22c55e;}
-.mail{background:#f97316;}
-.social{display:flex;justify-content:center;gap:18px;margin-top:15px;}
-.social a{color:#475569;font-size:20px;}
+.card img{
+  width:90px;height:90px;border-radius:50%;
+}
 </style>
 </head>
-
 <body>
+
 <div class="card">
-  <div class="header">
-    <i class="fa fa-share-alt" id="share"></i>
-    <i class="fa fa-download" id="save"></i>
-  </div>
-
-  <div class="profile">
-    <img id="photo">
-    <h2 id="name"></h2>
-    <div id="business"></div>
-  </div>
-
-  <div class="info">
-    <div id="about"></div>
-    <div id="address"></div>
-    <div id="phone"></div>
-    <div id="email"></div>
-  </div>
-
-  <div class="actions">
-    <a id="miniCall"><i class="fa fa-phone"></i></a>
-    <a id="miniWa"><i class="fab fa-whatsapp"></i></a>
-    <a id="miniMail"><i class="fa fa-envelope"></i></a>
-  </div>
-
-  <div class="buttons">
-    <a id="callBtn" class="call">Call</a>
-    <a id="waBtn" class="wa">WhatsApp</a>
-    <a id="mailBtn" class="mail">Email</a>
-  </div>
-
-  <div class="social">
-    <a id="fb"><i class="fab fa-facebook"></i></a>
-    <a id="ig"><i class="fab fa-instagram"></i></a>
-    <a id="yt"><i class="fab fa-youtube"></i></a>
-  </div>
+<img id="photo">
+<h2 id="name"></h2>
+<div id="business"></div>
+<div id="about"></div>
+<div id="address"></div>
+<div id="phone"></div>
+<div id="email"></div>
 </div>
 
 <script>
-let data = JSON.parse(localStorage.getItem("cardData")||"{}");
+let data=JSON.parse(localStorage.getItem("currentCard")||"{}");
 
-photo.src=data.profileImage||"";
-name.textContent=data.name||"";
-business.textContent=data.businessName||"";
-about.textContent=data.businessInfo||"";
-address.textContent=data.address||"";
-phone.textContent=data.phone||"";
-email.textContent=data.email||"";
-
-miniCall.href="tel:"+data.phone;
-miniWa.href="https://wa.me/"+data.phone;
-miniMail.href="mailto:"+data.email;
-callBtn.href=miniCall.href;
-waBtn.href=miniWa.href;
-mailBtn.href=miniMail.href;
-
-if(data.facebook){fb.href=data.facebook;fb.target="_blank";}
-if(data.instagram){ig.href=data.instagram;ig.target="_blank";}
-if(data.youtube){yt.href=data.youtube;yt.target="_blank";}
-
-share.onclick=()=>{
-  navigator.share({title:data.name,url:location.href});
-};
-
-save.onclick=()=>{
-  const v=`BEGIN:VCARD
-FN:${data.name}
-TEL:${data.phone}
-EMAIL:${data.email}
-ADR:${data.address}
-END:VCARD`;
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([v],{type:"text/vcard"}));
-  a.download="contact.vcf";
-  a.click();
-};
+photo.src=data.profileImage;
+name.textContent=data.name;
+business.textContent=data.businessName;
+about.textContent=data.businessInfo;
+address.textContent=data.address;
+phone.textContent=data.phone;
+email.textContent=data.email;
 
 history.pushState(null,null,location.href);
 window.onpopstate=()=>{history.go(1);}
