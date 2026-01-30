@@ -1,121 +1,161 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>My Card</title>
+<title>Digital Business Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#64748b">
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
-  background:#e5e7eb;
-  font-family:system-ui;
+  min-height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-  min-height:100vh;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  font-family: "Inter", system-ui, sans-serif;
 }
 
 .card{
   width:100%;
-  max-width:380px;
-  background:white;
-  border-radius:22px;
+  max-width:390px;
+  background:#ffffff;
+  border-radius:26px;
   overflow:hidden;
-  box-shadow:0 25px 50px rgba(0,0,0,.2);
+  box-shadow:0 30px 80px rgba(0,0,0,.35);
 }
 
-/* top grey curve */
-.top{
-  background:linear-gradient(135deg,#9ca3af,#6b7280);
-  height:140px;
+/* HERO */
+.hero{
+  background:linear-gradient(135deg,#3b82f6,#2563eb);
+  height:170px;
   position:relative;
 }
 
-.header{
+.top-actions{
   display:flex;
-  justify-content:space-around;
-  padding:15px;
+  justify-content:space-between;
+  padding:16px 18px;
   color:white;
   font-size:20px;
 }
 
+.top-actions i{cursor:pointer;opacity:.9}
+.top-actions i:hover{opacity:1}
+
+/* PROFILE */
 .profile{
   text-align:center;
-  margin-top:-50px;
+  margin-top:-60px;
+  padding:0 20px;
 }
 
 .profile img{
-  width:100px;
-  height:100px;
+  width:110px;
+  height:110px;
   border-radius:50%;
-  border:4px solid white;
+  border:5px solid white;
   object-fit:cover;
-  background:white;
+  background:#fff;
 }
 
-.profile h2{margin:8px 0 2px;}
-.profile div{color:#475569;font-size:14px;}
+.profile h2{
+  margin:10px 0 2px;
+  font-size:22px;
+  color:#0f172a;
+}
 
+.profile .role{
+  color:#64748b;
+  font-size:14px;
+  margin-bottom:8px;
+}
+
+/* INFO */
 .info{
   text-align:center;
-  padding:10px 20px;
+  padding:10px 26px;
   color:#334155;
   font-size:14px;
+  line-height:1.6;
 }
 
-.buttons{
+/* PRIMARY ACTIONS */
+.actions{
   display:grid;
   gap:12px;
-  padding:20px;
+  padding:18px 26px;
 }
 
-.buttons a{
+.actions a{
   text-decoration:none;
-  padding:14px;
+  padding:15px;
   border-radius:14px;
   color:white;
   text-align:center;
   font-weight:600;
   font-size:15px;
+  transition:.2s;
 }
 
-.call{background:#2563eb;}
-.wa{background:#22c55e;}
-.mail{background:#f97316;}
+.actions a:hover{transform:scale(1.02)}
 
+.call{background:#2563eb}
+.wa{background:#22c55e}
+.mail{background:#f97316}
+
+/* QUICK ICON BAR */
+.quick{
+  display:flex;
+  justify-content:space-around;
+  padding:14px 20px 6px;
+  color:#475569;
+  font-size:20px;
+}
+
+.quick i{cursor:pointer}
+.quick i:hover{color:#2563eb}
+
+/* SOCIAL */
 .social{
   display:flex;
   justify-content:center;
-  gap:20px;
-  padding-bottom:18px;
+  gap:22px;
+  padding:14px 0 22px;
 }
 
-.social a{color:#64748b;font-size:22px;}
+.social a{
+  color:#64748b;
+  font-size:22px;
+  transition:.2s;
+}
+.social a:hover{color:#2563eb}
 </style>
 </head>
 
 <body>
 <div class="card">
 
-  <div class="top">
-    <div class="header">
+  <div class="hero">
+    <div class="top-actions">
       <i class="fa fa-share-alt" id="share"></i>
-      <i class="fa fa-download" id="save"></i>
-      <i class="fa fa-map-marker-alt" id="map"></i>
-      <i class="fa fa-comment-sms" id="sms"></i>
+      <div>
+        <i class="fa fa-map-marker-alt" id="map"></i>
+        &nbsp;&nbsp;
+        <i class="fa fa-comment-sms" id="sms"></i>
+        &nbsp;&nbsp;
+        <i class="fa fa-download" id="save"></i>
+      </div>
     </div>
   </div>
 
   <div class="profile">
     <img id="photo">
     <h2 id="name"></h2>
-    <div id="business"></div>
+    <div class="role" id="business"></div>
   </div>
 
   <div class="info">
@@ -125,10 +165,16 @@ body{
     <div id="email"></div>
   </div>
 
-  <div class="buttons">
+  <div class="actions">
     <a id="callBtn" class="call"><i class="fa fa-phone"></i> Call Now</a>
     <a id="waBtn" class="wa"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-    <a id="mailBtn" class="mail"><i class="fa fa-envelope"></i> Send Email</a>
+    <a id="mailBtn" class="mail"><i class="fa fa-envelope"></i> Email</a>
+  </div>
+
+  <div class="quick">
+    <i class="fa fa-phone" id="qcall"></i>
+    <i class="fab fa-whatsapp" id="qwa"></i>
+    <i class="fa fa-envelope" id="qmail"></i>
   </div>
 
   <div class="social">
@@ -153,6 +199,10 @@ email.textContent=data.email||"";
 callBtn.href="tel:"+data.phone;
 waBtn.href="https://wa.me/"+data.phone;
 mailBtn.href="mailto:"+data.email;
+
+qcall.onclick=()=>location.href=callBtn.href;
+qwa.onclick=()=>location.href=waBtn.href;
+qmail.onclick=()=>location.href=mailBtn.href;
 
 map.onclick=()=>{
   window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(data.address));
