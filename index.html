@@ -1,148 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Business Card</title>
-
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1e90ff">
-<script>
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
-}
-</script>
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<meta charset="UTF-8">
+<title>Card Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-/* === YOUR ORIGINAL CSS (UNCHANGED) === */
-body{
-  font-family:Segoe UI,sans-serif;
-  margin:0;
-  padding:1rem;
-  background:linear-gradient(135deg,#cfd8dc,#eceff1);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-}
-.card-container{
-  width:400px;
-  background:#fff;
-  border-radius:20px;
-  box-shadow:0 8px 30px rgba(0,0,0,.2);
-  padding:1.5rem;
-}
-.top-icons{position:absolute;top:10px;right:10px;}
-.top-icons button{background:none;border:none;font-size:20px;color:#1e90ff;}
-.mini-icons{display:flex;justify-content:center;gap:1rem;padding:1rem;}
-.mini-icons .icon{font-size:1.5rem;color:#333;}
-.profile-section{display:flex;gap:1rem;padding:1rem;}
-.profile-image{width:90px;height:90px;border-radius:50%;object-fit:cover;}
-.business-info-section{background:#e0f7fa;padding:1rem;border-radius:10px;}
-.action-buttons{display:grid;gap:10px;}
-.action-btn{padding:10px;border-radius:8px;color:white;text-align:center;text-decoration:none;font-weight:600;}
-.social-links{display:flex;justify-content:center;gap:15px;margin-top:15px;}
+body{font-family:Arial;background:#f1f5f9;padding:20px;}
+input,textarea{width:100%;padding:10px;margin:6px 0;}
+button{padding:12px;width:100%;background:#2563eb;color:white;border:none;}
 </style>
 </head>
 
 <body>
+<h2>Create Card</h2>
 
-<div class="card-container">
+<input id="name" placeholder="Full Name">
+<input id="businessName" placeholder="Business Name">
+<textarea id="businessInfo" placeholder="Business Info"></textarea>
+<input id="address" placeholder="Address">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
+<input id="facebook" placeholder="Facebook">
+<input id="instagram" placeholder="Instagram">
+<input id="youtube" placeholder="YouTube">
 
-  <div class="top-icons">
-    <button id="topShareIcon"><i class="fas fa-share-alt"></i></button>
-  </div>
+<input type="file" id="profileImage">
 
-  <div class="mini-icons">
-    <a id="miniCallButton" class="icon"><i class="fas fa-phone"></i></a>
-    <a id="miniEmailButton" class="icon"><i class="fas fa-envelope"></i></a>
-    <a id="miniWhatsappButton" class="icon"><i class="fab fa-whatsapp"></i></a>
-  </div>
-
-  <div class="profile-section">
-    <img id="cardProfileImage" class="profile-image"/>
-    <div>
-      <h3 id="cardName"></h3>
-      <p id="cardBusinessName"></p>
-      <p id="cardAddress"></p>
-      <p id="cardPhone"></p>
-      <p id="cardEmail"></p>
-    </div>
-  </div>
-
-  <div class="business-info-section">
-    <div id="businessInfoContent"></div>
-  </div>
-
-  <div class="action-buttons">
-    <a id="callButton" class="action-btn" style="background:#1e90ff">Call</a>
-    <a id="whatsappButton" class="action-btn" style="background:#25d366">WhatsApp</a>
-    <a id="emailButton" class="action-btn" style="background:#ff5722">Email</a>
-  </div>
-
-  <div class="social-links">
-    <a id="facebookButton"><i class="fab fa-facebook"></i></a>
-    <a id="instagramButton"><i class="fab fa-instagram"></i></a>
-    <a id="youtubeButton"><i class="fab fa-youtube"></i></a>
-  </div>
-
-</div>
+<button id="generate">Generate Card</button>
 
 <script>
-/* ===== DATA LOADER (URL + localStorage) ===== */
-const params = new URLSearchParams(location.search);
-let data = Object.fromEntries(params.entries());
+generate.onclick=()=>{
+  const data={
+    name:name.value,
+    businessName:businessName.value,
+    businessInfo:businessInfo.value,
+    address:address.value,
+    phone:phone.value,
+    email:email.value,
+    facebook:facebook.value,
+    instagram:instagram.value,
+    youtube:youtube.value,
+    profileImage:""
+  };
 
-if(Object.keys(data).length === 0){
-  data = JSON.parse(localStorage.getItem("cardData") || "{}");
-}
-
-/* ===== POPULATE CARD ===== */
-cardProfileImage.src = data.profileImage || "";
-cardName.textContent = data.name || "";
-cardBusinessName.textContent = data.businessName || "";
-cardAddress.textContent = data.address || "";
-cardPhone.textContent = data.phone || "";
-cardEmail.textContent = data.email || "";
-businessInfoContent.textContent = data.businessInfo || "";
-
-/* ===== LINKS ===== */
-miniCallButton.href = "tel:" + (data.phone||"");
-miniEmailButton.href = "mailto:" + (data.email||"");
-miniWhatsappButton.href = "https://wa.me/" + (data.phone||"");
-
-callButton.href = "tel:" + (data.phone||"");
-whatsappButton.href = "https://wa.me/" + (data.phone||"");
-emailButton.href = "mailto:" + (data.email||"");
-
-if(data.facebook){
-  facebookButton.href = data.facebook;
-  facebookButton.target="_blank";
-}
-if(data.instagram){
-  instagramButton.href = data.instagram;
-  instagramButton.target="_blank";
-}
-if(data.youtube){
-  youtubeButton.href = data.youtube;
-  youtubeButton.target="_blank";
-}
-
-/* ===== SHARE ===== */
-topShareIcon.onclick=()=>{
-  navigator.share({
-    title:data.name || "My Card",
-    url:location.href
-  });
+  const f=profileImage.files[0];
+  if(f){
+    const r=new FileReader();
+    r.onload=()=>{
+      data.profileImage=r.result;
+      localStorage.setItem("cardData",JSON.stringify(data));
+      location.href="card.html";
+    };
+    r.readAsDataURL(f);
+  }else{
+    localStorage.setItem("cardData",JSON.stringify(data));
+    location.href="card.html";
+  }
 };
-
-/* ===== BACK BLOCK ===== */
-history.pushState(null,null,location.href);
-window.onpopstate=()=>{history.go(1);};
 </script>
-
 </body>
 </html>
