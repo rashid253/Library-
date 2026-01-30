@@ -1,13 +1,7 @@
-self.addEventListener("install",e=>{
-  e.waitUntil(
-    caches.open("card-app").then(c=>{
-      return c.addAll(["card.html","manifest.json"]);
-    })
-  );
+self.addEventListener("install", event => {
+  self.skipWaiting();
 });
 
-self.addEventListener("fetch",e=>{
-  e.respondWith(
-    caches.match(e.request).then(r=>r||fetch(e.request))
-  );
+self.addEventListener("activate", event => {
+  event.waitUntil(self.clients.claim());
 });
