@@ -1,7 +1,7 @@
 {
   "name": "My Digital Card",
   "short_name": "MyCard",
-  "start_url": "card.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
