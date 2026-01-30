@@ -3,37 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>My Digital Card</title>
+<title>Digital Card Generator</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body{margin:0;font-family:Arial;background:#fff}
-.top{background:#111;color:#fff;padding:10px;text-align:center}
-.profile{display:flex;align-items:center;padding:15px;background:#eaf1ff}
-.profile img{width:70px;height:70px;border-radius:50%;object-fit:cover}
-.info{margin-left:15px}
-.card{padding:15px}
-.offer{background:#f4f6fb;margin:10px;padding:10px;border-radius:10px}
-button{background:#25D366;color:white;border:0;padding:10px;width:100%}
+body{font-family:Arial;margin:0;background:#f4f6fb}
+input,textarea,button{width:100%;margin:8px 0;padding:10px}
+button{background:#2563eb;color:#fff;border:0;font-size:18px}
 </style>
 </head>
 <body>
 
-<div class="top">
-<button onclick="share()">Share</button>
-</div>
+<h2 style="text-align:center">Create Digital Card</h2>
 
-<div class="profile">
-<img id="pimg">
-<div class="info">
-<b id="pname"></b><br>
-<span id="pphone"></span><br>
-<span id="pemail"></span>
-</div>
-</div>
-
-<div class="card">
-<h3>Offers</h3>
-<div id="offers"></div>
+<div style="padding:15px">
+<input id="name" placeholder="Business / Name">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
+<input id="address" placeholder="Address">
+<input id="image" placeholder="Profile Image URL">
+<textarea id="offer1" placeholder="Offer 1"></textarea>
+<textarea id="offer2" placeholder="Offer 2"></textarea>
+<textarea id="offer3" placeholder="Offer 3"></textarea>
+<button onclick="generate()">Generate Card</button>
 </div>
 
 <script>
@@ -42,31 +33,18 @@ const supabase = supabase.createClient(
   "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
 );
 
-const id=new URLSearchParams(location.search).get("id");
-
-supabase.from("cards").select().eq("id",id).then(r=>{
- const d=JSON.parse(r.data[0].data);
- pimg.src=d.image;
- pname.innerText=d.name;
- pphone.innerText=d.phone;
- pemail.innerText=d.email;
- d.offers.forEach(o=>{
-  if(o.trim()){
-   offers.innerHTML+=`
-   <div class="offer">
-   ${o}
-   <button onclick="wa('${o}')">Get on WhatsApp</button>
-   </div>`;
-  }
- });
-});
-
-function wa(text){
- location.href="https://wa.me/?text="+encodeURIComponent(text);
-}
-
-function share(){
- navigator.share({url:location.href});
+async function generate(){
+ const data={
+  name:name.value,
+  phone:phone.value,
+  email:email.value,
+  address:address.value,
+  image:image.value,
+  offers:[offer1.value,offer2.value,offer3.value]
+ };
+ const id=Math.random().toString(36).slice(2,8);
+ await supabase.from("cards").insert({id,data:JSON.stringify(data)});
+ location.href="card.html?id="+id;
 }
 </script>
 </body>
