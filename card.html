@@ -2,49 +2,79 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>My Cards</title>
+<title>Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{font-family:system-ui;background:#f1f5f9;margin:0;padding:15px;}
+body{
+ margin:0;
+ background:linear-gradient(135deg,#f1f5f9,#e2e8f0);
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ height:100vh;
+ font-family:system-ui;
+}
 .card{
  background:white;
- padding:12px;
- border-radius:14px;
- margin-bottom:10px;
- display:flex;
- gap:12px;
- align-items:center;
- box-shadow:0 5px 15px rgba(0,0,0,.1);
+ padding:20px;
+ border-radius:20px;
+ width:90%;
+ max-width:360px;
+ text-align:center;
+ box-shadow:0 20px 40px rgba(0,0,0,.2);
 }
 .card img{
- width:55px;height:55px;
+ width:90px;height:90px;
  border-radius:50%;
  object-fit:cover;
+ border:3px solid #2563eb;
 }
+.btn{
+ display:block;
+ margin-top:10px;
+ padding:10px;
+ border-radius:10px;
+ text-decoration:none;
+ color:white;
+}
+.call{background:#2563eb;}
+.wa{background:#22c55e;}
+.mail{background:#f97316;}
 </style>
 </head>
 <body>
 
-<h2>Saved Cards</h2>
-<div id="list"></div>
+<div class="card">
+<img id="photo">
+<h2 id="name"></h2>
+<div id="business"></div>
+<p id="about"></p>
+<div id="address"></div>
+<div id="phone"></div>
+<div id="email"></div>
+
+<a id="callBtn" class="btn call">Call</a>
+<a id="waBtn" class="btn wa">WhatsApp</a>
+<a id="mailBtn" class="btn mail">Email</a>
+</div>
 
 <script>
-let all=JSON.parse(localStorage.getItem("allCards")||"[]");
-all.forEach(c=>{
- const d=document.createElement("div");
- d.className="card";
- d.innerHTML=`
- <img src="${c.profileImage}">
- <div>
- <b>${c.name}</b><br>
- <small>${c.businessName}</small>
- </div>`;
- d.onclick=()=>{
-  localStorage.setItem("currentCard",JSON.stringify(c));
-  location.href="card.html";
- };
- list.appendChild(d);
-});
+let d=JSON.parse(localStorage.getItem("currentCard")||"{}");
+
+photo.src=d.profileImage;
+name.textContent=d.name;
+business.textContent=d.businessName;
+about.textContent=d.businessInfo;
+address.textContent=d.address;
+phone.textContent=d.phone;
+email.textContent=d.email;
+
+callBtn.href="tel:"+d.phone;
+waBtn.href="https://wa.me/"+d.phone;
+mailBtn.href="mailto:"+d.email;
+
+history.pushState(null,null,location.href);
+window.onpopstate=()=>{history.go(1);}
 </script>
 </body>
 </html>
