@@ -1,30 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Digital Card</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Card Generator</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<style>
+/* SAME DESIGN – nothing changed */
+body{margin:0;font-family:system-ui;background:#f1f5f9}
+.form-container{max-width:450px;margin:auto;background:white;padding:20px;border-radius:14px;margin-top:30px}
+input,textarea,select,button{width:100%;padding:10px;margin:6px 0}
+button{background:#2563eb;color:white;border:none;border-radius:8px}
+</style>
 </head>
+
 <body>
 
-<h2>Create Your Digital Card</h2>
+<div class="form-container">
+<h2>Create Business Card</h2>
 
-<div class="form">
-<input id="name" placeholder="Business / Name">
+<input id="name" placeholder="Full Name">
+<input id="businessName" placeholder="Business Name">
+<textarea id="businessInfo" placeholder="Business Info (3–5 paragraphs)"></textarea>
+<input id="address" placeholder="Address">
+
+<select id="countryCode">
+<option value="+92">+92</option>
+<option value="+1">+1</option>
+<option value="+44">+44</option>
+</select>
+
 <input id="phone" placeholder="Phone">
 <input id="email" placeholder="Email">
-<input id="address" placeholder="Address">
-<input id="image" placeholder="Profile Image URL">
+<input id="facebook" placeholder="Facebook">
+<input id="instagram" placeholder="Instagram">
+<input id="youtube" placeholder="YouTube">
 
-<textarea id="offer1" placeholder="Offer 1"></textarea>
-<textarea id="offer2" placeholder="Offer 2"></textarea>
-<textarea id="offer3" placeholder="Offer 3"></textarea>
+<label>Profile Photo</label>
+<input type="file" id="profileImage">
 
+<h3>Offers</h3>
+<div id="offers"></div>
+<button onclick="addOffer()">Add Offer</button>
+
+<br><br>
 <button onclick="generate()">Generate Card</button>
 </div>
 
-<script src="app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const supabase = supabase.createClient(
+ 'https://dfvnefbxgayxqgjjgtrr.supabase.co',
+ 'sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE'
+);
+
+function addOffer(){
+ const d=document.createElement("div");
+ d.innerHTML=`
+  <input placeholder="Offer title">
+  <textarea placeholder="Description"></textarea>
+  <input type="file">
+ `;
+ offers.appendChild(d);
+}
+
+function compress(file){
+ return new Promise(res=>{
+  const img=new Image();
+  img.src=URL.createObjectURL(file);
+  img.onload=()=>{
+   const c=document.createElement("canvas");
+   c.width=200;c.height=200;
+   c.getContext("2d").drawImage(img,0,0,200,200);
+   res(c.toDataURL("image/jpeg",0.6));
+  }
+ });
+}
+
+async function generate(){
+
+ const id=Math.random().toString(36).substring(2,8);
+
+ const profile = profileImage.files[0]
+  ? await compress(profileImage.files[0])
+  : "";
+
+ const offerArr=[];
+ for(let o of offers.children){
+  const img=o.children[2].files[0]
+   ? await compress(o.children[2].files[0])
+   : "";
+  offerArr.push({
+   title:o.children[0].value,
+   desc:o.children[1].value,
+   image:img
+  });
+ }
+
+ const data={
+  name:name.value,
+  businessName:businessName.value,
+  businessInfo:businessInfo.value,
+  address:address.value,
+  phone:countryCode.value+phone.value,
+  email:email.value,
+  facebook:facebook.value,
+  instagram:instagram.value,
+  youtube:youtube.value,
+  profileImage:profile,
+  offers:offerArr
+ };
+
+ await supabase.from("cards").insert({
+  id:id,
+  data:JSON.stringify(data)
+ });
+
+ location.href="card.html?id="+id;
+}
+</script>
+
+<script>
+if("serviceWorker" in navigator){
+ navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
 </body>
 </html>
