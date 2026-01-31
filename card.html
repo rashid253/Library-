@@ -2,252 +2,106 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>My Digital Card</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Business Card</title>
 
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f172a">
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<meta name="theme-color" content="#2563eb">
 
 <style>
-/* 100% SAME DESIGN */
-body{
- margin:0;
- font-family:system-ui;
- background:#f1f5f9;
- color:#0f172a;
- overflow-x:hidden;
-}
-
-.topbar{
- display:flex;
- justify-content:space-around;
- padding:10px;
- background:#0f172a;
-}
-
-.topbar a{color:white;font-size:18px}
-
-.profile{
- display:flex;
- gap:12px;
- padding:16px;
- background:#e2e8f0;
- align-items:center;
-}
-
-.profile img{
- width:70px;
- height:70px;
- border-radius:50%;
- object-fit:contain;
- border:2px solid #cbd5f5;
- background:white;
-}
-
-.info{font-size:13px}
-
-.downloadBtn{
- display:inline-block;
- font-size:12px;
- padding:4px 8px;
- border-radius:6px;
- background:#2563eb;
- color:white;
- margin-top:6px;
-}
-
-.about{
- padding:12px;
- background:white;
- font-size:14px;
-}
-
-.offers{
- display:flex;
- overflow-x:auto;
- scroll-snap-type:x mandatory;
-}
-
-.offer{
- min-width:90%;
- margin:12px;
- background:#2563eb;
- border-radius:16px;
- padding:12px;
- scroll-snap-align:center;
- color:white;
- display:flex;
- gap:12px;
- align-items:center;
-}
-
-.offer img{
- max-width:120px;
- max-height:100px;
- object-fit:contain;
- border-radius:8px;
-}
-
-.offerContent{flex:1}
-
-.offer button{
- width:100%;
- padding:8px;
- border:none;
- border-radius:8px;
- background:#0f172a;
- color:white;
- margin-top:6px;
-}
-
-.dots{text-align:center}
-.dots span{
- width:8px;height:8px;
- border-radius:50%;
- background:#94a3b8;
- display:inline-block;
- margin:0 3px;
-}
-.dots .active{background:#2563eb;width:18px;border-radius:10px}
-
-.actions{
- display:flex;
- justify-content:space-around;
- padding:14px;
- background:#e2e8f0;
-}
-
-.actions a{font-size:22px;color:#0f172a}
-
-.social{
- display:flex;
- justify-content:center;
- gap:18px;
- padding:10px;
-}
-.social a{font-size:20px;color:#2563eb}
+body{margin:0;font-family:system-ui;background:#f8fafc}
+.topbar{background:#0f172a;color:white;padding:10px;display:flex;justify-content:space-around}
+.topbar a{color:white;font-size:18px;text-decoration:none}
+.profile{display:flex;gap:15px;padding:20px;align-items:center}
+.profile img{width:100px;height:100px;border-radius:50%;object-fit:cover}
+.info h2{margin:0}
+.card{background:white;margin:15px;border-radius:14px;overflow:hidden}
+.offers{display:flex;overflow-x:auto;gap:10px;padding:15px}
+.offer{min-width:260px;background:#f1f5f9;border-radius:12px;padding:10px}
+.offer img{width:100%;height:120px;object-fit:cover;border-radius:10px}
+.offer button{width:100%;margin-top:6px;background:#22c55e;color:white;border:none;padding:8px;border-radius:8px}
 </style>
 </head>
 
 <body>
 
 <div class="topbar">
-<a id="share"><i class="fa fa-share"></i></a>
-<a id="map"><i class="fa fa-location-dot"></i></a>
-<a id="sms"><i class="fa fa-comment"></i></a>
+<a id="shareBtn">Share</a>
+<a id="callBtn">Call</a>
+<a id="waBtn">WhatsApp</a>
+<a id="mapBtn">Map</a>
 </div>
 
+<div class="card">
 <div class="profile">
-<img id="photo">
+<img id="profileImg">
 <div class="info">
-<div id="name"></div>
-<div id="business"></div>
-<div id="phone"></div>
-<div id="email"></div>
-<div id="address"></div>
+<h2 id="name"></h2>
+<p id="businessName"></p>
+<p id="address"></p>
 </div>
 </div>
 
-<div class="about" id="about"></div>
+<p style="padding:0 20px" id="businessInfo"></p>
+</div>
 
+<h3 style="padding-left:15px">Offers</h3>
 <div class="offers" id="offers"></div>
-<div class="dots" id="dots"></div>
 
-<div class="actions">
-<a id="call"><i class="fa fa-phone"></i></a>
-<a id="wa"><i class="fab fa-whatsapp"></i></a>
-<a id="mail"><i class="fa fa-envelope"></i></a>
-</div>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+const db = supabase.createClient(
+ "https://dfvnefbxgayxqgjjgtrr.supabase.co",
+ "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
+);
 
-<div class="social">
-<a id="fb"><i class="fab fa-facebook"></i></a>
-<a id="ig"><i class="fab fa-instagram"></i></a>
-<a id="yt"><i class="fab fa-youtube"></i></a>
-</div>
+const params=new URLSearchParams(location.search);
+const id=params.get("id");
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+if(!id){
+ location.href="index.html";
+}
+
+db.from("cards").select("*").eq("id",id).single().then(r=>{
+ if(r.error){
+  alert("Card not found");
+  return;
+ }
+
+ const d=JSON.parse(r.data.data);
+
+ name.innerText=d.name;
+ businessName.innerText=d.businessName;
+ businessInfo.innerText=d.businessInfo;
+ address.innerText=d.address;
+ profileImg.src=d.profileImage || "https://via.placeholder.com/100";
+
+ callBtn.href="tel:"+d.phone;
+ waBtn.href="https://wa.me/"+d.phone.replace("+","");
+ mapBtn.href="https://www.google.com/maps?q="+encodeURIComponent(d.address);
+ shareBtn.onclick=()=>{
+  navigator.share({url:location.href});
+ }
+
+ d.offers.forEach(o=>{
+  const div=document.createElement("div");
+  div.className="offer";
+  div.innerHTML=`
+   ${o.image?`<img src="${o.image}">`:""}
+   <h4>${o.title}</h4>
+   <p>${o.desc}</p>
+   <button onclick="window.open('https://wa.me/${d.phone.replace("+","")}?text=${encodeURIComponent(o.title)}')">
+    Get Offer
+   </button>
+  `;
+  offers.appendChild(div);
+ });
+});
+</script>
 
 <script>
 if("serviceWorker" in navigator){
  navigator.serviceWorker.register("service-worker.js");
-}
-
-const supabase = supabase.createClient(
- 'https://dfvnefbxgayxqgjjgtrr.supabase.co',
- 'sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE'
-);
-
-const id=new URLSearchParams(location.search).get("id");
-if(!id) location="index.html";
-
-loadCard();
-
-async function loadCard(){
- const {data}=await supabase
-  .from("cards")
-  .select()
-  .eq("id",id)
-  .single();
-
- const card=JSON.parse(data.data);
- localStorage.lastCard=id;
-
- photo.src=card.profileImage;
- name.textContent=card.name;
- business.textContent=card.businessName;
- phone.textContent="📞 "+card.phone;
- email.textContent="✉️ "+card.email;
- address.textContent="📍 "+card.address;
- about.textContent=card.businessInfo;
-
- call.href="tel:"+card.phone;
- wa.href="https://wa.me/"+card.phone;
- mail.href="mailto:"+card.email;
- map.href="https://maps.google.com/?q="+encodeURIComponent(card.address);
- sms.href="sms:"+card.phone;
-
- if(card.facebook) fb.href=card.facebook;
- if(card.instagram) ig.href=card.instagram;
- if(card.youtube) yt.href=card.youtube;
-
- share.onclick=()=>{
-  navigator.share({
-   title:card.name,
-   text:card.businessName,
-   url:location.href
-  });
- }
-
- card.offers.forEach((o,i)=>{
-  const d=document.createElement("div");
-  d.className="offer";
-  d.innerHTML=`
-   ${o.image?`<img src="${o.image}">`:""}
-   <div class="offerContent">
-    <h3>🔥 ${o.title}</h3>
-    <p>${o.desc}</p>
-    <button>Grab Offer</button>
-   </div>
-  `;
-  d.onclick=()=>{
-   const msg=`Hi, I'm interested in your offer: ${o.title}`;
-   location.href="https://wa.me/"+card.phone+"?text="+encodeURIComponent(msg);
-  };
-  offers.appendChild(d);
-
-  const dot=document.createElement("span");
-  if(i==0) dot.classList.add("active");
-  dots.appendChild(dot);
- });
-
- offers.addEventListener("scroll",()=>{
-  const idx=Math.round(offers.scrollLeft / offers.offsetWidth);
-  document.querySelectorAll(".dots span").forEach((d,i)=>{
-   d.classList.toggle("active",i==idx);
-  });
- });
 }
 </script>
 
