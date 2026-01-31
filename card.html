@@ -54,8 +54,6 @@ const id=new URLSearchParams(location.search).get("id");
 if(!id) location.href="index.html";
 
 db.from("cards").select("*").eq("id",id).single().then(r=>{
- if(r.error){ alert("Card not found"); return; }
-
  const d=JSON.parse(r.data.data);
 
  name.innerText=d.name;
