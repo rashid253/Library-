@@ -1,9 +1,5 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Generate Card</title>
-</head>
 <body>
 
 <h2>Create Card</h2>
@@ -11,36 +7,38 @@
 <input id="phone" placeholder="Phone"><br><br>
 <button onclick="generate()">Generate</button>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-const db = supabase.createClient(
- "https://dfvnefbxgayxqgjjgtrr.supabase.co",
- "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
-);
+const URL = "https://dfvnefbxgayxqgjjgtrr.supabase.co/rest/v1/cards";
+const KEY = "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE";
 
 async function generate(){
  alert("clicked");
 
- const n = name.value.trim();
- const p = phone.value.trim();
+ const n=name.value.trim();
+ const p=phone.value.trim();
+ if(!n||!p){ alert("fill"); return; }
 
- if(!n || !p){
-  alert("fill fields");
-  return;
- }
+ const id=Math.random().toString(36).slice(2,8);
 
- const id = Math.random().toString(36).slice(2,8);
-
- const { error } = await db.from("cards").insert({
-  id: id,
-  data: JSON.stringify({ name:n, phone:p })
+ const res = await fetch(URL,{
+  method:"POST",
+  headers:{
+   "apikey":KEY,
+   "Authorization":"Bearer "+KEY,
+   "Content-Type":"application/json",
+   "Prefer":"return=minimal"
+  },
+  body:JSON.stringify({
+   id:id,
+   data:JSON.stringify({name:n,phone:p})
+  })
  });
 
- if(error){
-  alert("DB error: "+error.message);
- } else {
+ if(!res.ok){
+  alert("HTTP ERROR: "+res.status);
+ }else{
   alert("saved");
-  location.href = "card.html?id="+id;
+  location.href="card.html?id="+id;
  }
 }
 </script>
