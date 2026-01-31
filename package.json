@@ -1,0 +1,14 @@
+{
+  "name": "digital-business-card-saas",
+  "version": "1.0.0",
+  "description": "Digital Business Card SaaS PWA",
+  "scripts": {
+    "dev": "serve ."
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "serve": "^14.0.0"
+  }
+}
