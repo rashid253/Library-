@@ -1,47 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Card</title>
-
-<style>
-body{margin:0;font-family:system-ui;background:#f8fafc}
-.topbar{background:#0f172a;color:white;padding:10px;display:flex;justify-content:space-around}
-.topbar a{color:white;text-decoration:none}
-.profile{display:flex;gap:15px;padding:20px;align-items:center}
-.profile img{width:90px;height:90px;border-radius:50%;object-fit:cover}
-.card{background:white;margin:15px;border-radius:14px}
-.offers{display:flex;overflow-x:auto;gap:10px;padding:15px}
-.offer{min-width:240px;background:#f1f5f9;border-radius:12px;padding:10px}
-.offer button{width:100%;margin-top:6px;background:#22c55e;color:white;border:none;padding:8px;border-radius:8px}
-</style>
-</head>
-
 <body>
 
-<div class="topbar">
-<a id="shareBtn">Share</a>
-<a id="callBtn">Call</a>
-<a id="waBtn">WhatsApp</a>
-<a id="mapBtn">Map</a>
-</div>
-
-<div class="card">
-<div class="profile">
-<img id="profileImg">
-<div>
 <h2 id="name"></h2>
-<p id="businessName"></p>
-<p id="address"></p>
-</div>
-</div>
-
-<p style="padding:0 20px" id="businessInfo"></p>
-</div>
-
-<h3 style="padding-left:15px">Offers</h3>
-<div class="offers" id="offers"></div>
+<p id="phone"></p>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
@@ -50,35 +12,12 @@ const db = supabase.createClient(
  "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
 );
 
-const id=new URLSearchParams(location.search).get("id");
-if(!id) location.href="index.html";
+const id = new URLSearchParams(location.search).get("id");
 
 db.from("cards").select("*").eq("id",id).single().then(r=>{
- const d=JSON.parse(r.data.data);
-
- name.innerText=d.name;
- businessName.innerText=d.businessName;
- businessInfo.innerText=d.businessInfo;
- address.innerText=d.address;
- profileImg.src=d.profileImage || "https://via.placeholder.com/90";
-
- callBtn.href="tel:"+d.phone;
- waBtn.href="https://wa.me/"+d.phone.replace("+","");
- mapBtn.href="https://www.google.com/maps?q="+encodeURIComponent(d.address);
- shareBtn.onclick=()=>navigator.share({url:location.href});
-
- d.offers.forEach(o=>{
-  const div=document.createElement("div");
-  div.className="offer";
-  div.innerHTML=`
-   <h4>${o.title}</h4>
-   <p>${o.desc}</p>
-   <button onclick="window.open('https://wa.me/${d.phone.replace("+","")}?text=${encodeURIComponent(o.title)}')">
-    Get Offer
-   </button>
-  `;
-  offers.appendChild(div);
- });
+ const d = JSON.parse(r.data.data);
+ name.innerText = d.name;
+ phone.innerText = d.phone;
 });
 </script>
 
