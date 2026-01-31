@@ -3,22 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Business Card</title>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
+<title>Digital Card</title>
 
 <style>
 body{margin:0;font-family:system-ui;background:#f8fafc}
 .topbar{background:#0f172a;color:white;padding:10px;display:flex;justify-content:space-around}
-.topbar a{color:white;font-size:18px;text-decoration:none}
+.topbar a{color:white;text-decoration:none}
 .profile{display:flex;gap:15px;padding:20px;align-items:center}
-.profile img{width:100px;height:100px;border-radius:50%;object-fit:cover}
-.info h2{margin:0}
-.card{background:white;margin:15px;border-radius:14px;overflow:hidden}
+.profile img{width:90px;height:90px;border-radius:50%;object-fit:cover}
+.card{background:white;margin:15px;border-radius:14px}
 .offers{display:flex;overflow-x:auto;gap:10px;padding:15px}
-.offer{min-width:260px;background:#f1f5f9;border-radius:12px;padding:10px}
-.offer img{width:100%;height:120px;object-fit:cover;border-radius:10px}
+.offer{min-width:240px;background:#f1f5f9;border-radius:12px;padding:10px}
 .offer button{width:100%;margin-top:6px;background:#22c55e;color:white;border:none;padding:8px;border-radius:8px}
 </style>
 </head>
@@ -35,7 +30,7 @@ body{margin:0;font-family:system-ui;background:#f8fafc}
 <div class="card">
 <div class="profile">
 <img id="profileImg">
-<div class="info">
+<div>
 <h2 id="name"></h2>
 <p id="businessName"></p>
 <p id="address"></p>
@@ -55,18 +50,11 @@ const db = supabase.createClient(
  "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
 );
 
-const params=new URLSearchParams(location.search);
-const id=params.get("id");
-
-if(!id){
- location.href="index.html";
-}
+const id=new URLSearchParams(location.search).get("id");
+if(!id) location.href="index.html";
 
 db.from("cards").select("*").eq("id",id).single().then(r=>{
- if(r.error){
-  alert("Card not found");
-  return;
- }
+ if(r.error){ alert("Card not found"); return; }
 
  const d=JSON.parse(r.data.data);
 
@@ -74,20 +62,17 @@ db.from("cards").select("*").eq("id",id).single().then(r=>{
  businessName.innerText=d.businessName;
  businessInfo.innerText=d.businessInfo;
  address.innerText=d.address;
- profileImg.src=d.profileImage || "https://via.placeholder.com/100";
+ profileImg.src=d.profileImage || "https://via.placeholder.com/90";
 
  callBtn.href="tel:"+d.phone;
  waBtn.href="https://wa.me/"+d.phone.replace("+","");
  mapBtn.href="https://www.google.com/maps?q="+encodeURIComponent(d.address);
- shareBtn.onclick=()=>{
-  navigator.share({url:location.href});
- }
+ shareBtn.onclick=()=>navigator.share({url:location.href});
 
  d.offers.forEach(o=>{
   const div=document.createElement("div");
   div.className="offer";
   div.innerHTML=`
-   ${o.image?`<img src="${o.image}">`:""}
    <h4>${o.title}</h4>
    <p>${o.desc}</p>
    <button onclick="window.open('https://wa.me/${d.phone.replace("+","")}?text=${encodeURIComponent(o.title)}')">
@@ -97,12 +82,6 @@ db.from("cards").select("*").eq("id",id).single().then(r=>{
   offers.appendChild(div);
  });
 });
-</script>
-
-<script>
-if("serviceWorker" in navigator){
- navigator.serviceWorker.register("service-worker.js");
-}
 </script>
 
 </body>
