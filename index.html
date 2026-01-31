@@ -3,23 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Business Card Generator</title>
+<title>Digital Business Card</title>
 
 <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
 
 <style>
 body{font-family:system-ui;background:#f1f5f9}
-.form{max-width:420px;margin:auto;background:white;padding:20px;border-radius:12px;margin-top:30px}
-input,textarea,select,button{width:100%;padding:10px;margin:6px 0}
-button{background:#2563eb;color:white;border:none;border-radius:8px}
-.offer{border:1px solid #ddd;padding:10px;margin-bottom:8px}
+.form{max-width:420px;margin:auto;background:white;padding:20px;border-radius:14px;margin-top:30px}
+input,textarea,select,button{width:100%;padding:10px;margin:6px 0;font-size:15px}
+button{background:#2563eb;color:white;border:none;border-radius:8px;font-size:16px}
+.offer{border:1px solid #ddd;padding:10px;margin-bottom:8px;border-radius:8px}
+h2,h3{text-align:center}
 </style>
 </head>
 
 <body>
 
 <div class="form">
-<h2>Create Business Card</h2>
+<h2>Create Digital Card</h2>
 
 <input id="name" placeholder="Full Name">
 <input id="businessName" placeholder="Business Name">
@@ -29,7 +31,7 @@ button{background:#2563eb;color:white;border:none;border-radius:8px}
 <input id="email" placeholder="Email">
 
 <label>Profile Photo</label>
-<input type="file" id="profileImage">
+<input type="file" id="profileImage" accept="image/*">
 
 <h3>Offers</h3>
 <div id="offers"></div>
@@ -71,8 +73,16 @@ function compress(file){
 
 async function generate(){
 
- if(!name.value||!businessName.value||!businessInfo.value||!address.value||!phone.value||!email.value){
-  alert("Fill all fields");
+ // STRONG VALIDATION (no false error)
+ const n=name.value.trim();
+ const b=businessName.value.trim();
+ const info=businessInfo.value.trim();
+ const addr=address.value.trim();
+ const ph=phone.value.trim();
+ const em=email.value.trim();
+
+ if(n.length<2 || b.length<2 || info.length<2 || addr.length<2 || ph.length<3 || em.length<5){
+  alert("Please fill all required fields properly");
   return;
  }
 
@@ -85,18 +95,18 @@ async function generate(){
  const offerArr=[];
  for(let o of offers.children){
   offerArr.push({
-   title:o.children[0].value,
-   desc:o.children[1].value
+   title:o.children[0].value.trim(),
+   desc:o.children[1].value.trim()
   });
  }
 
  const data={
-  name:name.value,
-  businessName:businessName.value,
-  businessInfo:businessInfo.value,
-  address:address.value,
-  phone:phone.value,
-  email:email.value,
+  name:n,
+  businessName:b,
+  businessInfo:info,
+  address:addr,
+  phone:ph,
+  email:em,
   profileImage:profile,
   offers:offerArr
  };
@@ -107,11 +117,18 @@ async function generate(){
  });
 
  if(r.error){
-  alert(r.error.message);
+  alert("Database error: "+r.error.message);
   return;
  }
 
+ // FINAL SaaS behavior
  location.href="card.html?id="+id;
+}
+</script>
+
+<script>
+if("serviceWorker" in navigator){
+ navigator.serviceWorker.register("service-worker.js");
 }
 </script>
 
