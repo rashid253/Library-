@@ -1,8 +1,46 @@
 <!DOCTYPE html>
 <html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Digital Card</title>
+</head>
 <body>
 
-<button onclick="alert('CLICK WORKING')">Generate</button>
+<h2>Create Card</h2>
+
+<input id="name" placeholder="Name"><br>
+<input id="phone" placeholder="Phone"><br>
+<button id="gen">Generate</button>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+const db = supabase.createClient(
+ "https://dfvnefbxgayxqgjjgtrr.supabase.co",
+ "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
+);
+
+document.getElementById("gen").onclick = async function(){
+
+ const n=name.value.trim();
+ const p=phone.value.trim();
+ if(!n||!p){ alert("fill"); return; }
+
+ const id=Math.random().toString(36).slice(2,8);
+
+ const {error}=await db.from("cards").insert({
+  id:id,
+  data:JSON.stringify({name:n,phone:p})
+ });
+
+ if(error){
+  alert(error.message);
+ }else{
+  location.href="card.html?id="+id;
+ }
+
+};
+</script>
 
 </body>
 </html>
