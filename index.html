@@ -8,8 +8,6 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f172a">
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-
 <style>
 body{margin:0;font-family:system-ui;background:#f1f5f9}
 .form-container{max-width:450px;margin:auto;background:white;padding:20px;border-radius:14px;margin-top:30px}
@@ -55,7 +53,8 @@ button{background:#2563eb;color:white;border:none;border-radius:8px}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const supabase = supabase.createClient(
+// IMPORTANT: use db variable (not supabase)
+const db = window.supabase.createClient(
  'https://dfvnefbxgayxqgjjgtrr.supabase.co',
  'sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE'
 );
@@ -64,8 +63,8 @@ function addOffer(){
  const d=document.createElement("div");
  d.className="offerBox";
  d.innerHTML=`
-  <input placeholder="Offer Title" required>
-  <textarea placeholder="Description" required></textarea>
+  <input placeholder="Offer Title">
+  <textarea placeholder="Description"></textarea>
   <input type="file" accept="image/*">
  `;
  offers.appendChild(d);
@@ -77,7 +76,8 @@ function compress(file){
   img.src=URL.createObjectURL(file);
   img.onload=()=>{
    const c=document.createElement("canvas");
-   c.width=200;c.height=200;
+   c.width=200;
+   c.height=200;
    c.getContext("2d").drawImage(img,0,0,200,200);
    res(c.toDataURL("image/jpeg",0.6));
   }
@@ -123,7 +123,7 @@ async function generate(){
   offers:offerArr
  };
 
- await supabase.from("cards").insert({
+ await db.from("cards").insert({
   id:id,
   data:JSON.stringify(data)
  });
