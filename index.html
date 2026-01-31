@@ -11,11 +11,11 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
 <style>
-/* SAME DESIGN – nothing changed */
 body{margin:0;font-family:system-ui;background:#f1f5f9}
 .form-container{max-width:450px;margin:auto;background:white;padding:20px;border-radius:14px;margin-top:30px}
 input,textarea,select,button{width:100%;padding:10px;margin:6px 0}
 button{background:#2563eb;color:white;border:none;border-radius:8px}
+.offerBox{border:1px solid #cbd5f5;padding:10px;border-radius:8px;margin-bottom:8px}
 </style>
 </head>
 
@@ -24,10 +24,10 @@ button{background:#2563eb;color:white;border:none;border-radius:8px}
 <div class="form-container">
 <h2>Create Business Card</h2>
 
-<input id="name" placeholder="Full Name">
-<input id="businessName" placeholder="Business Name">
-<textarea id="businessInfo" placeholder="Business Info (3–5 paragraphs)"></textarea>
-<input id="address" placeholder="Address">
+<input id="name" placeholder="Full Name" required>
+<input id="businessName" placeholder="Business Name" required>
+<textarea id="businessInfo" placeholder="Business Info" required></textarea>
+<input id="address" placeholder="Address" required>
 
 <select id="countryCode">
 <option value="+92">+92</option>
@@ -35,21 +35,21 @@ button{background:#2563eb;color:white;border:none;border-radius:8px}
 <option value="+44">+44</option>
 </select>
 
-<input id="phone" placeholder="Phone">
-<input id="email" placeholder="Email">
+<input id="phone" placeholder="Phone" required>
+<input id="email" placeholder="Email" required>
 <input id="facebook" placeholder="Facebook">
 <input id="instagram" placeholder="Instagram">
 <input id="youtube" placeholder="YouTube">
 
 <label>Profile Photo</label>
-<input type="file" id="profileImage">
+<input type="file" id="profileImage" accept="image/*">
 
 <h3>Offers</h3>
 <div id="offers"></div>
-<button onclick="addOffer()">Add Offer</button>
+<button type="button" onclick="addOffer()">Add Offer</button>
 
 <br><br>
-<button onclick="generate()">Generate Card</button>
+<button type="button" onclick="generate()">Generate Card</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -62,10 +62,11 @@ const supabase = supabase.createClient(
 
 function addOffer(){
  const d=document.createElement("div");
+ d.className="offerBox";
  d.innerHTML=`
-  <input placeholder="Offer title">
-  <textarea placeholder="Description"></textarea>
-  <input type="file">
+  <input placeholder="Offer Title" required>
+  <textarea placeholder="Description" required></textarea>
+  <input type="file" accept="image/*">
  `;
  offers.appendChild(d);
 }
@@ -84,6 +85,11 @@ function compress(file){
 }
 
 async function generate(){
+
+ if(!name.value || !businessName.value){
+  alert("Please fill required fields");
+  return;
+ }
 
  const id=Math.random().toString(36).substring(2,8);
 
