@@ -3,41 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Business Card</title>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
+<title>Digital Card Generator</title>
 
 <style>
 body{font-family:system-ui;background:#f1f5f9}
 .form{max-width:420px;margin:auto;background:white;padding:20px;border-radius:14px;margin-top:30px}
-input,textarea,select,button{width:100%;padding:10px;margin:6px 0;font-size:15px}
-button{background:#2563eb;color:white;border:none;border-radius:8px;font-size:16px}
-.offer{border:1px solid #ddd;padding:10px;margin-bottom:8px;border-radius:8px}
-h2,h3{text-align:center}
+input,textarea,button{width:100%;padding:10px;margin:6px 0}
+button{background:#2563eb;color:white;border:none;border-radius:8px}
+.offer{border:1px solid #ddd;padding:10px;margin-bottom:8px}
 </style>
 </head>
 
 <body>
 
 <div class="form">
-<h2>Create Digital Card</h2>
+<h2>Create Card</h2>
 
-<input id="name" placeholder="Full Name">
+<input id="name" placeholder="Name">
 <input id="businessName" placeholder="Business Name">
-<textarea id="businessInfo" placeholder="Business Info"></textarea>
+<textarea id="businessInfo" placeholder="Info"></textarea>
 <input id="address" placeholder="Address">
 <input id="phone" placeholder="Phone">
 <input id="email" placeholder="Email">
 
-<label>Profile Photo</label>
-<input type="file" id="profileImage" accept="image/*">
+<input type="file" id="profileImage">
 
-<h3>Offers</h3>
 <div id="offers"></div>
 <button onclick="addOffer()">Add Offer</button>
-
-<br><br>
 <button onclick="generate()">Generate Card</button>
 </div>
 
@@ -48,87 +40,30 @@ const db = supabase.createClient(
  "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
 );
 
-function addOffer(){
+// expose to global (important)
+window.addOffer = function(){
  const d=document.createElement("div");
  d.className="offer";
- d.innerHTML=`
-  <input placeholder="Offer Title">
-  <textarea placeholder="Description"></textarea>
- `;
+ d.innerHTML='<input placeholder="Title"><textarea placeholder="Desc"></textarea>';
  offers.appendChild(d);
 }
 
-function compress(file){
- return new Promise(res=>{
-  const img=new Image();
-  img.src=URL.createObjectURL(file);
-  img.onload=()=>{
-   const c=document.createElement("canvas");
-   c.width=300;c.height=300;
-   c.getContext("2d").drawImage(img,0,0,300,300);
-   res(c.toDataURL("image/jpeg",0.7));
-  }
- });
-}
-
-async function generate(){
-
- // STRONG VALIDATION (no false error)
- const n=name.value.trim();
- const b=businessName.value.trim();
- const info=businessInfo.value.trim();
- const addr=address.value.trim();
- const ph=phone.value.trim();
- const em=email.value.trim();
-
- if(n.length<2 || b.length<2 || info.length<2 || addr.length<2 || ph.length<3 || em.length<5){
-  alert("Please fill all required fields properly");
-  return;
- }
+window.generate = async function(){
+ alert("BUTTON WORKING"); // only for proof
 
  const id=Math.random().toString(36).substring(2,8);
 
- const profile = profileImage.files[0]
-  ? await compress(profileImage.files[0])
-  : "";
-
- const offerArr=[];
- for(let o of offers.children){
-  offerArr.push({
-   title:o.children[0].value.trim(),
-   desc:o.children[1].value.trim()
-  });
- }
-
- const data={
-  name:n,
-  businessName:b,
-  businessInfo:info,
-  address:addr,
-  phone:ph,
-  email:em,
-  profileImage:profile,
-  offers:offerArr
- };
-
  const r = await db.from("cards").insert({
   id:id,
-  data:JSON.stringify(data)
+  data:JSON.stringify({name:name.value})
  });
 
  if(r.error){
-  alert("Database error: "+r.error.message);
+  alert(r.error.message);
   return;
  }
 
- // FINAL SaaS behavior
  location.href="card.html?id="+id;
-}
-</script>
-
-<script>
-if("serviceWorker" in navigator){
- navigator.serviceWorker.register("service-worker.js");
 }
 </script>
 
