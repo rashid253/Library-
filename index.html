@@ -1,1 +1,64 @@
-<button onclick="alert('WORKING')">TEST</button>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Card Generator</title>
+
+<style>
+body{font-family:system-ui;background:#f1f5f9}
+.form{max-width:400px;margin:auto;background:white;padding:20px;border-radius:12px;margin-top:40px}
+input,textarea,button{width:100%;padding:10px;margin:6px 0}
+button{background:#2563eb;color:white;border:none;border-radius:8px}
+.offer{border:1px solid #ddd;padding:10px;margin-bottom:8px}
+</style>
+</head>
+
+<body>
+
+<div class="form">
+<h2>Create Card</h2>
+
+<input id="name" placeholder="Name">
+<input id="businessName" placeholder="Business Name">
+<textarea id="businessInfo" placeholder="Info"></textarea>
+<input id="address" placeholder="Address">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
+
+<input type="file" id="profileImage">
+
+<div id="offers"></div>
+<button onclick="addOffer()">Add Offer</button>
+<button onclick="generate()">Generate</button>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+const db = supabase.createClient(
+ "https://dfvnefbxgayxqgjjgtrr.supabase.co",
+ "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
+);
+
+function addOffer(){
+ const d=document.createElement("div");
+ d.className="offer";
+ d.innerHTML='<input placeholder="Title"><textarea placeholder="Desc"></textarea>';
+ offers.appendChild(d);
+}
+
+function generate(){
+ alert("JS REACHED");
+
+ db.from("cards").insert({
+  id:Math.random().toString(36).substring(2,8),
+  data:JSON.stringify({name:name.value})
+ }).then(r=>{
+  if(r.error) alert(r.error.message);
+  else alert("SAVED SUCCESS");
+ });
+}
+</script>
+
+</body>
+</html>
