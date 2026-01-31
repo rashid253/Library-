@@ -2,16 +2,14 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Create Digital Card</title>
+<title>Generate Card</title>
 </head>
 <body>
 
 <h2>Create Card</h2>
-
-<input id="name" placeholder="Name"><br>
-<input id="phone" placeholder="Phone"><br>
-<button id="gen">Generate</button>
+<input id="name" placeholder="Name"><br><br>
+<input id="phone" placeholder="Phone"><br><br>
+<button onclick="generate()">Generate</button>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
@@ -20,26 +18,31 @@ const db = supabase.createClient(
  "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
 );
 
-document.getElementById("gen").onclick = async function(){
+async function generate(){
+ alert("clicked");
 
- const n=name.value.trim();
- const p=phone.value.trim();
- if(!n||!p){ alert("fill"); return; }
+ const n = name.value.trim();
+ const p = phone.value.trim();
 
- const id=Math.random().toString(36).slice(2,8);
+ if(!n || !p){
+  alert("fill fields");
+  return;
+ }
 
- const {error}=await db.from("cards").insert({
-  id:id,
-  data:JSON.stringify({name:n,phone:p})
+ const id = Math.random().toString(36).slice(2,8);
+
+ const { error } = await db.from("cards").insert({
+  id: id,
+  data: JSON.stringify({ name:n, phone:p })
  });
 
  if(error){
-  alert(error.message);
- }else{
-  location.href="card.html?id="+id;
+  alert("DB error: "+error.message);
+ } else {
+  alert("saved");
+  location.href = "card.html?id="+id;
  }
-
-};
+}
 </script>
 
 </body>
