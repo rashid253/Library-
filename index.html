@@ -53,7 +53,6 @@ button{background:#2563eb;color:white;border:none;border-radius:8px}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-// IMPORTANT: use db variable (not supabase)
 const db = window.supabase.createClient(
  'https://dfvnefbxgayxqgjjgtrr.supabase.co',
  'sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE'
@@ -86,8 +85,15 @@ function compress(file){
 
 async function generate(){
 
- if(!name.value || !businessName.value){
-  alert("Please fill required fields");
+ const n=name.value.trim();
+ const b=businessName.value.trim();
+ const info=businessInfo.value.trim();
+ const addr=address.value.trim();
+ const ph=phone.value.trim();
+ const em=email.value.trim();
+
+ if(!n||!b||!info||!addr||!ph||!em){
+  alert("Please fill all required fields");
   return;
  }
 
@@ -103,22 +109,22 @@ async function generate(){
    ? await compress(o.children[2].files[0])
    : "";
   offerArr.push({
-   title:o.children[0].value,
-   desc:o.children[1].value,
+   title:o.children[0].value.trim(),
+   desc:o.children[1].value.trim(),
    image:img
   });
  }
 
  const data={
-  name:name.value,
-  businessName:businessName.value,
-  businessInfo:businessInfo.value,
-  address:address.value,
-  phone:countryCode.value+phone.value,
-  email:email.value,
-  facebook:facebook.value,
-  instagram:instagram.value,
-  youtube:youtube.value,
+  name:n,
+  businessName:b,
+  businessInfo:info,
+  address:addr,
+  phone:countryCode.value+ph,
+  email:em,
+  facebook:facebook.value.trim(),
+  instagram:instagram.value.trim(),
+  youtube:youtube.value.trim(),
   profileImage:profile,
   offers:offerArr
  };
