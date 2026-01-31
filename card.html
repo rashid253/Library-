@@ -1,27 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2c3e50">
+    <title>Digital Business Card</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
 <body>
-
-<h2 id="name"></h2>
-<p id="phone"></p>
-
-<script>
-const URL = "https://dfvnefbxgayxqgjjgtrr.supabase.co/rest/v1/cards";
-const KEY = "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE";
-
-const id=new URLSearchParams(location.search).get("id");
-
-fetch(URL+"?id=eq."+id,{
- headers:{
-  "apikey":KEY,
-  "Authorization":"Bearer "+KEY
- }
-}).then(r=>r.json()).then(d=>{
- const obj=JSON.parse(d[0].data);
- name.innerText=obj.name;
- phone.innerText=obj.phone;
-});
-</script>
-
+    <div class="container">
+        <div class="card" id="businessCard">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <a href="#" id="shareBtn" title="Share Card">
+                    <i class="fas fa-share-alt"></i>
+                </a>
+                <h3 style="color: white; margin: 0;">Digital Business Card</h3>
+                <a href="index.html" title="Create New">
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+            
+            <!-- Profile Section -->
+            <div class="profile">
+                <img id="profileImg" class="profile-img" src="https://via.placeholder.com/100" alt="Profile">
+                <div class="profile-info">
+                    <h1 id="fullName">Loading...</h1>
+                    <p><i class="fas fa-phone"></i> <span id="phone">Loading...</span></p>
+                    <p><i class="fas fa-envelope"></i> <span id="email">Loading...</span></p>
+                    <p><i class="fas fa-map-marker-alt"></i> <span id="address">Loading...</span></p>
+                </div>
+            </div>
+            
+            <!-- About Section -->
+            <div class="about">
+                <h2>About</h2>
+                <div id="aboutContent">
+                    <p>Loading business information...</p>
+                </div>
+            </div>
+            
+            <!-- Offers Section -->
+            <div class="offers">
+                <h2>Special Offers</h2>
+                <div class="offer-slider">
+                    <div class="offer-track" id="offerTrack">
+                        <!-- Offers will be loaded here -->
+                    </div>
+                </div>
+                <div class="slider-dots" id="sliderDots">
+                    <!-- Dots will be added here -->
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="actions">
+                <button class="action-btn" id="callBtn" title="Call">
+                    <i class="fas fa-phone"></i>
+                </button>
+                <button class="action-btn" id="whatsappBtn" title="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </button>
+                <button class="action-btn" id="smsBtn" title="SMS">
+                    <i class="fas fa-comment"></i>
+                </button>
+                <button class="action-btn" id="mapBtn" title="Open Map">
+                    <i class="fas fa-map-marked-alt"></i>
+                </button>
+            </div>
+            
+            <!-- Social Links -->
+            <div class="social-links" id="socialLinks">
+                <!-- Social links will be added here -->
+            </div>
+        </div>
+        
+        <!-- Admin Actions (only visible if you're the creator) -->
+        <div class="admin-actions hidden" id="adminActions">
+            <a href="#" id="editBtn" class="secondary-btn">
+                <i class="fas fa-edit"></i> Edit Card
+            </a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="card.js"></script>
 </body>
 </html>
