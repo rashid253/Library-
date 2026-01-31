@@ -5,19 +5,21 @@
 <h2 id="name"></h2>
 <p id="phone"></p>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-const db = supabase.createClient(
- "https://dfvnefbxgayxqgjjgtrr.supabase.co",
- "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
-);
+const URL = "https://dfvnefbxgayxqgjjgtrr.supabase.co/rest/v1/cards";
+const KEY = "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE";
 
-const id = new URLSearchParams(location.search).get("id");
+const id=new URLSearchParams(location.search).get("id");
 
-db.from("cards").select("*").eq("id",id).single().then(r=>{
- const d = JSON.parse(r.data.data);
- name.innerText = d.name;
- phone.innerText = d.phone;
+fetch(URL+"?id=eq."+id,{
+ headers:{
+  "apikey":KEY,
+  "Authorization":"Bearer "+KEY
+ }
+}).then(r=>r.json()).then(d=>{
+ const obj=JSON.parse(d[0].data);
+ name.innerText=obj.name;
+ phone.innerText=obj.phone;
 });
 </script>
 
