@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Card Generator</title>
+<title>Create Card</title>
 
 <style>
 body{font-family:system-ui;background:#f1f5f9}
@@ -11,25 +11,30 @@ body{font-family:system-ui;background:#f1f5f9}
 input,textarea,button{width:100%;padding:10px;margin:6px 0}
 button{background:#2563eb;color:white;border:none;border-radius:8px}
 .offer{border:1px solid #ddd;padding:10px;margin-bottom:8px}
+h2,h3{text-align:center}
 </style>
 </head>
 
 <body>
 
 <div class="form">
-<h2>Create Card</h2>
+<h2>Create Digital Card</h2>
 
-<input id="name" placeholder="Name">
+<input id="name" placeholder="Full Name">
 <input id="businessName" placeholder="Business Name">
-<textarea id="businessInfo" placeholder="Info"></textarea>
+<textarea id="businessInfo" placeholder="Business Info"></textarea>
 <input id="address" placeholder="Address">
 <input id="phone" placeholder="Phone">
 <input id="email" placeholder="Email">
 
-<input type="file" id="profileImage">
+<label>Profile Photo</label>
+<input type="file" id="profileImage" accept="image/*">
 
+<h3>Offers</h3>
 <div id="offers"></div>
 <button onclick="addOffer()">Add Offer</button>
+
+<br><br>
 <button onclick="generate()">Generate Card</button>
 </div>
 
@@ -40,22 +45,63 @@ const db = supabase.createClient(
  "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
 );
 
-// expose to global (important)
-window.addOffer = function(){
+function addOffer(){
  const d=document.createElement("div");
  d.className="offer";
- d.innerHTML='<input placeholder="Title"><textarea placeholder="Desc"></textarea>';
+ d.innerHTML=`
+  <input placeholder="Offer Title">
+  <textarea placeholder="Description"></textarea>
+ `;
  offers.appendChild(d);
 }
 
-window.generate = async function(){
- alert("BUTTON WORKING"); // only for proof
+function compress(file){
+ return new Promise(res=>{
+  const img=new Image();
+  img.src=URL.createObjectURL(file);
+  img.onload=()=>{
+   const c=document.createElement("canvas");
+   c.width=300;c.height=300;
+   c.getContext("2d").drawImage(img,0,0,300,300);
+   res(c.toDataURL("image/jpeg",0.7));
+  }
+ });
+}
+
+async function generate(){
+
+ const data={
+  name:name.value.trim(),
+  businessName:businessName.value.trim(),
+  businessInfo:businessInfo.value.trim(),
+  address:address.value.trim(),
+  phone:phone.value.trim(),
+  email:email.value.trim(),
+  profileImage:"",
+  offers:[]
+ };
+
+ if(data.name.length<2 || data.businessName.length<2 || data.phone.length<3){
+  alert("Fill all fields");
+  return;
+ }
+
+ if(profileImage.files[0]){
+  data.profileImage = await compress(profileImage.files[0]);
+ }
+
+ for(let o of offers.children){
+  data.offers.push({
+   title:o.children[0].value.trim(),
+   desc:o.children[1].value.trim()
+  });
+ }
 
  const id=Math.random().toString(36).substring(2,8);
 
  const r = await db.from("cards").insert({
   id:id,
-  data:JSON.stringify({name:name.value})
+  data:JSON.stringify(data)
  });
 
  if(r.error){
