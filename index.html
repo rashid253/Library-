@@ -1,47 +1,328 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <title>Create Digital Business Card</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
 <body>
-
-<h2>Create Card</h2>
-<input id="name" placeholder="Name"><br><br>
-<input id="phone" placeholder="Phone"><br><br>
-<button onclick="generate()">Generate</button>
-
-<script>
-const URL = "https://dfvnefbxgayxqgjjgtrr.supabase.co/rest/v1/cards";
-const KEY = "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE";
-
-async function generate(){
- alert("clicked");
-
- const n=name.value.trim();
- const p=phone.value.trim();
- if(!n||!p){ alert("fill"); return; }
-
- const id=Math.random().toString(36).slice(2,8);
-
- const res = await fetch(URL,{
-  method:"POST",
-  headers:{
-   "apikey":KEY,
-   "Authorization":"Bearer "+KEY,
-   "Content-Type":"application/json",
-   "Prefer":"return=minimal"
-  },
-  body:JSON.stringify({
-   id:id,
-   data:JSON.stringify({name:n,phone:p})
-  })
- });
-
- if(!res.ok){
-  alert("HTTP ERROR: "+res.status);
- }else{
-  alert("saved");
-  location.href="card.html?id="+id;
- }
-}
-</script>
-
+    <div class="container">
+        <div class="form-container">
+            <h1 class="text-center">Create Digital Business Card</h1>
+            <p class="text-center" style="color: #666; margin-bottom: 30px;">Fill in your details to create a shareable digital card</p>
+            
+            <form id="cardForm">
+                <!-- Profile Image -->
+                <div class="form-group">
+                    <label>Profile Image <span class="required">*</span></label>
+                    <div class="image-upload" id="imageUpload">
+                        <input type="file" id="profileImage" accept="image/*" required>
+                        <i class="fas fa-camera fa-3x" style="color: #667eea; margin-bottom: 10px;"></i>
+                        <p>Click to upload profile photo</p>
+                        <p style="color: #666; font-size: 12px; margin-top: 5px;">Max 100KB, will be resized automatically</p>
+                        <img id="imagePreview" class="image-preview" alt="Preview">
+                    </div>
+                </div>
+                
+                <!-- Basic Information -->
+                <div class="form-group">
+                    <label for="fullName">Full Name <span class="required">*</span></label>
+                    <input type="text" id="fullName" placeholder="John Doe" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="phone" placeholder="+1234567890" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="whatsapp">WhatsApp Number</label>
+                    <input type="tel" id="whatsapp" placeholder="+1234567890">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email <span class="required">*</span></label>
+                    <input type="email" id="email" placeholder="john@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Address <span class="required">*</span></label>
+                    <input type="text" id="address" placeholder="123 Business St, City, Country" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mapLink">Google Maps Link</label>
+                    <input type="url" id="mapLink" placeholder="https://maps.google.com/?q=...">
+                </div>
+                
+                <!-- About Section -->
+                <div class="form-group">
+                    <label for="about">About/Business Info <span class="required">*</span></label>
+                    <textarea id="about" placeholder="Describe your business or yourself..." rows="4" required></textarea>
+                    <small style="color: #666;">Enter 3-5 paragraphs about your business</small>
+                </div>
+                
+                <!-- Offers Section -->
+                <div id="offersContainer">
+                    <h3>Special Offers (3-5 offers)</h3>
+                    <button type="button" class="add-offer-btn" id="addOffer">
+                        <i class="fas fa-plus"></i> Add Offer
+                    </button>
+                    
+                    <!-- Offer templates will be added here -->
+                </div>
+                
+                <!-- Social Links -->
+                <div class="form-group">
+                    <label for="facebook">Facebook URL</label>
+                    <input type="url" id="facebook" placeholder="https://facebook.com/username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="instagram">Instagram URL</label>
+                    <input type="url" id="instagram" placeholder="https://instagram.com/username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="youtube">YouTube URL</label>
+                    <input type="url" id="youtube" placeholder="https://youtube.com/username">
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="primary-btn" id="generateBtn">
+                    <i class="fas fa-qrcode"></i> Generate Digital Card
+                </button>
+                
+                <div class="spinner hidden" id="loadingSpinner"></div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module">
+        import { supabase, generateID, resizeImage, validateEmail, validatePhone, showNotification } from './app.js';
+        
+        let offerCount = 0;
+        const maxOffers = 5;
+        
+        // Image Upload Preview
+        document.getElementById('profileImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Add Offer Form
+        document.getElementById('addOffer').addEventListener('click', function() {
+            if (offerCount >= maxOffers) {
+                showNotification('Maximum 5 offers allowed', 'error');
+                return;
+            }
+            
+            offerCount++;
+            const offerDiv = document.createElement('div');
+            offerDiv.className = 'offer-form';
+            offerDiv.innerHTML = `
+                <h4>Offer ${offerCount}</h4>
+                <div class="form-group">
+                    <label>Title <span class="required">*</span></label>
+                    <input type="text" class="offer-title" placeholder="Special Discount" required>
+                </div>
+                <div class="form-group">
+                    <label>Description <span class="required">*</span></label>
+                    <textarea class="offer-desc" placeholder="Describe this offer..." rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Offer Image (Max 100KB)</label>
+                    <input type="file" class="offer-image" accept="image/*">
+                    <img class="offer-preview" style="width: 80px; height: 80px; object-fit: cover; display: none; margin-top: 10px;">
+                </div>
+                ${offerCount > 3 ? '<button type="button" class="remove-offer-btn">Remove Offer</button>' : ''}
+            `;
+            
+            if (offerCount > 3) {
+                offerDiv.querySelector('.remove-offer-btn').addEventListener('click', function() {
+                    offerDiv.remove();
+                    offerCount--;
+                });
+            }
+            
+            // Add image preview for offer image
+            const offerImageInput = offerDiv.querySelector('.offer-image');
+            const offerPreview = offerDiv.querySelector('.offer-preview');
+            
+            offerImageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        offerPreview.src = e.target.result;
+                        offerPreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            document.getElementById('offersContainer').appendChild(offerDiv);
+        });
+        
+        // Form Submission
+        document.getElementById('cardForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Validate form
+            if (!validateForm()) {
+                return;
+            }
+            
+            const generateBtn = document.getElementById('generateBtn');
+            const spinner = document.getElementById('loadingSpinner');
+            
+            generateBtn.disabled = true;
+            spinner.classList.remove('hidden');
+            
+            try {
+                // Collect form data
+                const cardData = {
+                    fullName: document.getElementById('fullName').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    whatsapp: document.getElementById('whatsapp').value.trim() || document.getElementById('phone').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    address: document.getElementById('address').value.trim(),
+                    mapLink: document.getElementById('mapLink').value.trim() || `https://maps.google.com/?q=${encodeURIComponent(document.getElementById('address').value.trim())}`,
+                    about: document.getElementById('about').value.trim(),
+                    facebook: document.getElementById('facebook').value.trim(),
+                    instagram: document.getElementById('instagram').value.trim(),
+                    youtube: document.getElementById('youtube').value.trim(),
+                    offers: [],
+                    createdAt: new Date().toISOString()
+                };
+                
+                // Process profile image
+                const profileImage = document.getElementById('profileImage').files[0];
+                if (profileImage) {
+                    const resizedImage = await resizeImage(profileImage, 100);
+                    cardData.profileImage = resizedImage;
+                }
+                
+                // Process offers
+                const offerForms = document.querySelectorAll('.offer-form');
+                if (offerForms.length < 3) {
+                    showNotification('Please add at least 3 offers', 'error');
+                    throw new Error('Minimum 3 offers required');
+                }
+                
+                for (const form of offerForms) {
+                    const offer = {
+                        title: form.querySelector('.offer-title').value.trim(),
+                        description: form.querySelector('.offer-desc').value.trim()
+                    };
+                    
+                    const offerImage = form.querySelector('.offer-image').files[0];
+                    if (offerImage) {
+                        const resizedOfferImage = await resizeImage(offerImage, 100);
+                        offer.image = resizedOfferImage;
+                    }
+                    
+                    cardData.offers.push(offer);
+                }
+                
+                // Generate unique ID
+                const cardId = generateID();
+                
+                // Save to Supabase
+                const { error } = await supabase
+                    .from('cards')
+                    .insert([{ 
+                        id: cardId, 
+                        data: JSON.stringify(cardData) 
+                    }]);
+                
+                if (error) throw error;
+                
+                // Save to localStorage for offline access
+                localStorage.setItem(`card_${cardId}`, JSON.stringify(cardData));
+                
+                showNotification('Card created successfully! Redirecting...', 'success');
+                
+                // Redirect to card
+                setTimeout(() => {
+                    window.location.href = `card.html?id=${cardId}`;
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error creating card:', error);
+                showNotification(error.message || 'Failed to create card', 'error');
+            } finally {
+                generateBtn.disabled = false;
+                spinner.classList.add('hidden');
+            }
+        });
+        
+        function validateForm() {
+            // Validate email
+            const email = document.getElementById('email').value.trim();
+            if (!validateEmail(email)) {
+                showNotification('Please enter a valid email address', 'error');
+                return false;
+            }
+            
+            // Validate phone
+            const phone = document.getElementById('phone').value.trim();
+            if (!validatePhone(phone)) {
+                showNotification('Please enter a valid phone number', 'error');
+                return false;
+            }
+            
+            // Check for profile image
+            const profileImage = document.getElementById('profileImage').files[0];
+            if (!profileImage) {
+                showNotification('Please upload a profile image', 'error');
+                return false;
+            }
+            
+            // Check offers count
+            const offerForms = document.querySelectorAll('.offer-form');
+            if (offerForms.length < 3) {
+                showNotification('Please add at least 3 offers', 'error');
+                return false;
+            }
+            
+            if (offerForms.length > 5) {
+                showNotification('Maximum 5 offers allowed', 'error');
+                return false;
+            }
+            
+            // Validate each offer
+            let isValid = true;
+            offerForms.forEach((form, index) => {
+                const title = form.querySelector('.offer-title').value.trim();
+                const desc = form.querySelector('.offer-desc').value.trim();
+                
+                if (!title || !desc) {
+                    showNotification(`Please fill all fields for Offer ${index + 1}`, 'error');
+                    isValid = false;
+                }
+            });
+            
+            return isValid;
+        }
+        
+        // Initialize with 3 offers
+        for (let i = 0; i < 3; i++) {
+            document.getElementById('addOffer').click();
+        }
+    </script>
 </body>
 </html>
