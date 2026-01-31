@@ -1,160 +1,110 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Edit Card</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f172a">
-
-<style>
-body{font-family:system-ui;background:#f1f5f9;padding:15px}
-input,textarea,button{width:100%;padding:10px;margin:6px 0}
-button{background:#2563eb;color:white;border:none;border-radius:8px}
-h2{text-align:center}
-.card{background:white;padding:15px;border-radius:12px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <title>Edit Business Card</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
-
-<h2>Edit Digital Card</h2>
-
-<div class="card">
-<input id="name" placeholder="Full Name">
-<input id="businessName" placeholder="Business Name">
-<textarea id="businessInfo" placeholder="Business Info"></textarea>
-<input id="address" placeholder="Address">
-<input id="phone" placeholder="Phone">
-<input id="email" placeholder="Email">
-<input id="facebook" placeholder="Facebook">
-<input id="instagram" placeholder="Instagram">
-<input id="youtube" placeholder="YouTube">
-
-<label>Change Profile Image</label>
-<input type="file" id="profileImage">
-
-<h3>Offers</h3>
-<div id="offers"></div>
-<button onclick="addOffer()">Add Offer</button>
-
-<br><br>
-<button onclick="save()">Save Changes</button>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-const supabase = supabase.createClient(
- 'https://dfvnefbxgayxqgjjgtrr.supabase.co',
- 'sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE'
-);
-
-const id=new URLSearchParams(location.search).get("id");
-if(!id) location="index.html";
-
-let originalData=null;
-
-load();
-
-async function load(){
- const {data}=await supabase
-  .from("cards")
-  .select()
-  .eq("id",id)
-  .single();
-
- originalData=JSON.parse(data.data);
-
- name.value=originalData.name;
- businessName.value=originalData.businessName;
- businessInfo.value=originalData.businessInfo;
- address.value=originalData.address;
- phone.value=originalData.phone;
- email.value=originalData.email;
- facebook.value=originalData.facebook;
- instagram.value=originalData.instagram;
- youtube.value=originalData.youtube;
-
- originalData.offers.forEach(o=>{
-  addOffer(o.title,o.desc,o.image);
- });
-}
-
-function addOffer(t="",d="",img=""){
- const div=document.createElement("div");
- div.innerHTML=`
-  <input placeholder="Title" value="${t}">
-  <textarea placeholder="Description">${d}</textarea>
-  <input type="file">
- `;
- offers.appendChild(div);
- div.dataset.img=img;
-}
-
-function compress(file){
- return new Promise(res=>{
-  const img=new Image();
-  img.src=URL.createObjectURL(file);
-  img.onload=()=>{
-   const c=document.createElement("canvas");
-   c.width=200;c.height=200;
-   c.getContext("2d").drawImage(img,0,0,200,200);
-   res(c.toDataURL("image/jpeg",0.6));
-  }
- });
-}
-
-async function save(){
-
- let profile=originalData.profileImage;
- if(profileImage.files[0]){
-  profile=await compress(profileImage.files[0]);
- }
-
- const offerArr=[];
- for(let o of offers.children){
-  let img=o.dataset.img||"";
-  if(o.children[2].files[0]){
-   img=await compress(o.children[2].files[0]);
-  }
-  offerArr.push({
-   title:o.children[0].value,
-   desc:o.children[1].value,
-   image:img
-  });
- }
-
- const newData={
-  name:name.value,
-  businessName:businessName.value,
-  businessInfo:businessInfo.value,
-  address:address.value,
-  phone:phone.value,
-  email:email.value,
-  facebook:facebook.value,
-  instagram:instagram.value,
-  youtube:youtube.value,
-  profileImage:profile,
-  offers:offerArr
- };
-
- await supabase
-  .from("cards")
-  .update({data:JSON.stringify(newData)})
-  .eq("id",id);
-
- alert("Updated Successfully");
- location.href="card.html?id="+id;
-}
-</script>
-
-<script>
-if("serviceWorker" in navigator){
- navigator.serviceWorker.register("service-worker.js");
-}
-</script>
-
+    <div class="container">
+        <div class="form-container">
+            <h1 class="text-center">Edit Business Card</h1>
+            <p class="text-center" style="color: #666; margin-bottom: 30px;">Update your card information</p>
+            
+            <form id="editForm">
+                <!-- Profile Image -->
+                <div class="form-group">
+                    <label>Profile Image</label>
+                    <div class="image-upload" id="imageUpload">
+                        <input type="file" id="profileImage" accept="image/*">
+                        <i class="fas fa-camera fa-3x" style="color: #667eea; margin-bottom: 10px;"></i>
+                        <p>Click to change profile photo</p>
+                        <p style="color: #666; font-size: 12px; margin-top: 5px;">Max 100KB, will be resized automatically</p>
+                        <img id="imagePreview" class="image-preview" alt="Preview">
+                    </div>
+                </div>
+                
+                <!-- Basic Information -->
+                <div class="form-group">
+                    <label for="fullName">Full Name <span class="required">*</span></label>
+                    <input type="text" id="fullName" placeholder="John Doe" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="phone" placeholder="+1234567890" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="whatsapp">WhatsApp Number</label>
+                    <input type="tel" id="whatsapp" placeholder="+1234567890">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email <span class="required">*</span></label>
+                    <input type="email" id="email" placeholder="john@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Address <span class="required">*</span></label>
+                    <input type="text" id="address" placeholder="123 Business St, City, Country" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mapLink">Google Maps Link</label>
+                    <input type="url" id="mapLink" placeholder="https://maps.google.com/?q=...">
+                </div>
+                
+                <!-- About Section -->
+                <div class="form-group">
+                    <label for="about">About/Business Info <span class="required">*</span></label>
+                    <textarea id="about" placeholder="Describe your business or yourself..." rows="4" required></textarea>
+                </div>
+                
+                <!-- Offers Section -->
+                <div id="offersContainer">
+                    <h3>Special Offers (3-5 offers)</h3>
+                    <button type="button" class="add-offer-btn" id="addOffer">
+                        <i class="fas fa-plus"></i> Add Offer
+                    </button>
+                    <!-- Offers will be loaded here -->
+                </div>
+                
+                <!-- Social Links -->
+                <div class="form-group">
+                    <label for="facebook">Facebook URL</label>
+                    <input type="url" id="facebook" placeholder="https://facebook.com/username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="instagram">Instagram URL</label>
+                    <input type="url" id="instagram" placeholder="https://instagram.com/username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="youtube">YouTube URL</label>
+                    <input type="url" id="youtube" placeholder="https://youtube.com/username">
+                </div>
+                
+                <!-- Action Buttons -->
+                <button type="submit" class="primary-btn" id="updateBtn">
+                    <i class="fas fa-save"></i> Update Card
+                </button>
+                
+                <a href="#" id="cancelBtn" class="secondary-btn">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                
+                <div class="spinner hidden" id="loadingSpinner"></div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="edit.js"></script>
 </body>
 </html>
