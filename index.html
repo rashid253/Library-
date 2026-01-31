@@ -22,10 +22,10 @@ button{background:#2563eb;color:white;border:none;border-radius:8px}
 <div class="form-container">
 <h2>Create Business Card</h2>
 
-<input id="name" placeholder="Full Name" required>
-<input id="businessName" placeholder="Business Name" required>
-<textarea id="businessInfo" placeholder="Business Info" required></textarea>
-<input id="address" placeholder="Address" required>
+<input id="name" placeholder="Full Name">
+<input id="businessName" placeholder="Business Name">
+<textarea id="businessInfo" placeholder="Business Info"></textarea>
+<input id="address" placeholder="Address">
 
 <select id="countryCode">
 <option value="+92">+92</option>
@@ -33,8 +33,8 @@ button{background:#2563eb;color:white;border:none;border-radius:8px}
 <option value="+44">+44</option>
 </select>
 
-<input id="phone" placeholder="Phone" required>
-<input id="email" placeholder="Email" required>
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
 <input id="facebook" placeholder="Facebook">
 <input id="instagram" placeholder="Instagram">
 <input id="youtube" placeholder="YouTube">
@@ -50,15 +50,15 @@ button{background:#2563eb;color:white;border:none;border-radius:8px}
 <button type="button" onclick="generate()">Generate Card</button>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-<script>
-const db = window.supabase.createClient(
- 'https://dfvnefbxgayxqgjjgtrr.supabase.co',
- 'sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE'
+const db = createClient(
+ "https://dfvnefbxgayxqgjjgtrr.supabase.co",
+ "sb_publishable_WypeFELCIlVDlqGY4PdWwA_snqoPUSE"
 );
 
-function addOffer(){
+window.addOffer = function(){
  const d=document.createElement("div");
  d.className="offerBox";
  d.innerHTML=`
@@ -83,7 +83,7 @@ function compress(file){
  });
 }
 
-async function generate(){
+window.generate = async function(){
 
  const n=name.value.trim();
  const b=businessName.value.trim();
@@ -129,10 +129,16 @@ async function generate(){
   offers:offerArr
  };
 
- await db.from("cards").insert({
+ const { error } = await db.from("cards").insert({
   id:id,
   data:JSON.stringify(data)
  });
+
+ if(error){
+  alert("Supabase error: " + error.message);
+  console.error(error);
+  return;
+ }
 
  location.href="card.html?id="+id;
 }
